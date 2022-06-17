@@ -1,0 +1,24 @@
+sim:
+  # --- load data ----
+  env_name           : "dclaw"
+  model_file         : "dclaw3xh_valve3_default.xml"
+  inplicit_step      : 200
+
+  # --- render options ---
+  width_capture      : 64
+  height_capture     : 64
+  is_use_render      : True
+  is_Offscreen       : False
+  is_target_visible  : True
+
+  # --- joint range limit (radian) ---
+  claw_jnt_range_lb   : [-0.3491, -0.5236, -1e-6,   -0.3491, -0.5236, -1e-6,   -0.3491, -0.5236, -1e-6]
+  claw_jnt_range_ub   : [ 0.7854,  0.5236,  1e-6,    0.7854,  0.5236,  1e-6,    0.7854,  0.5236,  1e-6]
+  object_jnt_range_lb : -12.566370614359172 # -4*np.pi
+  object_jnt_range_ub :  12.566370614359172 #  4*np.pi
+
+  # --- initial state ----
+  robot_position_init  : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+  robot_velocity_init  : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+  object_position_init : [0.0] # バルブで
+  object_velocity_init : [0.0]

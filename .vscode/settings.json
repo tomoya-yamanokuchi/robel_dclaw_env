@@ -1,0 +1,39 @@
+{
+    "python.pythonPath"            : "/home/tomoya-y/.venv_pytorch/bin/python",
+    "editor.fontFamily"            : "Ubuntu Mono",
+    "editor.tabSize"               : 4,
+    "window.zoomLevel"             : 2,
+    "editor.fontSize"              : 16,
+    "debug.console.fontSize"       : 16,
+    "terminal.integrated.fontSize" : 16,
+    "editor.insertSpaces"          : true,
+    "python.formatting.blackPath"  : "/home/tomoya-y/.venv_python3.7/bin/black",
+    // "python.formatting.provider": "black",
+    "python.languageServer": "Pylance",
+    "python.analysis.extraPaths": [
+        "./scripts",
+        "/hdd_mount/drkvae/master",
+        "/hdd_mount/ensemble",
+        "/hdd_mount/ROBEL_DClaw_hands_on/ros_dclaw/script"
+    ],
+
+    "python.testing.pytestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    // "python.testing.unittestEnabled": true,
+
+    // << trailing-spaces >>
+    "trailing-spaces.backgroundColor": "rgba(255,0,0,0.0)",
+    "trailing-spaces.trimOnSave": true,
+
+    "workbench.tree.indent": 25,
+
+    "indentOneSpace.workOnSingleLine": true,// Even if 1 character on 1 line is selected - the command will work.
+    "indentOneSpace.cramReversed": true,// Outdent lines even if one of them has reached column 0 (gutter).
+    "indentOneSpace.onlyCompleteRange": false,// Indent works only when selection has nothing or whitespace characters on the sides
+
+    "bracket-pair-colorizer-2.colors": [
+        "Gold",
+        "Orchid",
+        "LightSkyBlue"
+    ],
+}
