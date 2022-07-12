@@ -34,11 +34,11 @@
           <body name="FFL12" pos="0 0 0.068">
             <geom name="FFL12_metal_clamping" mesh="metal_clamping"                 material="FFL12_metal_clamping_mat"/>
             <geom name="FFL12_plastic_finger" mesh="plastic_finger" pos="0 0 0.046" material="FFL12_plastic_finger_mat"/>
-            <geom class="phy_metal" type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003" />
-            <geom class="phy_metal" type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002" />
-            <geom class="phy_metal" type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
-            <geom class="phy_plastic" type="capsule" pos="0 0 0.053" size="0.011 0.02" mass=".018"      />
-            <geom class="phy_plastic" type="box" pos="0 0 0.03" size="0.0245 0.014 0.003" mass=".007"   />
+            <geom     class="phy_metal"   type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003" />
+            <geom     class="phy_metal"   type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002" />
+            <geom     class="phy_metal"   type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
+            <geom name="phy_tip" class="phy_plastic" type="capsule" pos="0 0 0.053" size="0.011 0.02" mass=".018"      />
+            <geom     class="phy_plastic" type="box" pos="0 0 0.03" size="0.0245 0.014 0.003" mass=".007"   />
             <joint name="FFJ12" type="hinge" axis="1 0 0" range="-1.57 1.57"/>
             <!-- <site name="FFtip" type="sphere" pos="0 0 .076" size="0.01" rgba="1 .3 .3 1"/> -->
           </body>

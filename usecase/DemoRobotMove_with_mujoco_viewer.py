@@ -21,16 +21,17 @@ class DemoRobotMove_with_mujoco_viewer:
             object_velocity = np.array(config.sim.object_velocity_init),
         )
 
-        step        = 100
-        dim_ctrl    = 9
-        ctrl        = np.zeros([step, dim_ctrl])
-        ctrl[:, -3] = np.linspace(0, np.pi*0.25, step)
-        ctrl[:, -2] = np.linspace(0, np.pi*0.25, step)
+        step       = 100
+        dim_ctrl   = 9
+        ctrl       = np.zeros([step, dim_ctrl])
+        ctrl[:, 0] = np.linspace(0, -np.pi*0.1, step)
+        ctrl[:, 1] = np.linspace(0, np.pi*0.1, step)
+        ctrl[:, 2] = np.linspace(0, np.pi*0.25, step)
 
         for s in range(10):
             env.reset(state)
-            env.canonicalize_texture() # canonicalテクスチャを設定
-            # env.randomize_texture()    # randomテクスチャを設定
+            # env.canonicalize_texture() # canonicalテクスチャを設定
+            env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
                 env.set_ctrl(ctrl[i])
                 env.render_with_viewer()    # Mujocoのビューワを使って描画

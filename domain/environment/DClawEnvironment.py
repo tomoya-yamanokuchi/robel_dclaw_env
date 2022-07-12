@@ -26,6 +26,7 @@ from .. import dictionary_operation as dictOps
 from .DClawState import DClawState
 from .AbstractEnvironment import AbstractEnvironment
 from ..ImageObject import ImageObject
+from .TexturedGeometory import TexturedGeometory
 
 
 class DClawEnvironment(AbstractEnvironment):
@@ -69,8 +70,9 @@ class DClawEnvironment(AbstractEnvironment):
 
 
     def _set_geom_names_randomize_target(self):
-        self.geom_names_randomize_target = self.sim.model.geom_names
-
+        self.geom_names_randomize_target = TexturedGeometory()()
+        # self.geom_names_randomize_target = self.sim.model.geom_names
+        a = 23
 
     def render_with_viewer(self):
         self.viewer.render()
@@ -460,6 +462,14 @@ class DClawEnvironment(AbstractEnvironment):
         for i in range(self.inplicit_step):
             self.sim.step()
 
+        # print("self.sim.data.ncon: ", self.sim.data.ncon)
+        for i in range(self.sim.data.ncon):
+            con = self.sim.data.contact[i]
+            # if con.geom1 == self.sim.model.geom_name2id("phy_tip") and con.geom2 == self.sim.model.geom_name2id("phy_valve_6_oclock"):
+            if con.geom1:
+                print(con.geom1)
+                print(con.geom2)
+                contact_pos = con.pos
 
     def step(self):
         self.sim.step()

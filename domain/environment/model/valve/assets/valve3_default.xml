@@ -3,9 +3,9 @@
   <body name="valve_base" pos=".0 0.00 0.01" euler="0 0 0" childclass="station">
     <body name="valve" pos="0 0 0.038" euler="0 0 -1.57">
       <geom class="station_viz_plastic_white" mesh="valve_3"  pos="0 0 0"               name="valve_3"      material="valve_3_mat"/>
-      <geom class="station_phy_plastic"       type="capsule"  pos="0.0 0.038 0.054"     size="0.021 0.035"  euler="1.57 0 0"/>
-      <geom class="station_phy_plastic"       type="capsule"  pos="-0.034 -0.019 0.054" size="0.021 0.035"  euler="1.57 2.0944 0"/>
-      <geom class="station_phy_plastic"       type="capsule"  pos="0.034 -0.019 0.054"  size="0.021 0.035"  euler="1.57 4.1887 0"/>
+      <geom name="phy_valve_6_oclock" class="station_phy_plastic"       type="capsule"  pos="0.0 0.038 0.054"     size="0.021 0.035"  euler="1.57 0 0"/>
+      <geom name="phy_valve_2_oclock" class="station_phy_plastic"       type="capsule"  pos="-0.034 -0.019 0.054" size="0.021 0.035"  euler="1.57 2.0944 0"/>
+      <geom name="phy_valve_10_oclock" class="station_phy_plastic"       type="capsule"  pos="0.034 -0.019 0.054"  size="0.021 0.035"  euler="1.57 4.1887 0"/>
       <geom class="station_phy_plastic"       type="cylinder" pos="0.0 0.0 0.027"       size="0.02 0.0275"/>
       <joint name="valve_OBJRx"               type="hinge"    pos="0 0 0"  axis="0 0 1" range="-6.28 6.28" damping="0.1" limited="true"/>
     </body>

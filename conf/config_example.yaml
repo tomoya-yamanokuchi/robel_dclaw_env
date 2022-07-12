@@ -2,7 +2,7 @@ sim:
   # --- load data ----
   env_name              : "dclaw"
   model_file            : "dclaw3xh_valve3_default.xml"
-  env_color             : "white"
+  env_color             : "random"
   inplicit_step         : 200
 
   # --- render options ---

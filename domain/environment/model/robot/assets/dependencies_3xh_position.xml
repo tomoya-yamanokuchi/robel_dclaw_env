@@ -24,11 +24,11 @@
         <site group="3"/>
       </default>
       <default class="phy_metal">
-        <geom contype="1" conaffinity="1" group="4" type="mesh" rgba="0.0 0.0 1.0 .3"/>
+        <geom contype="1" conaffinity="1" group="4" type="mesh" rgba="0.0 0.0 1.0 .3" solimp="1 1 0 0.5 2"/>
         <site group="4"/>
       </default>
       <default class="phy_plastic">
-        <geom contype="1" conaffinity="1" group="4" type="mesh" rgba="0.0 0.0 1.0 .3" friction=".2 0.005 0.0001"/>
+        <geom contype="1" conaffinity="1" group="4" type="mesh" rgba="0.0 0.0 1.0 .3" friction=".2 0.005 0.0001" solimp="1 1 0 0.5 2"/>
         <site group="4"/>
       </default>
     </default>
