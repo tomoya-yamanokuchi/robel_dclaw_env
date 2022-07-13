@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco>
+    <worldbody>
+        <body name="Finger_base" pos="0 0 0" euler="0 0 0">
+            <!-- <geom mesh="xh28" pos="0 0 0.01425" euler="1.57 0 1.57"/> -->
+            <geom  type="box" pos=".012 0 0.014" size="0.024 0.0175 0.015" mass=".093"/>
+            <body name="FF10" pos="0 0 0.01425" euler="0 0 3.14">
+                <!-- <geom mesh="metal_clamping" euler="0 0 1.57"/>
+                <geom mesh="metal_clamping_small" pos="0 0 0.055" euler="3.14 0 0"/>
+                <geom mesh="xh28" pos="0 0 0.068" euler="1.57 1.57 0"/> -->
+                <geom  type="box" pos="0 0 0.056" size="0.0175 0.015 0.024" mass=".093"/>
+                <geom  type="box" pos="0.0 0 0.026" size="0.0125 0.0214 0.003" mass=".003"/>
+                <geom  type="box" pos="0 0.02 0.013" size="0.011 0.0012 0.016" mass=".002"/>
+                <geom  type="box" pos="0 -0.02 0.013" size="0.011 0.0012 0.016" mass=".002"/>
+                <geom  type="box" pos="0 0 0.033" size="0.019 0.014 0.006" mass=".005"/>
+                <joint name="FFJ10" type="hinge" axis="0 1 0" range="-.45 1.35"/>
+                <body name="FFL11" pos="0 0 0.0675">
+                    <!-- <geom mesh="metal_clamping_small" pos="0 0 0.055" euler="3.14 0 0"/>
+                    <geom mesh="xh28" pos="0 0 0.0686" euler="1.57 1.57 0"/>
+                    <geom mesh="metal_clamping"/> -->
+                    <geom  type="box" pos="0 0 0.056" size="0.0175 0.015 0.024" mass=".093"/>
+                    <geom  type="box" pos="0 0 0.026" size="0.0214 0.0125 0.003" mass=".003"/>
+                    <geom  type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
+                    <geom  type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
+                    <geom  type="box" pos="0 0 0.033" size="0.019 0.014 0.006" mass=".005"/>
+                    <joint name="FFJ11" type="hinge" axis="1 0 0" range="-2 2"/>
+                    <body name="FFL12" pos="0 0 0.068">
+                        <!-- <geom mesh="metal_clamping"/> -->
+                        <!-- <geom material="plastic" mesh="plastic_finger" pos="0 0 0.046"/> -->
+                        <geom  type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003"/>
+                        <geom  type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
+                        <geom  type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
+                        <geom  type="capsule" pos="0 0 0.053" size="0.011 0.02" mass=".018"/>
+                        <geom  type="box" pos="0 0 0.03" size="0.0245 0.014 0.003" mass=".007"/>
+                        <joint name="FFJ12" type="hinge" axis="1 0 0" range="-2 2"/>
+                        <site name="FFtip" type="sphere" pos="0 0 .076" size="0.01" rgba="1 .3 .3 1"/>
+                    </body>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+</mujoco>

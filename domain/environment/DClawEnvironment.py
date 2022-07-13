@@ -54,6 +54,7 @@ class DClawEnvironment(AbstractEnvironment):
 
         self._valve_jnt_id               = self.model.joint_name2id('valve_OBJRx')
         self._target_bid                 = self.model.body_name2id('target')
+        self._contact_bid                = self.model.body_name2id('vis_contact_body')
         self._target_sid                 = self.model.site_name2id('tmark')
         self._target_position            = None
         self.sim                         = None
@@ -462,14 +463,19 @@ class DClawEnvironment(AbstractEnvironment):
         for i in range(self.inplicit_step):
             self.sim.step()
 
+        self.viewer.vopt.flags[mujoco_py.const.VIS_CONTACTFORCE] = 1
         # print("self.sim.data.ncon: ", self.sim.data.ncon)
         for i in range(self.sim.data.ncon):
             con = self.sim.data.contact[i]
             # if con.geom1 == self.sim.model.geom_name2id("phy_tip") and con.geom2 == self.sim.model.geom_name2id("phy_valve_6_oclock"):
             if con.geom1:
-                print(con.geom1)
-                print(con.geom2)
+                # print(con.geom1)
+                # print(con.geom2)
+                # contact_pos = con.pos
+                self.sim.model.body_pos[self._contact_bid][:] = con.pos
+            if self.sim.data.ncon > 1:
                 contact_pos = con.pos
+
 
     def step(self):
         self.sim.step()

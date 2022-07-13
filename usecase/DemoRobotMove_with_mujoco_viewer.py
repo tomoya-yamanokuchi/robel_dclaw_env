@@ -28,10 +28,10 @@ class DemoRobotMove_with_mujoco_viewer:
         ctrl[:, 1] = np.linspace(0, np.pi*0.1, step)
         ctrl[:, 2] = np.linspace(0, np.pi*0.25, step)
 
-        for s in range(10):
+        for s in range(30):
             env.reset(state)
-            # env.canonicalize_texture() # canonicalテクスチャを設定
-            env.randomize_texture()    # randomテクスチャを設定
+            env.canonicalize_texture() # canonicalテクスチャを設定
+            # env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
                 env.set_ctrl(ctrl[i])
                 env.render_with_viewer()    # Mujocoのビューワを使って描画
