@@ -30,6 +30,7 @@ sim:
   robot_velocity_init  : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
   object_position_init : [0.0]
   object_velocity_init : [0.0]
+  force_init           : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
 
 
   dynamics:

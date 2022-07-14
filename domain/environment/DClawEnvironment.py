@@ -1,5 +1,7 @@
 import sys
 import pathlib
+
+from cv2 import DFT_INVERSE
 p = pathlib.Path()
 sys.path.append(str(p.cwd()))
 
@@ -55,6 +57,18 @@ class DClawEnvironment(AbstractEnvironment):
         self._valve_jnt_id               = self.model.joint_name2id('valve_OBJRx')
         self._target_bid                 = self.model.body_name2id('target')
         self._target_sid                 = self.model.site_name2id('tmark')
+
+        self.optoforce_geom_id_dict = {
+            "claw1" : self.model.geom_name2id('FFL12_phy_optoforce'),
+            "claw2" : self.model.geom_name2id('MFL22_phy_optoforce'),
+            "claw3" : self.model.geom_name2id('THL32_phy_optoforce'),
+        }
+        self.index_force = {
+            "claw1" : [0, 1, 2],
+            "claw2" : [3, 4, 5],
+            "claw3" : [6, 7, 8],
+        }
+
         self._target_position            = None
         self.sim                         = None
         self.viewer                      = None
@@ -252,24 +266,44 @@ class DClawEnvironment(AbstractEnvironment):
 
 
     def get_state(self):
-        env_state = copy.deepcopy(self.sim.get_state())
+        env_state   = copy.deepcopy(self.sim.get_state())
+        force       = self.get_force()
         state = DClawState(
             robot_position  = env_state.qpos[:9],
             object_position = env_state.qpos[-1:],
             robot_velocity  = env_state.qvel[:9],
             object_velocity = env_state.qvel[-1:],
+            force           = force,
         )
         return state
 
 
-    def set_state(self, qpos, qvel):
-        assert(qpos.shape == self.model.nq, "qpos.shape {} != self.model.nq {}".format(qpos.shape, self.model.nq))
-        assert(qvel.shape == self.model.nv, "qvel.shape {} != self.model.nv {}".format(qvel.shape, self.model.nv))
+    def get_force(self):
+        num_data_per_force_sensor = 3 # (Fx, Fy, Fz)
+        force = np.zeros(self.num_force_sensor * num_data_per_force_sensor)
+        for i in range(self.sim.data.ncon):
+            con = self.sim.data.contact[i]
+            for geom in [con.geom1, con.geom2]:
+                if geom in list(self.optoforce_geom_id_dict.values()):
+                    contact_claw = [k for k, v in self.optoforce_geom_id_dict.items() if v == geom]
+                    assert len(contact_claw) == 1
+                    force[self.index_force[contact_claw[0]]] = np.take(self.sim.data.sensordata, self.index_force[contact_claw[0]])
+        print("force: [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}]".format(
+            force[0], force[1], force[2],     force[3], force[4], force[5],     force[6], force[7], force[8]))
+        return force
+
+
+    def set_state(self, qpos, qvel, sensordata):
+        assert(      qpos.shape == self.model.nq,          "      qpos.shape {} != self.model.nq {}".format(qpos.shape, self.model.nq))
+        assert(      qvel.shape == self.model.nv,          "      qvel.shape {} != self.model.nv {}".format(qvel.shape, self.model.nv))
+        assert(sensordata.shape == self.model.nsensordata, "sensordata.shape {} != self.model.nsensordata {}".format(sensordata.shape, self.model.nsensordata))
+
         old_state = self.sim.get_state()
         new_state = mujoco_py.MjSimState(old_state.time, qpos, qvel, old_state.act, old_state.udd_state)
         self.sim.set_state(new_state)
-        self.sim.data.ctrl[:9] = qpos[:9]
-        self.sim.data.ctrl[9:] = 0.0
+        self.sim.data.ctrl[:9]      = qpos[:9]
+        self.sim.data.ctrl[9:]      = 0.0
+        self.sim.data.sensordata[:] = sensordata
         self.sim.forward()
 
 
@@ -336,14 +370,16 @@ class DClawEnvironment(AbstractEnvironment):
 
     def create_qpos_qvel_from_InitialState(self, DClawState_: DClawState):
         # qpos
-        qpos     = np.zeros(self.sim.model.nq)
-        qpos[:9] = DClawState_.robot_position
-        qpos[-1] = DClawState_.object_position
+        qpos       = np.zeros(self.sim.model.nq)
+        qpos[:9]   = DClawState_.robot_position
+        qpos[-1]   = DClawState_.object_position
         # qvel
-        qvel     = np.zeros(self.sim.model.nq)
-        qvel[:9] = DClawState_.robot_velocity
-        qvel[-1] = DClawState_.object_velocity
-        return qpos, qvel
+        qvel       = np.zeros(self.sim.model.nq)
+        qvel[:9]   = DClawState_.robot_velocity
+        qvel[-1]   = DClawState_.object_velocity
+
+        sensordata = DClawState_.force
+        return qpos, qvel, sensordata
 
 
     def reset(self, DClawState_: DClawState):
@@ -358,17 +394,22 @@ class DClawEnvironment(AbstractEnvironment):
         self.set_camera_position(self.camera)
         self.set_light_position(self.light)
         self.set_target_visible(self.is_target_visible)
-        qpos, qvel = self.create_qpos_qvel_from_InitialState(DClawState_)
-        self.set_state(qpos=qpos, qvel=qvel)
+        qpos, qvel, sensordata = self.create_qpos_qvel_from_InitialState(DClawState_)
+        self.set_state(qpos=qpos, qvel=qvel, sensordata=sensordata)
         self.render(iteration=1)
 
 
 
     def _create_mujoco_related_instance(self):
         self.sim = mujoco_py.MjSim(self.model)
+
+        self.num_force_sensor = len(self.sim.model.sensor_names)
+        assert self.num_force_sensor == 3
+
         if self.is_use_render:
             if self.is_Offscreen: self.viewer = mujoco_py.MjRenderContextOffscreen(self.sim, 0);    print(" init --> viewer"); time.sleep(2)
             else:                 self.viewer = mujoco_py.MjViewer(self.sim);                       print(" init --> "); time.sleep(2)
+            # self.viewer.vopt.flags[mujoco_py.const.VIS_CONTACTFORCE] = 1 # force sensorではないbuild-inのcontactを可視化
             # -------------------
             self.texture_modder  = TextureModder(self.sim);                                         print(" init --> texture_modder")
             self.camera_modder   = CameraModder(self.sim);                                          print(" init --> camera_modder")
@@ -377,6 +418,8 @@ class DClawEnvironment(AbstractEnvironment):
             self._set_geom_names_randomize_target();                                                print(" init --> _set_geom_names_randomize_target()")
             factory              = DclawEnvironmentRGBFactory();                                    print(" init --> factory")
             self.rgb             = factory.create(self.env_color, self.geom_names_randomize_target);print(" init --> self.rgb")
+
+
 
 
     def set_target_position(self, target_position):
@@ -461,26 +504,6 @@ class DClawEnvironment(AbstractEnvironment):
         '''
         for i in range(self.inplicit_step):
             self.sim.step()
-
-        self.viewer.vopt.flags[mujoco_py.const.VIS_CONTACTFORCE] = 1
-        # print("self.sim.data.ncon: ", self.sim.data.ncon)
-        for i in range(self.sim.data.ncon):
-            con = self.sim.data.contact[i]
-            # if con.geom1 == self.sim.model.geom_name2id("phy_tip") and con.geom2 == self.sim.model.geom_name2id("phy_valve_6_oclock"):
-            if con.geom1:
-                # print(con.geom1)
-                # print(con.geom2)
-                # contact_pos = con.pos
-                # self.sim.model.body_pos[self._contact_bid][:] = con.pos
-                print(np.abs(self.sim.data.cfrc_ext).sum())
-            if self.sim.data.ncon > 0:
-
-                contact_pos = con.pos
-
-                c_array = np.zeros(6, dtype=np.float64)
-                print('c_array', c_array)
-                mujoco_py.functions.mj_contactForce(self.sim.model, self.sim.data, i, c_array)
-                print('c_array', c_array)
 
 
 
