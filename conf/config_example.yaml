@@ -1,7 +1,9 @@
 sim:
   # --- load data ----
   env_name              : "dclaw"
-  model_file            : "dclaw3xh_valve3_default.xml"
+#   env_name              : "force"
+  model_file            : "dclaw3xh_valve3_with_force.xml"
+#   model_file            : "simple_force_sensor_model.xml"
   env_color             : "random"
   inplicit_step         : 200
 

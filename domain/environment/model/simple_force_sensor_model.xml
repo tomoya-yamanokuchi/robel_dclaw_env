@@ -1,0 +1,78 @@
+<mujoco model="dddd">
+    <size njmax="8000" nconmax="4000"/>
+
+    <visual>
+        <quality shadowsize="1024" offsamples="4"/>
+    </visual>
+
+
+    <default>
+        <default class="phy_plastic">
+            <geom contype="1" conaffinity="1" group="4" type="mesh" rgba="0.0 0.0 1.0 .5" friction=".2 0.005 0.0001" solimp="1 1 0 0.5 2"/>
+            <site group="4"/>
+        </default>
+        <default class="dddd">
+            <geom contype="1" conaffinity="1" group="4" type="mesh" rgba="0.0 0.8 0.0 .5" friction=".2 0.005 0.0001" solimp="1 1 0 0.5 2"/>
+            <site group="4"/>
+        </default>
+
+
+
+
+        <default class="phy_optoforce">
+            <geom contype="1" conaffinity="1" group="4" type="sphere" size="0.011" mass=".009" pos="0 0 0" rgba="0 0 1 .5" friction=".2 0.005 0.0001" solimp="1 1 0 0.5 2"/>
+            <site group="4"/>
+        </default>
+
+        <default class="site_optoforce">
+            <site type="sphere" size="0.011" rgba="1 0 1 .5" pos="0 0 0" group="5"/>
+        </default>
+
+
+    </default>
+
+
+    <worldbody>
+        <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
+
+        <!-- <geom type="plane" pos="0 0 0.0309"  size="0.04 0.04 0.001" rgba="0.7 0.7 0.7 1"/>
+        <geom type="plane" pos="0 0 -0.0309" size="0.04 0.04 0.001" rgba="0.7 0.7 0.7 1"/> -->
+
+        <body name="row" pos="0.05 0.0 0.031" euler="0 0 0">
+            <joint name='ballx' type="slide" axis='1 0 0' damping=".5" armature="0.001" range="-0.2 0.2"/>
+            <geom name="tip_row" class="dddd" type="capsule" size="0.011 0.02" mass=".1" euler="90 0 0"/>
+        </body>
+
+
+        <!-- <body name="top" pos="0 0.02 0" euler="0 0 0">
+            <geom name="bo" type="box" size="0.011 0.02 0" mass=".018"/>
+        </body> -->
+
+        <body name="top" pos="0 0.02 0" euler="0 0 0">
+            <geom name="phy_tip" class="phy_plastic" type="capsule" size="0.011 0.02" mass=".018"/>
+        </body>
+
+        <body name="mytio" pos="0 -0.02 0" euler="0 0 0">
+            <geom class="phy_plastic" name="phy_tip_claw1" type="cylinder" size="0.011 0.02" mass=".009" pos="0 0 0"/>
+            <body name="optoforce_claw1" pos="0 0 0.02">
+                <geom class="phy_optoforce"  name="phy_optoforce_claw1"/>
+                <site class="site_optoforce" name="site_optoforce_claw1"/>
+            </body>
+        </body>
+
+
+    </worldbody>
+
+    <actuator>
+        <!-- <position name="ballx_aa" kp="0.1" joint="ballx" ctrllimited="true" ctrlrange="-0.05 0.05"/> -->
+        <position name="ballx_aa" kp="1" joint="ballx" ctrllimited="true" ctrlrange="-0.1 0.1"/>
+        <!-- <jointpos name="ballx"	joint="ballx"/> -->
+        <!-- <motor name='bossx' 	gear='50' joint='ballx'/> -->
+    </actuator>
+
+    <sensor>
+        <!-- <force site="optoforce_claw1_site"/> -->
+        <!-- <torque site="sensor" user="0 0 0"/> -->
+    </sensor>
+
+</mujoco>

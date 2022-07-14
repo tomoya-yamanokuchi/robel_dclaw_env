@@ -34,9 +34,16 @@
             <geom     class="phy_metal"   type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003" />
             <geom     class="phy_metal"   type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002" />
             <geom     class="phy_metal"   type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
-            <geom name="phy_tip"      class="phy_plastic" type="capsule" pos="0 0 0.053" size="0.011 0.02" mass=".018"/>
-            <site name="phy_tip_site"                     type="capsule" pos="0 0 0.053" size="0.011 0.02" rgba="0.0 1.0 0 .3"/>
-            <geom     class="phy_plastic" type="box" pos="0 0 0.03" size="0.0245 0.014 0.003" mass=".007"   />
+
+            <body name="FFL12_tip" pos="0 0 0">
+                <geom class="phy_plastic" type="box"       pos="0 0 0.03"  size="0.0245 0.014 0.003"  mass=".007"/>
+                <geom class="phy_plastic" type="cylinder"  pos="0 0 0.053" size="0.011 0.02"          mass=".009"/>
+                <body name="FFL12_optoforce" pos="0 0 0.073">
+                    <geom class="phy_optoforce"  name="FFL12_phy_optoforce"/>
+                    <site class="site_optoforce" name="FFL12_site_optoforce"/>
+                </body>
+            </body>
+
             <joint name="FFJ12" type="hinge" axis="1 0 0" range="-1.57 1.57"/>
             <!-- <site name="FFtip" type="sphere" pos="0 0 .076" size="0.01" rgba="1 .3 .3 1"/> -->
           </body>
@@ -73,8 +80,16 @@
             <geom class="phy_metal" type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003" />
             <geom class="phy_metal" type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002" />
             <geom class="phy_metal" type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
-            <geom class="phy_plastic" type="capsule" pos="0 0 0.053" size="0.011 0.02" mass=".018"      />
-            <geom class="phy_plastic" type="box" pos="0 0 0.03" size="0.0245 0.014 0.003" mass=".007"   />
+
+            <body name="MFL22_tip" pos="0 0 0">
+                <geom class="phy_plastic" type="box"       pos="0 0 0.03"  size="0.0245 0.014 0.003"  mass=".007"/>
+                <geom class="phy_plastic" type="cylinder"  pos="0 0 0.053" size="0.011 0.02"          mass=".009"/>
+                <body name="MFL22_optoforce" pos="0 0 0.073">
+                    <geom class="phy_optoforce"  name="MFL22_phy_optoforce"/>
+                    <site class="site_optoforce" name="MFL22_site_optoforce"/>
+                </body>
+            </body>
+
             <joint name="MFJ22" type="hinge" axis="1 0 0" range="-1.57 1.57"/>
             <!-- <site name="MFtip" type="sphere" pos="0 0 .076" size="0.01" rgba=".3 1 .3 1"/> -->
           </body>
@@ -111,8 +126,16 @@
             <geom class="phy_metal" type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003" />
             <geom class="phy_metal" type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002" />
             <geom class="phy_metal" type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
-            <geom class="phy_plastic" type="capsule" pos="0 0 0.053" size="0.011 0.02" mass=".018"      />
-            <geom class="phy_plastic" type="box" pos="0 0 0.03" size="0.0245 0.014 0.003" mass=".007"   />
+
+            <body name="THL32_tip" pos="0 0 0">
+                <geom class="phy_plastic" type="box"       pos="0 0 0.03"  size="0.0245 0.014 0.003"  mass=".007"/>
+                <geom class="phy_plastic" type="cylinder"  pos="0 0 0.053" size="0.011 0.02"          mass=".009"/>
+                <body name="THL32_optoforce" pos="0 0 0.073">
+                    <geom class="phy_optoforce"  name="THL32_phy_optoforce"/>
+                    <site class="site_optoforce" name="THL32_site_optoforce"/>
+                </body>
+            </body>
+
             <joint name="THJ32" type="hinge" axis="1 0 0" range="-1.57 1.57"/>
             <!-- <site name="THtip" type="sphere" pos="0 0 .076" size="0.01" rgba=".3 .3 1 1"/> -->
           </body>

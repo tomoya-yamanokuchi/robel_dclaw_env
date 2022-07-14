@@ -21,7 +21,7 @@ from mujoco_py.modder import LightModder, CameraModder
 from .my_mujoco.modder import myTextureModder as TextureModder
 from numpy.lib.function_base import append
 from transforms3d.euler import euler2quat, quat2euler
-from .DclawEnvironmentRGBFactory import DclawEnvironmentRGBFactory
+# from .DclawEnvironmentRGBFactory import DclawEnvironmentRGBFactory
 from .. import dictionary_operation as dictOps
 from .DClawState import DClawState
 from .AbstractEnvironment import AbstractEnvironment
@@ -29,7 +29,7 @@ from ..ImageObject import ImageObject
 from .TexturedGeometory import TexturedGeometory
 
 
-class DClawEnvironment(AbstractEnvironment):
+class Force(AbstractEnvironment):
     def __init__(self, config):
         self.width_capture               = config.width_capture
         self.height_capture              = config.height_capture
@@ -52,9 +52,6 @@ class DClawEnvironment(AbstractEnvironment):
         self.camera                      = config.camera
         self.light                       = config.light
 
-        self._valve_jnt_id               = self.model.joint_name2id('valve_OBJRx')
-        self._target_bid                 = self.model.body_name2id('target')
-        self._target_sid                 = self.model.site_name2id('tmark')
         self._target_position            = None
         self.sim                         = None
         self.viewer                      = None
@@ -375,8 +372,8 @@ class DClawEnvironment(AbstractEnvironment):
             self.light_modder    = LightModder(self.sim);                                           print(" init --> light_modder")
             self.default_cam_pos = self.camera_modder.get_pos("canonical");                         print(" init --> default_cam_pos")
             self._set_geom_names_randomize_target();                                                print(" init --> _set_geom_names_randomize_target()")
-            factory              = DclawEnvironmentRGBFactory();                                    print(" init --> factory")
-            self.rgb             = factory.create(self.env_color, self.geom_names_randomize_target);print(" init --> self.rgb")
+            # factory              = DclawEnvironmentRGBFactory();                                    print(" init --> factory")
+            # self.rgb             = factory.create(self.env_color, self.geom_names_randomize_target);print(" init --> self.rgb")
 
 
     def set_target_position(self, target_position):
@@ -471,9 +468,9 @@ class DClawEnvironment(AbstractEnvironment):
                 # print(con.geom1)
                 # print(con.geom2)
                 # contact_pos = con.pos
-                # self.sim.model.body_pos[self._contact_bid][:] = con.pos
+                self.sim.model.body_pos[self._contact_bid][:] = con.pos
                 print(np.abs(self.sim.data.cfrc_ext).sum())
-            if self.sim.data.ncon > 0:
+            if self.sim.data.ncon > 1:
 
                 contact_pos = con.pos
 
