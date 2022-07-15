@@ -19,6 +19,7 @@ class DemoTargetMove:
             robot_velocity  = np.array(config.sim.robot_velocity_init),
             object_position = np.array(config.sim.object_position_init),
             object_velocity = np.array(config.sim.object_velocity_init),
+            force           = np.array(config.sim.force_init),
         )
         env.reset(state)
 
