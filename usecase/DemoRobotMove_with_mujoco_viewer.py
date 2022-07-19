@@ -23,12 +23,8 @@ class DemoRobotMove_with_mujoco_viewer:
         )
 
         step       = 100
-        dim_ctrl   = 9
+        dim_ctrl   = 9 # 全部で9次元の制御入力
         ctrl       = np.zeros([step, dim_ctrl])
-        # ctrl[:, 0] = np.linspace(0, -np.pi*0.1, step)
-        # ctrl[:, 1] = np.linspace(0, np.pi*0.1, step)
-        # ctrl[:, 2] = np.linspace(0, np.pi*0.25, step)
-
         ctrl[:, 3] = np.linspace(0, -np.pi*0.1, step)
         ctrl[:, 4] = np.linspace(0, np.pi*0.1, step)
         ctrl[:, 5] = np.linspace(0, np.pi*0.25, step)
