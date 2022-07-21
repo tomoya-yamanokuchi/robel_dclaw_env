@@ -7,6 +7,9 @@
   <size njmax="8000" nconmax="4000"/>
 
   <worldbody>
+
+    <camera name="fix"  pos="0.3 0.3 0.33" euler="-0.6 -1.57 0" mode="fixed"/>
+
     <camera name="canonical"            mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
     <camera name="random"               mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
     <camera name="canonical_nonfix"     mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
@@ -15,7 +18,12 @@
     <camera name="top"                  mode= "fixed" euler="0 0 1.57" pos="0 0 3"/>
 
     <camera name="targeting"      pos="1 1 2"     mode="targetbodycom"  target="dClaw"/>
+    <!-- <camera name="FFL12"          ipd="0.5" fovy="5" mode="targetbodycom"     target="FFL12"/>
+    <camera name="MFL22"          fovy="90" mode="targetbody"     target="MFL22"/> -->
     <camera name="object_target"  pos="0 0 0.33"  mode="targetbody"     target="object"/>
+
+
+
     <body name="mount" pos="0 0 0.333" euler="0 0 0">
       <geom type="cylinder" size="0.03 0.005" rgba=".7 .7 .7 1"/>
       <include file="./robot/assets/chain3xh_with_force.xml"/>

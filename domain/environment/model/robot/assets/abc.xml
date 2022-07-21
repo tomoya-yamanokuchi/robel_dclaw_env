@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujocoinclude>
+	<body childclass="dclaw3xh" name="FFL12_tip" pos="0 0 0">
+		<geom euler="0 0 1.57" material="FFL12_plastic_finger_mat" mesh="finger_for_optoforce" name="FFL12_plastic_finger" pos="0 0 0"/>
+		<geom class="phy_plastic" mass=".007" pos="0 0 0.00254" size="0.0241 0.014 0.00254" type="box"/>
+		<geom class="phy_plastic" mass=".009" pos="0 0 0.02332" size="0.0115 0.01732" type="cylinder"/>
+		<body name="FFL12_optoforce" pos="0 0 0.073">
+			<geom class="phy_optoforce" name="FFL12_phy_optoforce"/>
+			<site class="site_optoforce" name="FFL12_site_optoforce"/>
+		</body>
+	</body>
+</mujocoinclude>

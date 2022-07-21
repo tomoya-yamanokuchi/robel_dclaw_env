@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujocoinclude>
+	<body name="FFL12_optoforce" pos="0 0 0.073">
+		<geom class="phy_optoforce" name="FFL12_phy_optoforce"/>
+		<site class="site_optoforce" name="FFL12_site_optoforce"/>
+	</body>
+</mujocoinclude>
+
+
+
+

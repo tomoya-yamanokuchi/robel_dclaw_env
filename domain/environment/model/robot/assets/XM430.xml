@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<mujocoinclude>
+  <body name="FFbase" pos=".03 -0.052 .020" euler="0 0 .52">
+    <geom name="FFbase_xh28" mesh="xh28" pos="0 0 0.01425" euler="1.57 0 1.57" material="FFbase_xh28_mat"/>
+    <geom class="phy_metal" type="box" pos=".012 0 0.014" size="0.024 0.0175 0.015" mass=".093" />
+  </body>
+</mujocoinclude>
