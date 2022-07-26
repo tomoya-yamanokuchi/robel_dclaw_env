@@ -59,7 +59,7 @@
       </body>
     </body>
     <!-- MIDDLE FINGER -->
-    <!-- <body name="MFbase" pos=".03 0.052 .020" euler="0 0 2.6">
+    <body name="MFbase" pos=".03 0.052 .020" euler="0 0 2.6">
       <geom name="MFbase_xh28" mesh="xh28" pos="0 0 0.01425" euler="1.57 0 1.57"  material="MFbase_xh28_mat"/>
       <geom class="phy_metal" type="box" pos=".012 0 0.014" size="0.024 0.0175 0.015" mass=".093" />
       <body name="MF20" pos="0 0 0.01425" euler="0 0 3.14">
@@ -102,9 +102,9 @@
           </body>
         </body>
       </body>
-    </body> -->
+    </body>
     <!-- THUMB -->
-    <!-- <body name="THbase" pos="-.06 0 .020" euler="0 0 -1.57">
+    <body name="THbase" pos="-.06 0 .020" euler="0 0 -1.57">
       <geom name="THbase_xh28" mesh="xh28" pos="0 0 0.01425" euler="1.57 0 1.57" material="THbase_xh28_mat"/>
       <geom class="phy_metal" type="box" pos=".012 0 0.014" size="0.024 0.0175 0.015" mass=".093" />
       <body name="TH30" pos="0 0 0.01425" euler="0 0 3.14">
@@ -147,6 +147,6 @@
           </body>
         </body>
       </body>
-    </body> -->
+    </body>
   </body>
 </mujocoinclude>

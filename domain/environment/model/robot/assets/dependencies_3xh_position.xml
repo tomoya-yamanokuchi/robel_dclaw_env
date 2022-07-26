@@ -53,7 +53,7 @@
   </asset>
 
 
-  <!-- <actuator>
+  <actuator>
     <position name="FFJ10_pos_sensor" kp="2" joint="FFJ10" class="dclaw3xh"  />
     <position name="FFJ11_pos_sensor" kp="2" joint="FFJ11" class="dclaw3xh"  />
     <position name="FFJ12_pos_sensor" kp="2" joint="FFJ12" class="dclaw3xh"  />
@@ -69,6 +69,6 @@
     <force name="FFL12_force" site="FFL12_site_optoforce"/>
     <force name="MFL22_force" site="MFL22_site_optoforce"/>
     <force name="THL32_force" site="THL32_site_optoforce"/>
-  </sensor> -->
+  </sensor>
 
 </mujocoinclude>
