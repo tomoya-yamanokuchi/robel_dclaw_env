@@ -28,7 +28,6 @@ from .. import dictionary_operation as dictOps
 from .DClawState import DClawState
 from .AbstractEnvironment import AbstractEnvironment
 from ..ImageObject import ImageObject
-from .TexturedGeometory import TexturedGeometory
 
 
 class DClawEnvironment(AbstractEnvironment):
@@ -84,9 +83,14 @@ class DClawEnvironment(AbstractEnvironment):
 
 
     def _set_geom_names_randomize_target(self):
-        self.geom_names_randomize_target = TexturedGeometory()()
-        # self.geom_names_randomize_target = self.sim.model.geom_names
-        a = 23
+        self.visible_geom_group = [0, 1, 2] # XMLファイルと整合性が取れるようにする
+        self.geom_names_randomize_target = []
+        for name in self.sim.model.geom_names:
+            id    = self.sim.model.geom_name2id(name)
+            group = self.sim.model.geom_group[id]
+            if group in self.visible_geom_group:
+                self.geom_names_randomize_target.append(name)
+
 
     def render_with_viewer(self):
         self.viewer.render()
@@ -164,6 +168,7 @@ class DClawEnvironment(AbstractEnvironment):
     def _render(self, camera_name: str="canonical"):
         if   "canonical" in camera_name: shadowsize = 0;    self.canonicalize_texture()
         elif    "random" in camera_name: shadowsize = 1024; self.randomize_texture()
+        elif  "overview" in camera_name: shadowsize = 0;    self.randomize_texture()
         else                           : raise NotImplementedError()
         self.set_light_castshadow(shadowsize=shadowsize)
         self.set_light_on(self.light_index_list)
@@ -416,8 +421,8 @@ class DClawEnvironment(AbstractEnvironment):
             self.light_modder    = LightModder(self.sim);                                           print(" init --> light_modder")
             self.default_cam_pos = self.camera_modder.get_pos("canonical");                         print(" init --> default_cam_pos")
             self._set_geom_names_randomize_target();                                                print(" init --> _set_geom_names_randomize_target()")
-            factory              = DclawEnvironmentRGBFactory();                                    print(" init --> factory")
-            self.rgb             = factory.create(self.env_color, self.geom_names_randomize_target);print(" init --> self.rgb")
+            factory              = DclawEnvironmentRGBFactory(self.geom_names_randomize_target);    print(" init --> factory")
+            self.rgb             = factory.create(self.env_color);                                  print(" init --> self.rgb")
 
 
 

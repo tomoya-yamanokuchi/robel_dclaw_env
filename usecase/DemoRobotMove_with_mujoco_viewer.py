@@ -31,8 +31,8 @@ class DemoRobotMove_with_mujoco_viewer:
 
         for s in range(30):
             env.reset(state)
-            # env.canonicalize_texture() # canonicalテクスチャを設定
-            env.randomize_texture()    # randomテクスチャを設定
+            env.canonicalize_texture() # canonicalテクスチャを設定
+            # env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
                 state = env.get_state()
                 env.set_ctrl(ctrl[i])

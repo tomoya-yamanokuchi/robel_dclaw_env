@@ -4,16 +4,16 @@
     <texture name="skybox" type="skybox" builtin="gradient" rgb1=".08 .09 .10" rgb2="0 0 0" width="800" height="800" mark="random" markrgb=".8 .8 .8"/>
 
     <!-- Finger 1 -->
-    <texture name="FFbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="FF10_xh28_tex"                  type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="FF10_metal_clamping_tex"        type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="FF10_metal_clamping_small_tex"  type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="FFL11_xh28_tex"                 type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="FFL11_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="FFL11_metal_clamping_small_tex" type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="FFL11_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="FFL12_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="FFL12_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
+    <texture name="FFbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FF10_xh28_tex"                  type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FF10_metal_clamping_tex"        type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FF10_metal_clamping_small_tex"  type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FFL11_xh28_tex"                 type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FFL11_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FFL11_metal_clamping_small_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FFL11_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FFL12_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FFL12_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="FFbase_xh28_mat"                shininess="0.03" specular="0.75" texture="FFbase_xh28_tex"></material>
     <material name="FF10_xh28_mat"                  shininess="0.03" specular="0.75" texture="FF10_xh28_tex"></material>
     <material name="FF10_metal_clamping_mat"        shininess="0.03" specular="0.75" texture="FF10_metal_clamping_tex"></material>
@@ -26,16 +26,16 @@
     <material name="FFL12_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="FFL12_plastic_finger_tex"></material>
 
     <!-- Finger 2 -->
-    <texture name="MFbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="MF20_xh28_tex"                  type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="MF20_metal_clamping_tex"        type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="MF20_metal_clamping_small_tex"  type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="MFL21_xh28_tex"                 type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="MFL21_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="MFL21_metal_clamping_small_tex" type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="MFL21_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="MFL22_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="MFL22_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
+    <texture name="MFbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MF20_xh28_tex"                  type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MF20_metal_clamping_tex"        type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MF20_metal_clamping_small_tex"  type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MFL21_xh28_tex"                 type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MFL21_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MFL21_metal_clamping_small_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MFL21_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MFL22_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MFL22_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="MFbase_xh28_mat"                shininess="0.03" specular="0.75" texture="MFbase_xh28_tex"></material>
     <material name="MF20_xh28_mat"                  shininess="0.03" specular="0.75" texture="MF20_xh28_tex"></material>
     <material name="MF20_metal_clamping_mat"        shininess="0.03" specular="0.75" texture="MF20_metal_clamping_tex"></material>
@@ -48,16 +48,16 @@
     <material name="MFL22_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="MFL22_plastic_finger_tex"></material>
 
     <!-- Finger 3 -->
-    <texture name="THbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="TH30_xh28_tex"                  type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="TH30_metal_clamping_tex"        type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="TH30_metal_clamping_small_tex"  type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="THL31_xh28_tex"                 type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="THL31_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="THL31_metal_clamping_small_tex" type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="THL31_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="THL32_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
-    <texture name="THL32_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png"/>
+    <texture name="THbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="TH30_xh28_tex"                  type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="TH30_metal_clamping_tex"        type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="TH30_metal_clamping_small_tex"  type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="THL31_xh28_tex"                 type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="THL31_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="THL31_metal_clamping_small_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="THL31_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="THL32_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="THL32_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="THbase_xh28_mat"                shininess="0.03" specular="0.75" texture="THbase_xh28_tex"></material>
     <material name="TH30_xh28_mat"                  shininess="0.03" specular="0.75" texture="TH30_xh28_tex"></material>
     <material name="TH30_metal_clamping_mat"        shininess="0.03" specular="0.75" texture="TH30_metal_clamping_tex"></material>
@@ -71,24 +71,34 @@
 
 
     <!-- xh28 -->
-    <texture name="xh28_tex" type="2d" file="./pattern/pattern_default_crop.png"/>
+    <texture name="xh28_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="xh28_mat" shininess="0.03" specular="0.75" texture="xh28_tex"></material>
 
     <!-- acrylic_circle -->
-    <texture name="acrylic_circle_tex" type="2d" file="./pattern/pattern_default_crop.png"/>
+    <texture name="acrylic_circle_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="acrylic_circle_mat" shininess="0.03" specular="0.75" texture="acrylic_circle_tex"></material>
 
     <!-- floor -->
-    <texture name="floor_tex" type="2d" file="./pattern/pattern_default_crop.png"/>
+    <texture name="floor_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="floor_mat" shininess="0.03" specular="0.75" texture="floor_tex"></material>
 
     <!-- mount -->
-    <texture name="mount_tex" type="2d" file="./pattern/pattern_default_crop.png"/>
+    <texture name="mount_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="mount_mat" shininess="0.03" specular="0.75" texture="mount_tex"></material>
 
     <!-- valve_3 -->
-    <texture name="valve_3_tex" type="2d" file="./pattern/pattern_default_crop.png"/>
+    <texture name="valve_3_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="valve_3_mat" shininess="0.03" specular="0.75" texture="valve_3_tex"></material>
+
+    <!-- valve_3 individual -->
+    <texture name="valve_3fin_handle_1_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="valve_3fin_handle_2_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="valve_3fin_handle_3_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="valve_3fin_center_tex"   type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <material name="valve_3fin_handle_1_mat" shininess="0.03" specular="0.75" texture="valve_3fin_handle_1_tex"></material>
+    <material name="valve_3fin_handle_2_mat" shininess="0.03" specular="0.75" texture="valve_3fin_handle_2_tex"></material>
+    <material name="valve_3fin_handle_3_mat" shininess="0.03" specular="0.75" texture="valve_3fin_handle_3_tex"></material>
+    <material name="valve_3fin_center_mat"   shininess="0.03" specular="0.75" texture="valve_3fin_center_tex"></material>
   </asset>
 
   <visual>
@@ -102,7 +112,6 @@
     <!-- <light directional="true" diffuse=".3 .3 .3" specular="0.3 0.3 0.3" pos="-1 -1 1" dir="1 1 -1" castshadow="true"/> -->
     <!-- <light directional="true" diffuse=".3 .3 .3" specular="0.3 0.3 0.3" pos="1 -1 1" dir="-1 1 -1"/> -->
     <!-- <light directional="true" diffuse=".3 .3 .3" specular="0.3 0.3 0.3" pos="0 0 1" dir="0 0 -1"/> -->
-
 
     <light name="light_top_1" directional="true" diffuse=".3 .3 .3" specular="0.3 0.3 0.3" pos="-0.5 -0.5 1.0" active="false" dir="0.5 0.5 -1"/>
     <light name="light_top_2" directional="true" diffuse=".3 .3 .3" specular="0.3 0.3 0.3" pos="0.0 -0.5 1.0"  active="false" dir="0.0 0.5 -1"/>

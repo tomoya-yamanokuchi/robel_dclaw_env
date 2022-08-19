@@ -26,7 +26,6 @@ from .. import dictionary_operation as dictOps
 from .DClawState import DClawState
 from .AbstractEnvironment import AbstractEnvironment
 from ..ImageObject import ImageObject
-from .TexturedGeometory import TexturedGeometory
 
 
 class Force(AbstractEnvironment):

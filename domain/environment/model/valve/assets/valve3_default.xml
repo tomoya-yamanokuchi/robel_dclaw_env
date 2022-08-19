@@ -2,15 +2,26 @@
 <mujocoinclude name="valve3_random">
   <body name="valve_base" pos=".0 0.00 0.01" euler="0 0 0" childclass="station">
     <body name="valve" pos="0 0 0.038" euler="0 0 -1.57">
-      <geom class="station_viz_plastic_white" mesh="valve_3"  pos="0 0 0"               name="valve_3"      material="valve_3_mat"/>
-      <geom name="phy_valve_6_oclock" class="station_phy_plastic"       type="capsule"  pos="0.0 0.038 0.054"     size="0.021 0.035"  euler="1.57 0 0"/>
-      <geom name="phy_valve_2_oclock" class="station_phy_plastic"       type="capsule"  pos="-0.034 -0.019 0.054" size="0.021 0.035"  euler="1.57 2.0944 0"/>
-      <geom name="phy_valve_10_oclock" class="station_phy_plastic"       type="capsule"  pos="0.034 -0.019 0.054"  size="0.021 0.035"  euler="1.57 4.1887 0"/>
-      <geom class="station_phy_plastic"       type="cylinder" pos="0.0 0.0 0.027"       size="0.02 0.0275"/>
+
+      <!-- visual -->
+      <geom class="station_viz_plastic_white" name="vis_valve_3fin_handle_1" mesh="valve_3fin_handle_1"  pos="0.03075 -0.0514 0.01415" euler="0 0 3.1415926535897931" material="valve_3fin_handle_1_mat"/>
+      <geom class="station_viz_plastic_white" name="vis_valve_3fin_handle_2" mesh="valve_3fin_handle_2"  pos="0.03075 -0.0514 0.01415" euler="0 0 3.1415926535897931" material="valve_3fin_handle_2_mat"/>
+      <geom class="station_viz_plastic_white" name="vis_valve_3fin_handle_3" mesh="valve_3fin_handle_3"  pos="0.03075 -0.0514 0.01415" euler="0 0 3.1415926535897931" material="valve_3fin_handle_3_mat"/>
+      <geom class="station_viz_plastic_white" name="vis_valve_3fin_center"   mesh="valve_3fin_center"    pos="0.03075 -0.0514 0.01415" euler="0 0 3.1415926535897931" material="valve_3fin_center_mat"/>
+
+      <!-- physical -->
+      <geom name="phy_valve_6_oclock"   class="station_phy_plastic"  type="capsule"  pos=" 0.0    0.0399 0.054" size="0.0196 0.032"  euler="1.57 0 0"/>
+      <geom name="phy_valve_2_oclock"   class="station_phy_plastic"  type="capsule"  pos="-0.034 -0.019 0.054"  size="0.0196 0.032"  euler="1.57 2.0944 0"/>
+      <geom name="phy_valve_10_oclock"  class="station_phy_plastic"  type="capsule"  pos=" 0.034 -0.019 0.054"  size="0.0196 0.032"  euler="1.57 4.1887 0"/>
+      <geom name="phy_valve_center"     class="station_phy_plastic"  type="cylinder" pos=" 0.0 0.0 0.027"       size="0.02 0.0275"   />
+
+      <!-- joint -->
       <joint name="valve_OBJRx"               type="hinge"    pos="0 0 0"  axis="0 0 1" range="-6.28 6.28" damping="0.1" limited="true"/>
     </body>
+
     <body name="target" pos="0 0 0.12">
       <site name="tmark" type="capsule" size=".003 0.04" pos=".04 0 0" rgba="0 0.2 0.7 1" euler="0 1.57 0"/>
     </body>
+
   </body>
 </mujocoinclude>

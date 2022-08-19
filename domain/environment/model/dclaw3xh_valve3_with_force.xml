@@ -7,15 +7,17 @@
   <size njmax="8000" nconmax="4000"/>
 
   <worldbody>
-    <camera name="canonical"            mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
-    <camera name="random"               mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
-    <camera name="canonical_nonfix"     mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
-    <camera name="random_nonfix"        mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
-    <camera name="canonical_overview"   mode= "fixed" euler="0 1 1.57" pos="0.3 0 0.4"/>
-    <camera name="top"                  mode= "fixed" euler="0 0 1.57" pos="0 0 3"/>
+    <camera name="overview"         mode= "fixed" euler="0 1.01 1.57" pos="0.38 0  0.45"/>
+    <camera name="top"              mode= "fixed" euler="0 0 1.57" pos="0 0 3"/>
 
-    <camera name="targeting"      pos="1 1 2"     mode="targetbodycom"  target="dClaw"/>
-    <camera name="object_target"  pos="0 0 0.33"  mode="targetbody"     target="object"/>
+    <camera name="canonical"        mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
+    <camera name="random"           mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
+    <camera name="canonical_nonfix" mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
+    <camera name="random_nonfix"    mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.33"/>
+
+    <camera name="targeting"        mode="targetbodycom" pos="1 1 2"      target="dClaw"/>
+    <camera name="object_target"    mode="targetbody"    pos="0 0 0.33"   target="object"/>
+
     <body name="mount" pos="0 0 0.333" euler="0 0 0">
       <geom type="cylinder" size="0.03 0.005" rgba=".7 .7 .7 1"/>
       <include file="./robot/assets/chain3xh_with_force.xml"/>

@@ -21,20 +21,22 @@ class DemoRobotMove:
             force           = np.array(config.sim.force_init),
         )
 
-        step        = 100
+        step        = 30
         dim_ctrl    = 9 # 制御入力は9次元です
         ctrl        = np.zeros([step, dim_ctrl])
         ctrl[:, -3] = np.linspace(0, np.pi*0.25, step)
         ctrl[:, -2] = np.linspace(0, np.pi*0.25, step)
 
+        cv2_window_name = 'window'
+        cv2.namedWindow(cv2_window_name, cv2.WINDOW_NORMAL)
         for s in range(10):
             env.reset(state)
             for i in range(step):
                 env.set_ctrl(ctrl[i])
                 img_dict = env.render() # openCVでレンダリング画像を取得
                 env.step_with_inplicit_step()
-                cv2.imshow("window", np.concatenate([img.channel_last for img in img_dict.values()], axis=1))
-                cv2.waitKey(50)
+                cv2.imshow(cv2_window_name, np.concatenate([img.channel_last for img in img_dict.values()], axis=1))
+                cv2.waitKey(10)
 
 
 if __name__ == "__main__":
