@@ -14,6 +14,8 @@
     <texture name="FFL11_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="FFL12_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="FFL12_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FFL12_optoforce_sensor_tex"     type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="FFL12_optoforce_base_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="FFbase_xh28_mat"                shininess="0.03" specular="0.75" texture="FFbase_xh28_tex"></material>
     <material name="FF10_xh28_mat"                  shininess="0.03" specular="0.75" texture="FF10_xh28_tex"></material>
     <material name="FF10_metal_clamping_mat"        shininess="0.03" specular="0.75" texture="FF10_metal_clamping_tex"></material>
@@ -24,6 +26,8 @@
     <material name="FFL11_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="FFL11_plastic_finger_tex"></material>
     <material name="FFL12_metal_clamping_mat"       shininess="0.03" specular="0.75" texture="FFL12_metal_clamping_tex"></material>
     <material name="FFL12_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="FFL12_plastic_finger_tex"></material>
+    <material name="FFL12_optoforce_sensor_mat"     shininess="0.03" specular="0.75" texture="FFL12_optoforce_sensor_tex"></material>
+    <material name="FFL12_optoforce_base_mat"       shininess="0.03" specular="0.75" texture="FFL12_optoforce_base_tex"></material>
 
     <!-- Finger 2 -->
     <texture name="MFbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
@@ -36,6 +40,8 @@
     <texture name="MFL21_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="MFL22_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="MFL22_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MFL22_optoforce_sensor_tex"     type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="MFL22_optoforce_base_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="MFbase_xh28_mat"                shininess="0.03" specular="0.75" texture="MFbase_xh28_tex"></material>
     <material name="MF20_xh28_mat"                  shininess="0.03" specular="0.75" texture="MF20_xh28_tex"></material>
     <material name="MF20_metal_clamping_mat"        shininess="0.03" specular="0.75" texture="MF20_metal_clamping_tex"></material>
@@ -46,6 +52,8 @@
     <material name="MFL21_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="MFL21_plastic_finger_tex"></material>
     <material name="MFL22_metal_clamping_mat"       shininess="0.03" specular="0.75" texture="MFL22_metal_clamping_tex"></material>
     <material name="MFL22_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="MFL22_plastic_finger_tex"></material>
+    <material name="MFL22_optoforce_sensor_mat"     shininess="0.03" specular="0.75" texture="MFL22_optoforce_sensor_tex"></material>
+    <material name="MFL22_optoforce_base_mat"       shininess="0.03" specular="0.75" texture="MFL22_optoforce_base_tex"></material>
 
     <!-- Finger 3 -->
     <texture name="THbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
@@ -58,6 +66,8 @@
     <texture name="THL31_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="THL32_metal_clamping_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="THL32_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="THL32_optoforce_sensor_tex"     type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <texture name="THL32_optoforce_base_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <material name="THbase_xh28_mat"                shininess="0.03" specular="0.75" texture="THbase_xh28_tex"></material>
     <material name="TH30_xh28_mat"                  shininess="0.03" specular="0.75" texture="TH30_xh28_tex"></material>
     <material name="TH30_metal_clamping_mat"        shininess="0.03" specular="0.75" texture="TH30_metal_clamping_tex"></material>
@@ -68,6 +78,8 @@
     <material name="THL31_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="THL31_plastic_finger_tex"></material>
     <material name="THL32_metal_clamping_mat"       shininess="0.03" specular="0.75" texture="THL32_metal_clamping_tex"></material>
     <material name="THL32_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="THL32_plastic_finger_tex"></material>
+    <material name="THL32_optoforce_sensor_mat"     shininess="0.03" specular="0.75" texture="THL32_optoforce_sensor_tex"></material>
+    <material name="THL32_optoforce_base_mat"       shininess="0.03" specular="0.75" texture="THL32_optoforce_base_tex"></material>
 
 
     <!-- xh28 -->

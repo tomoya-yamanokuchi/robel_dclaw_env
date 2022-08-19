@@ -26,6 +26,8 @@ class DemoRobotMove:
         step   = 100
         policy = ExamplePolicy()
 
+        cv2_window_name = 'window'
+        cv2.namedWindow(cv2_window_name, cv2.WINDOW_NORMAL)
         for s in range(10):
             env.reset(state)
             for i in range(step):
@@ -33,7 +35,7 @@ class DemoRobotMove:
                 ctrl     = policy.get_action(img_dict["canonical"]) # 観測画像としてcanonical（configのenv_colorで指定した外観）を使う
                 env.set_ctrl(ctrl)                                  # 制御入力をセット
                 env.step_with_inplicit_step()                       # シミュレーションを進める
-                cv2.imshow("window", np.concatenate([img.channel_last for img in img_dict.values()], axis=1))
+                cv2.imshow(cv2_window_name, np.concatenate([img.channel_last for img in img_dict.values()], axis=1))
                 cv2.waitKey(50)
 
 

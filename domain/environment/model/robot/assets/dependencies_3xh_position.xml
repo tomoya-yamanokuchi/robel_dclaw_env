@@ -6,6 +6,9 @@
     <mesh name="xh28"                 file="./robot/meshes/xh_base_high_poly.stl"            scale=".001 .001 .001"/>
     <mesh name="acrylic_circle"       file="./robot/meshes/acrylic_circle.stl"               scale=".1 .1 .1"/>
     <mesh name="plastic_finger"       file="./robot/meshes/xh_finger_tip.stl"                scale=".001 .001 .001"/>
+    <mesh name="finger_for_optoforce" file="./robot/meshes/finger_for_optoforce.stl"         scale=".001 .001 .001"/>
+    <mesh name="optoforce_sensor"     file="./robot/meshes/OPTOFORCE_OMD-20-SE-40N.stl"      scale=".001 .001 .001"/>
+    <mesh name="optoforce_base"       file="./robot/meshes/optoforce_base.stl"               scale=".001 .001 .001"/>
     <mesh name="metal_clamping"       file="./robot/meshes/xh_clamping_high_poly.stl"        scale=".001 .001 .001"/>
     <mesh name="metal_clamping_small" file="./robot/meshes/xh_clamping_small_high_poly.stl"  scale=".001 .001 .001"/>
     <mesh name="plastic_top"          file="./robot/meshes/xh_white_top_high_poly.stl"       scale=".001 .001 .001"/>

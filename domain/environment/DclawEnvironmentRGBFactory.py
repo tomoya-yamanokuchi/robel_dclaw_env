@@ -20,7 +20,8 @@ class DclawEnvironmentRGBFactory:
             "base_plate": [s for s in geom_names if 'base_plate' in s ],
             "floor"     : [s for s in geom_names if 'floor' in s ],
             "tip"       : [s for s in geom_names if 'finger' in s],
-            # "valve"     : [s for s in geom_names if 'valve' in s],
+            "optoforce_sensor" : [s for s in geom_names if 'optoforce_sensor' in s],
+            "optoforce_base"   : [s for s in geom_names if 'optoforce_base' in s],
             "valve_3fin_handle_1" : [s for s in geom_names if 'valve_3fin_handle_1' in s],
             "valve_3fin_handle_2" : [s for s in geom_names if 'valve_3fin_handle_2' in s],
             "valve_3fin_handle_3" : [s for s in geom_names if 'valve_3fin_handle_3' in s],
@@ -60,7 +61,9 @@ class DclawEnvironmentRGBFactory:
             "valve_3fin_handle_3"   : [0, 0, 255],
             "valve_3fin_center"     : [255, 255, 255],
             "robot"                 : [ 38,  38,  38],
-            "tip"                   : [255, 127,   0]
+            "tip"                   : [255, 127,   0],
+            "optoforce_sensor"      : [30, 30, 30],
+            "optoforce_base"        : [200, 200, 200],
         })
 
         self.rgb["overview"] = copy.deepcopy(self.rgb["rgb_valve"])
@@ -77,4 +80,6 @@ class DclawEnvironmentRGBFactory:
         #     "valve_3fin_center"     : - ,
         #     "robot"                 : - ,
         #     "tip"                   : - ,
+        #     "optoforce_sensor"      : - ,
+        #     "optoforce_base"        : - ,
         # })
