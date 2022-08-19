@@ -1,8 +1,8 @@
 robel-dclaw
 
-## DClaw環境の概観
-<img width="799" alt="robel_env" src="https://user-images.githubusercontent.com/49630508/179651186-d8778741-e98c-435d-8232-50ab8ea6431b.png">
-
+## DClaw環境
+<img width="799" alt="robel_env" src="![Screenshot from 2022-08-20 02-22-30](https://user-images.githubusercontent.com/49630508/185673987-fca1c3f4-ee55-4e57-9bde-af4d91fc4982.png)
+">
 
 
 ## EnvStateの定義
