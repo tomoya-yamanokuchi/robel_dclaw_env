@@ -75,6 +75,13 @@ class DClawEnvironment(AbstractEnvironment):
         self.camera_modder               = None
 
 
+        # import inspect
+        # for x in inspect.getmembers(self, inspect.ismethod):
+        #     print(x[0])
+        # import ipdb; ipdb.set_trace()
+
+
+
     def load_model(self, model_file):
         repository_name = "robel-dclaw-env"
         assert sys.path[-1].split("/")[-1] == repository_name
@@ -119,10 +126,6 @@ class DClawEnvironment(AbstractEnvironment):
         for i in use_light_index_list:
             self.model.light_active[i] = 1
 
-    def set_texture(self, texture):
-        assert isinstance(texture, dict)
-        self.texture = texture
-
     def _set_texture_rand_all_with_return_info(self):
         self.texture = {}
         for name in self.geom_names_randomize_target:
@@ -135,11 +138,6 @@ class DClawEnvironment(AbstractEnvironment):
     def _set_texture_rand_all(self):
         for name in self.geom_names_randomize_target:
             self.texture_modder.rand_all(name)
-
-    def _get_texture_all(self):
-        self.texture = {}
-        for name in self.geom_names_randomize_target:
-            self.texture[name] = self.texture_modder.get_texture(name)
 
 
     def randomize_texture(self):
@@ -373,7 +371,7 @@ class DClawEnvironment(AbstractEnvironment):
         return dynamics_parameter
 
 
-    def create_qpos_qvel_from_InitialState(self, DClawState_: DClawState):
+    def _create_qpos_qvel_from_InitialState(self, DClawState_: DClawState):
         # qpos
         qpos       = np.zeros(self.sim.model.nq)
         qpos[:9]   = DClawState_.robot_position
@@ -399,7 +397,7 @@ class DClawEnvironment(AbstractEnvironment):
         self.set_camera_position(self.camera)
         self.set_light_position(self.light)
         self.set_target_visible(self.is_target_visible)
-        qpos, qvel, sensordata = self.create_qpos_qvel_from_InitialState(DClawState_)
+        qpos, qvel, sensordata = self._create_qpos_qvel_from_InitialState(DClawState_)
         self.set_state(qpos=qpos, qvel=qvel, sensordata=sensordata)
         self.render(iteration=1)
 
@@ -445,19 +443,9 @@ class DClawEnvironment(AbstractEnvironment):
             self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 0]
 
 
-    def set_action_space(self, action_space):
-        self.action_space = action_space
-
-
     def set_ctrl(self, ctrl):
         assert ctrl.shape == (9,), '[expected: {0}, input: {1}]'.format((9,), ctrl.shape)
         self.sim.data.ctrl[:9] = ctrl
-
-
-    def set_object_ctrl(self, ctrl):
-        # print("ctrl : {}".format(ctrl))
-        assert (ctrl.shape == (1,)) or (ctrl.shape == ()) , '[expected: {0}, input: {1}]'.format((1,), ctrl.shape)
-        self.sim.data.ctrl[-1] = ctrl
 
 
     def set_jnt_range(self):

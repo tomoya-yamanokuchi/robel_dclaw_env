@@ -1,5 +1,5 @@
 {
-    "python.pythonPath"            : "/home/tomoya-y/.venv_pytorch/bin/python",
+    "python.pythonPath"            : "/bin/python3",
     "editor.fontFamily"            : "Ubuntu Mono",
     "editor.tabSize"               : 4,
     "window.zoomLevel"             : 2,
