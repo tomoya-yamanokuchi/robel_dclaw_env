@@ -1,5 +1,6 @@
 import sys
 import pathlib
+
 p = pathlib.Path()
 sys.path.append(str(p.cwd()))
 
@@ -21,14 +22,19 @@ from mujoco_py.modder import LightModder, CameraModder
 from .my_mujoco.modder import myTextureModder as TextureModder
 from numpy.lib.function_base import append
 from transforms3d.euler import euler2quat, quat2euler
-# from .DclawEnvironmentRGBFactory import DclawEnvironmentRGBFactory
-from .. import dictionary_operation as dictOps
-from .DClawState import DClawState
-from .AbstractEnvironment import AbstractEnvironment
-from ..ImageObject import ImageObject
+from .DclawEnvironmentRGBFactory import DclawEnvironmentRGBFactory
+
+# 上位ディレクトリからのインポート
+p_file = pathlib.Path(__file__)
+path_environment = "/".join(str(p_file).split("/")[:-2])
+sys.path.append(path_environment)
+from ..DClawState import DClawState
+from ..AbstractEnvironment import AbstractEnvironment
+from ...ImageObject import ImageObject
+from ... import dictionary_operation as dictOps
 
 
-class Force(AbstractEnvironment):
+class DClawSimulationEnvironment(AbstractEnvironment):
     def __init__(self, config):
         self.width_capture               = config.width_capture
         self.height_capture              = config.height_capture
@@ -40,7 +46,7 @@ class Force(AbstractEnvironment):
         self.claw_jnt_range_ub           = config.claw_jnt_range_ub
         self.valve_jnt_range_lb          = config.object_jnt_range_lb
         self.valve_jnt_range_ub          = config.object_jnt_range_ub
-        self.is_use_render               = config.is_use_render
+        # self.is_use_render               = config.is_use_render
         self.is_Offscreen                = config.is_Offscreen
         self.is_target_visible           = config.is_target_visible
         self.model                       = self.load_model(config.model_file)
@@ -51,6 +57,21 @@ class Force(AbstractEnvironment):
         self.camera                      = config.camera
         self.light                       = config.light
 
+        self._valve_jnt_id               = self.model.joint_name2id('valve_OBJRx')
+        self._target_bid                 = self.model.body_name2id('target')
+        self._target_sid                 = self.model.site_name2id('tmark')
+
+        self.optoforce_geom_id_dict = {
+            "claw1" : self.model.geom_name2id('FFL12_phy_optoforce'),
+            "claw2" : self.model.geom_name2id('MFL22_phy_optoforce'),
+            "claw3" : self.model.geom_name2id('THL32_phy_optoforce'),
+        }
+        self.index_force = {
+            "claw1" : [0, 1, 2],
+            "claw2" : [3, 4, 5],
+            "claw3" : [6, 7, 8],
+        }
+
         self._target_position            = None
         self.sim                         = None
         self.viewer                      = None
@@ -58,20 +79,32 @@ class Force(AbstractEnvironment):
         self.camera_modder               = None
 
 
+
     def load_model(self, model_file):
-        repository_name = "robel-dclaw-env"
-        assert sys.path[-1].split("/")[-1] == repository_name
-        xml_path = "{}/domain/environment/model/{}".format(sys.path[-1], model_file)
+        repository_name  = "robel-dclaw-env"
+        sys_path_leaf    = [path.split("/")[-1] for path in sys.path]   # 全てのパスの末端ディレクトリを取得
+        assert repository_name in sys_path_leaf                         # 末端ディレクトリにリポジトリ名が含まれているか確認
+        index_model_path = sys_path_leaf.index(repository_name)         # リポジトリがあるパスを抽出
+        xml_path         = "{}/domain/environment/model/{}".format(sys.path[index_model_path], model_file)
         return mujoco_py.load_model_from_path(xml_path)
 
 
     def _set_geom_names_randomize_target(self):
-        self.geom_names_randomize_target = TexturedGeometory()()
-        # self.geom_names_randomize_target = self.sim.model.geom_names
-        a = 23
+        self.visible_geom_group = [0, 1, 2] # XMLファイルと整合性が取れるようにする
+        self.geom_names_randomize_target = []
+        for name in self.sim.model.geom_names:
+            id    = self.sim.model.geom_name2id(name)
+            group = self.sim.model.geom_group[id]
+            if group in self.visible_geom_group:
+                self.geom_names_randomize_target.append(name)
 
-    def render_with_viewer(self):
-        self.viewer.render()
+
+    def view(self):
+        if self.is_Offscreen:
+            cv2.imshow(self.cv2_window_name, np.concatenate([img.channel_last for img in self.img_dict.values()], axis=1))
+            cv2.waitKey(50)
+        else:
+            self.viewer.render()
 
 
     def _flip(self, img):
@@ -84,8 +117,8 @@ class Force(AbstractEnvironment):
 
 
     def _render_and_convert_color(self, camera_name):
-        if self._target_position is not None:
-            self.sim.model.body_quat[self._target_bid] = euler2quat(0, 0, float(self._target_position))
+        # if self._target_position is not None:
+            # self.sim.model.body_quat[self._target_bid] = euler2quat(0, 0, float(self._target_position))
         img = self.sim.render(width=self.width_capture, height=self.height_capture, camera_name=camera_name, depth=False)
         img = self._flip(img)
         img = self._reverse_channel(img)
@@ -96,10 +129,6 @@ class Force(AbstractEnvironment):
         self.model.light_active[:] = 0
         for i in use_light_index_list:
             self.model.light_active[i] = 1
-
-    def set_texture(self, texture):
-        assert isinstance(texture, dict)
-        self.texture = texture
 
     def _set_texture_rand_all_with_return_info(self):
         self.texture = {}
@@ -113,11 +142,6 @@ class Force(AbstractEnvironment):
     def _set_texture_rand_all(self):
         for name in self.geom_names_randomize_target:
             self.texture_modder.rand_all(name)
-
-    def _get_texture_all(self):
-        self.texture = {}
-        for name in self.geom_names_randomize_target:
-            self.texture[name] = self.texture_modder.get_texture(name)
 
 
     def randomize_texture(self):
@@ -146,6 +170,7 @@ class Force(AbstractEnvironment):
     def _render(self, camera_name: str="canonical"):
         if   "canonical" in camera_name: shadowsize = 0;    self.canonicalize_texture()
         elif    "random" in camera_name: shadowsize = 1024; self.randomize_texture()
+        elif  "overview" in camera_name: shadowsize = 0;    self.randomize_texture()
         else                           : raise NotImplementedError()
         self.set_light_castshadow(shadowsize=shadowsize)
         self.set_light_on(self.light_index_list)
@@ -160,14 +185,16 @@ class Force(AbstractEnvironment):
 
 
     def render(self, camera_name_list: str=None, iteration: int=1):
-        img_dict = {}
+        assert self.is_Offscreen is True, "Please set is_Offscreen = True"
         if camera_name_list is None:
             camera_name_list = self.camera_name_list
-        if self.is_use_render:
-            for i in range(iteration):
-                for camera_name in camera_name_list:
-                    img_dict[camera_name] = self._render(camera_name)
-            return img_dict
+
+        img_dict = {}
+        for i in range(iteration):
+            for camera_name in camera_name_list:
+                img_dict[camera_name] = self._render(camera_name)
+        self.img_dict = img_dict
+        return copy.deepcopy(self.img_dict)
 
 
     def check_camera_pos(self):
@@ -248,24 +275,44 @@ class Force(AbstractEnvironment):
 
 
     def get_state(self):
-        env_state = copy.deepcopy(self.sim.get_state())
+        env_state   = copy.deepcopy(self.sim.get_state())
+        force       = self.get_force()
         state = DClawState(
             robot_position  = env_state.qpos[:9],
             object_position = env_state.qpos[-1:],
             robot_velocity  = env_state.qvel[:9],
             object_velocity = env_state.qvel[-1:],
+            force           = force,
         )
         return state
 
 
-    def set_state(self, qpos, qvel):
-        assert(qpos.shape == self.model.nq, "qpos.shape {} != self.model.nq {}".format(qpos.shape, self.model.nq))
-        assert(qvel.shape == self.model.nv, "qvel.shape {} != self.model.nv {}".format(qvel.shape, self.model.nv))
+    def get_force(self):
+        num_data_per_force_sensor = 3 # (Fx, Fy, Fz)
+        force = np.zeros(self.num_force_sensor * num_data_per_force_sensor)
+        for i in range(self.sim.data.ncon):
+            con = self.sim.data.contact[i]
+            for geom in [con.geom1, con.geom2]:
+                if geom in list(self.optoforce_geom_id_dict.values()):
+                    contact_claw = [k for k, v in self.optoforce_geom_id_dict.items() if v == geom]
+                    assert len(contact_claw) == 1
+                    force[self.index_force[contact_claw[0]]] = np.take(self.sim.data.sensordata, self.index_force[contact_claw[0]])
+        print("force: [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}]".format(
+            force[0], force[1], force[2],     force[3], force[4], force[5],     force[6], force[7], force[8]))
+        return force
+
+
+    def set_state(self, qpos, qvel, sensordata):
+        assert(      qpos.shape == self.model.nq,          "      qpos.shape {} != self.model.nq {}".format(qpos.shape, self.model.nq))
+        assert(      qvel.shape == self.model.nv,          "      qvel.shape {} != self.model.nv {}".format(qvel.shape, self.model.nv))
+        assert(sensordata.shape == self.model.nsensordata, "sensordata.shape {} != self.model.nsensordata {}".format(sensordata.shape, self.model.nsensordata))
+
         old_state = self.sim.get_state()
         new_state = mujoco_py.MjSimState(old_state.time, qpos, qvel, old_state.act, old_state.udd_state)
         self.sim.set_state(new_state)
-        self.sim.data.ctrl[:9] = qpos[:9]
-        self.sim.data.ctrl[9:] = 0.0
+        self.sim.data.ctrl[:9]      = qpos[:9]
+        self.sim.data.ctrl[9:]      = 0.0
+        self.sim.data.sensordata[:] = sensordata
         self.sim.forward()
 
 
@@ -330,16 +377,18 @@ class Force(AbstractEnvironment):
         return dynamics_parameter
 
 
-    def create_qpos_qvel_from_InitialState(self, DClawState_: DClawState):
+    def _create_qpos_qvel_from_InitialState(self, DClawState_: DClawState):
         # qpos
-        qpos     = np.zeros(self.sim.model.nq)
-        qpos[:9] = DClawState_.robot_position
-        qpos[-1] = DClawState_.object_position
+        qpos       = np.zeros(self.sim.model.nq)
+        qpos[:9]   = DClawState_.robot_position
+        qpos[-1]   = DClawState_.object_position
         # qvel
-        qvel     = np.zeros(self.sim.model.nq)
-        qvel[:9] = DClawState_.robot_velocity
-        qvel[-1] = DClawState_.object_velocity
-        return qpos, qvel
+        qvel       = np.zeros(self.sim.model.nq)
+        qvel[:9]   = DClawState_.robot_velocity
+        qvel[-1]   = DClawState_.object_velocity
+
+        sensordata = DClawState_.force
+        return qpos, qvel, sensordata
 
 
     def reset(self, DClawState_: DClawState):
@@ -354,25 +403,38 @@ class Force(AbstractEnvironment):
         self.set_camera_position(self.camera)
         self.set_light_position(self.light)
         self.set_target_visible(self.is_target_visible)
-        qpos, qvel = self.create_qpos_qvel_from_InitialState(DClawState_)
-        self.set_state(qpos=qpos, qvel=qvel)
-        self.render(iteration=1)
+        qpos, qvel, sensordata = self._create_qpos_qvel_from_InitialState(DClawState_)
+        self.set_state(qpos=qpos, qvel=qvel, sensordata=sensordata)
+        if self.is_Offscreen: self.render(iteration=1)
 
 
 
     def _create_mujoco_related_instance(self):
         self.sim = mujoco_py.MjSim(self.model)
-        if self.is_use_render:
-            if self.is_Offscreen: self.viewer = mujoco_py.MjRenderContextOffscreen(self.sim, 0);    print(" init --> viewer"); time.sleep(2)
-            else:                 self.viewer = mujoco_py.MjViewer(self.sim);                       print(" init --> "); time.sleep(2)
-            # -------------------
-            self.texture_modder  = TextureModder(self.sim);                                         print(" init --> texture_modder")
-            self.camera_modder   = CameraModder(self.sim);                                          print(" init --> camera_modder")
-            self.light_modder    = LightModder(self.sim);                                           print(" init --> light_modder")
-            self.default_cam_pos = self.camera_modder.get_pos("canonical");                         print(" init --> default_cam_pos")
-            self._set_geom_names_randomize_target();                                                print(" init --> _set_geom_names_randomize_target()")
-            # factory              = DclawEnvironmentRGBFactory();                                    print(" init --> factory")
-            # self.rgb             = factory.create(self.env_color, self.geom_names_randomize_target);print(" init --> self.rgb")
+
+        self.num_force_sensor = len(self.sim.model.sensor_names)
+        assert self.num_force_sensor == 3
+
+        if self.is_Offscreen:
+            self.viewer          = mujoco_py.MjRenderContextOffscreen(self.sim, 0)
+            self.cv2_window_name = 'viewer'
+            cv2.namedWindow(self.cv2_window_name, cv2.WINDOW_NORMAL)
+            print(" init --> viewer"); time.sleep(2)
+        else:
+            self.viewer = mujoco_py.MjViewer(self.sim)
+            print(" init --> "); time.sleep(2)
+
+        # self.viewer.vopt.flags[mujoco_py.const.VIS_CONTACTFORCE] = 1 # force sensorではないbuild-inのcontactを可視化
+        # -------------------
+        self.texture_modder  = TextureModder(self.sim);                                         print(" init --> texture_modder")
+        self.camera_modder   = CameraModder(self.sim);                                          print(" init --> camera_modder")
+        self.light_modder    = LightModder(self.sim);                                           print(" init --> light_modder")
+        self.default_cam_pos = self.camera_modder.get_pos("canonical");                         print(" init --> default_cam_pos")
+        self._set_geom_names_randomize_target();                                                print(" init --> _set_geom_names_randomize_target()")
+        factory              = DclawEnvironmentRGBFactory(self.geom_names_randomize_target);    print(" init --> factory")
+        self.rgb             = factory.create(self.env_color);                                  print(" init --> self.rgb")
+
+
 
 
     def set_target_position(self, target_position):
@@ -383,6 +445,7 @@ class Force(AbstractEnvironment):
         '''
         target_position       = float(target_position)
         self._target_position = target_position
+        self.sim.model.body_quat[self._target_bid] = euler2quat(0, 0, float(self._target_position))
 
 
     def set_target_visible(self, is_visible):
@@ -393,19 +456,9 @@ class Force(AbstractEnvironment):
             self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 0]
 
 
-    def set_action_space(self, action_space):
-        self.action_space = action_space
-
-
     def set_ctrl(self, ctrl):
         assert ctrl.shape == (9,), '[expected: {0}, input: {1}]'.format((9,), ctrl.shape)
         self.sim.data.ctrl[:9] = ctrl
-
-
-    def set_object_ctrl(self, ctrl):
-        # print("ctrl : {}".format(ctrl))
-        assert (ctrl.shape == (1,)) or (ctrl.shape == ()) , '[expected: {0}, input: {1}]'.format((1,), ctrl.shape)
-        self.sim.data.ctrl[-1] = ctrl
 
 
     def set_jnt_range(self):
@@ -448,7 +501,7 @@ class Force(AbstractEnvironment):
         return 0
 
 
-    def step_with_inplicit_step(self):
+    def _step_with_inplicit_step(self):
         '''
         ・一回の sim.step() では，制御入力で与えた目標位置まで到達しないため，これを避けたい時に使います
         ・sim-to-realでは1ステップの状態遷移の違いがそのままダイナミクスのreality-gapとなるため，
@@ -458,27 +511,6 @@ class Force(AbstractEnvironment):
         for i in range(self.inplicit_step):
             self.sim.step()
 
-        self.viewer.vopt.flags[mujoco_py.const.VIS_CONTACTFORCE] = 1
-        # print("self.sim.data.ncon: ", self.sim.data.ncon)
-        for i in range(self.sim.data.ncon):
-            con = self.sim.data.contact[i]
-            # if con.geom1 == self.sim.model.geom_name2id("phy_tip") and con.geom2 == self.sim.model.geom_name2id("phy_valve_6_oclock"):
-            if con.geom1:
-                # print(con.geom1)
-                # print(con.geom2)
-                # contact_pos = con.pos
-                self.sim.model.body_pos[self._contact_bid][:] = con.pos
-                print(np.abs(self.sim.data.cfrc_ext).sum())
-            if self.sim.data.ncon > 1:
-
-                contact_pos = con.pos
-
-                c_array = np.zeros(6, dtype=np.float64)
-                print('c_array', c_array)
-                mujoco_py.functions.mj_contactForce(self.sim.model, self.sim.data, i, c_array)
-                print('c_array', c_array)
-
-
 
     def step(self):
-        self.sim.step()
+        self._step_with_inplicit_step()

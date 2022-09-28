@@ -1,5 +1,5 @@
-from .DClawEnvironment import DClawEnvironment
-from .Force import Force
+from .simulation.DClawSimulationEnvironment import DClawSimulationEnvironment
+from .real.DClawRealEnvironment import DClawRealEnvironment
 
 '''
 ・環境を生成するクラスです
@@ -10,8 +10,7 @@ class EnvironmentFactory:
     def create(self, env_name: str):
         assert type(env_name) == str
 
-        if   env_name == "dclaw": return DClawEnvironment
-        elif env_name == "force" : return Force
-        # elif env_name == "new_env" : return NewEnv (このような形で追加できます)
-        else                  : raise NotImplementedError()
+        if   env_name == "sim"  : return DClawSimulationEnvironment
+        elif env_name == "real" : return DClawRealEnvironment
+        else                    : raise NotImplementedError()
 

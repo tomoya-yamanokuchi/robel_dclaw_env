@@ -11,15 +11,15 @@ from domain.environment.DClawState import DClawState as EnvState
 
 class DemoRobotMove_with_mujoco_viewer:
     def run(self, config):
-        env = EnvironmentFactory().create(env_name=config.sim.env_name)
-        env = env(config.sim)
+        env = EnvironmentFactory().create(env_name=config.env.env_name)
+        env = env(config.env)
 
         state = EnvState(
-            robot_position  = np.array(config.sim.robot_position_init),
-            robot_velocity  = np.array(config.sim.robot_velocity_init),
-            object_position = np.array(config.sim.object_position_init),
-            object_velocity = np.array(config.sim.object_velocity_init),
-            force           = np.array(config.sim.force_init),
+            robot_position  = np.array(config.env.robot_position_init),
+            robot_velocity  = np.array(config.env.robot_velocity_init),
+            object_position = np.array(config.env.object_position_init),
+            object_velocity = np.array(config.env.object_velocity_init),
+            force           = np.array(config.env.force_init),
         )
 
         step       = 100
@@ -40,20 +40,20 @@ class DemoRobotMove_with_mujoco_viewer:
 
         for s in range(30):
             env.reset(state)
-            env.canonicalize_texture() # canonicalテクスチャを設定
-            # env.randomize_texture()    # randomテクスチャを設定
+            # env.canonicalize_texture() # canonicalテクスチャを設定
+            env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
                 state = env.get_state()
                 env.set_ctrl(ctrl[i])
-                env.render_with_viewer()    # Mujocoのビューワを使って描画
-                env.step_with_inplicit_step()
+                env.view()    # Mujocoのビューワを使って描画
+                env.step()
 
 
 if __name__ == "__main__":
     import hydra
     from omegaconf import DictConfig
 
-    @hydra.main(version_base=None, config_path="../conf", config_name="config_example.yaml")
+    @hydra.main(version_base=None, config_path="../conf", config_name="config.yaml")
     def main(config: DictConfig):
         demo = DemoRobotMove_with_mujoco_viewer()
         demo.run(config)
