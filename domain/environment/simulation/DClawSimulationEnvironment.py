@@ -1,7 +1,6 @@
 import sys
 import pathlib
 
-from cv2 import DFT_INVERSE
 p = pathlib.Path()
 sys.path.append(str(p.cwd()))
 
@@ -24,13 +23,18 @@ from .my_mujoco.modder import myTextureModder as TextureModder
 from numpy.lib.function_base import append
 from transforms3d.euler import euler2quat, quat2euler
 from .DclawEnvironmentRGBFactory import DclawEnvironmentRGBFactory
-from .. import dictionary_operation as dictOps
-from .DClawState import DClawState
-from .AbstractEnvironment import AbstractEnvironment
-from ..ImageObject import ImageObject
+
+# 上位ディレクトリからのインポート
+p_file = pathlib.Path(__file__)
+path_environment = "/".join(str(p_file).split("/")[:-2])
+sys.path.append(path_environment)
+from ..DClawState import DClawState
+from ..AbstractEnvironment import AbstractEnvironment
+from ...ImageObject import ImageObject
+from ... import dictionary_operation as dictOps
 
 
-class DClawEnvironment(AbstractEnvironment):
+class DClawSimulationEnvironment(AbstractEnvironment):
     def __init__(self, config):
         self.width_capture               = config.width_capture
         self.height_capture              = config.height_capture
@@ -42,7 +46,7 @@ class DClawEnvironment(AbstractEnvironment):
         self.claw_jnt_range_ub           = config.claw_jnt_range_ub
         self.valve_jnt_range_lb          = config.object_jnt_range_lb
         self.valve_jnt_range_ub          = config.object_jnt_range_ub
-        self.is_use_render               = config.is_use_render
+        # self.is_use_render               = config.is_use_render
         self.is_Offscreen                = config.is_Offscreen
         self.is_target_visible           = config.is_target_visible
         self.model                       = self.load_model(config.model_file)
@@ -75,17 +79,13 @@ class DClawEnvironment(AbstractEnvironment):
         self.camera_modder               = None
 
 
-        # import inspect
-        # for x in inspect.getmembers(self, inspect.ismethod):
-        #     print(x[0])
-        # import ipdb; ipdb.set_trace()
-
-
 
     def load_model(self, model_file):
-        repository_name = "robel-dclaw-env"
-        assert sys.path[-1].split("/")[-1] == repository_name
-        xml_path = "{}/domain/environment/model/{}".format(sys.path[-1], model_file)
+        repository_name  = "robel-dclaw-env"
+        sys_path_leaf    = [path.split("/")[-1] for path in sys.path]   # 全てのパスの末端ディレクトリを取得
+        assert repository_name in sys_path_leaf                         # 末端ディレクトリにリポジトリ名が含まれているか確認
+        index_model_path = sys_path_leaf.index(repository_name)         # リポジトリがあるパスを抽出
+        xml_path         = "{}/domain/environment/model/{}".format(sys.path[index_model_path], model_file)
         return mujoco_py.load_model_from_path(xml_path)
 
 
@@ -99,8 +99,12 @@ class DClawEnvironment(AbstractEnvironment):
                 self.geom_names_randomize_target.append(name)
 
 
-    def render_with_viewer(self):
-        self.viewer.render()
+    def view(self):
+        if self.is_Offscreen:
+            cv2.imshow(self.cv2_window_name, np.concatenate([img.channel_last for img in self.img_dict.values()], axis=1))
+            cv2.waitKey(50)
+        else:
+            self.viewer.render()
 
 
     def _flip(self, img):
@@ -113,8 +117,8 @@ class DClawEnvironment(AbstractEnvironment):
 
 
     def _render_and_convert_color(self, camera_name):
-        if self._target_position is not None:
-            self.sim.model.body_quat[self._target_bid] = euler2quat(0, 0, float(self._target_position))
+        # if self._target_position is not None:
+            # self.sim.model.body_quat[self._target_bid] = euler2quat(0, 0, float(self._target_position))
         img = self.sim.render(width=self.width_capture, height=self.height_capture, camera_name=camera_name, depth=False)
         img = self._flip(img)
         img = self._reverse_channel(img)
@@ -181,14 +185,16 @@ class DClawEnvironment(AbstractEnvironment):
 
 
     def render(self, camera_name_list: str=None, iteration: int=1):
-        img_dict = {}
+        assert self.is_Offscreen is True, "Please set is_Offscreen = True"
         if camera_name_list is None:
             camera_name_list = self.camera_name_list
-        if self.is_use_render:
-            for i in range(iteration):
-                for camera_name in camera_name_list:
-                    img_dict[camera_name] = self._render(camera_name)
-            return img_dict
+
+        img_dict = {}
+        for i in range(iteration):
+            for camera_name in camera_name_list:
+                img_dict[camera_name] = self._render(camera_name)
+        self.img_dict = img_dict
+        return copy.deepcopy(self.img_dict)
 
 
     def check_camera_pos(self):
@@ -399,7 +405,7 @@ class DClawEnvironment(AbstractEnvironment):
         self.set_target_visible(self.is_target_visible)
         qpos, qvel, sensordata = self._create_qpos_qvel_from_InitialState(DClawState_)
         self.set_state(qpos=qpos, qvel=qvel, sensordata=sensordata)
-        self.render(iteration=1)
+        if self.is_Offscreen: self.render(iteration=1)
 
 
 
@@ -409,18 +415,24 @@ class DClawEnvironment(AbstractEnvironment):
         self.num_force_sensor = len(self.sim.model.sensor_names)
         assert self.num_force_sensor == 3
 
-        if self.is_use_render:
-            if self.is_Offscreen: self.viewer = mujoco_py.MjRenderContextOffscreen(self.sim, 0);    print(" init --> viewer"); time.sleep(2)
-            else:                 self.viewer = mujoco_py.MjViewer(self.sim);                       print(" init --> "); time.sleep(2)
-            # self.viewer.vopt.flags[mujoco_py.const.VIS_CONTACTFORCE] = 1 # force sensorではないbuild-inのcontactを可視化
-            # -------------------
-            self.texture_modder  = TextureModder(self.sim);                                         print(" init --> texture_modder")
-            self.camera_modder   = CameraModder(self.sim);                                          print(" init --> camera_modder")
-            self.light_modder    = LightModder(self.sim);                                           print(" init --> light_modder")
-            self.default_cam_pos = self.camera_modder.get_pos("canonical");                         print(" init --> default_cam_pos")
-            self._set_geom_names_randomize_target();                                                print(" init --> _set_geom_names_randomize_target()")
-            factory              = DclawEnvironmentRGBFactory(self.geom_names_randomize_target);    print(" init --> factory")
-            self.rgb             = factory.create(self.env_color);                                  print(" init --> self.rgb")
+        if self.is_Offscreen:
+            self.viewer          = mujoco_py.MjRenderContextOffscreen(self.sim, 0)
+            self.cv2_window_name = 'viewer'
+            cv2.namedWindow(self.cv2_window_name, cv2.WINDOW_NORMAL)
+            print(" init --> viewer"); time.sleep(2)
+        else:
+            self.viewer = mujoco_py.MjViewer(self.sim)
+            print(" init --> "); time.sleep(2)
+
+        # self.viewer.vopt.flags[mujoco_py.const.VIS_CONTACTFORCE] = 1 # force sensorではないbuild-inのcontactを可視化
+        # -------------------
+        self.texture_modder  = TextureModder(self.sim);                                         print(" init --> texture_modder")
+        self.camera_modder   = CameraModder(self.sim);                                          print(" init --> camera_modder")
+        self.light_modder    = LightModder(self.sim);                                           print(" init --> light_modder")
+        self.default_cam_pos = self.camera_modder.get_pos("canonical");                         print(" init --> default_cam_pos")
+        self._set_geom_names_randomize_target();                                                print(" init --> _set_geom_names_randomize_target()")
+        factory              = DclawEnvironmentRGBFactory(self.geom_names_randomize_target);    print(" init --> factory")
+        self.rgb             = factory.create(self.env_color);                                  print(" init --> self.rgb")
 
 
 
@@ -433,6 +445,7 @@ class DClawEnvironment(AbstractEnvironment):
         '''
         target_position       = float(target_position)
         self._target_position = target_position
+        self.sim.model.body_quat[self._target_bid] = euler2quat(0, 0, float(self._target_position))
 
 
     def set_target_visible(self, is_visible):
@@ -488,7 +501,7 @@ class DClawEnvironment(AbstractEnvironment):
         return 0
 
 
-    def step_with_inplicit_step(self):
+    def _step_with_inplicit_step(self):
         '''
         ・一回の sim.step() では，制御入力で与えた目標位置まで到達しないため，これを避けたい時に使います
         ・sim-to-realでは1ステップの状態遷移の違いがそのままダイナミクスのreality-gapとなるため，
@@ -499,6 +512,5 @@ class DClawEnvironment(AbstractEnvironment):
             self.sim.step()
 
 
-
     def step(self):
-        self.sim.step()
+        self._step_with_inplicit_step()

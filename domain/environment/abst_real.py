@@ -64,10 +64,15 @@ class AbstractEnvironment(metaclass=ABCMeta):
         - self._step_task_space() -> env自体には含まれるべきでない
         """
 
-
-
-
         """
         - step は 解釈性の観点から rospy.sleep であるべき（今のpublishとsleepが一体になっているのは変な感じがする）
         -
+        """
+
+
+    @abstractmethod
+    def set_target_position(self):
+        pass
+        """
+        set_target_position
         """

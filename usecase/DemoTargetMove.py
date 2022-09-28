@@ -6,38 +6,38 @@ from domain.environment.DClawState import DClawState as EnvState
 
 '''
 ・バルブの目標状態だけを動かしながら描画するサンプルコードです
-・conf/sim/にあるconfig(yaml)ファイルの"is_target_visible"パラメータをTrueにして下さい
+・conf/env/にあるconfig(yaml)ファイルの"is_target_visible"パラメータをTrueにして下さい
 '''
 
 class DemoTargetMove:
     def run(self, config):
-        env = EnvironmentFactory().create(env_name=config.sim.env_name)
-        env = env(config.sim)
+        env = EnvironmentFactory().create(env_name=config.env.env_name)
+        env = env(config.env)
 
         state = EnvState(
-            robot_position  = np.array(config.sim.robot_position_init),
-            robot_velocity  = np.array(config.sim.robot_velocity_init),
-            object_position = np.array(config.sim.object_position_init),
-            object_velocity = np.array(config.sim.object_velocity_init),
-            force           = np.array(config.sim.force_init),
+            robot_position  = np.array(config.env.robot_position_init),
+            robot_velocity  = np.array(config.env.robot_velocity_init),
+            object_position = np.array(config.env.object_position_init),
+            object_velocity = np.array(config.env.object_velocity_init),
+            force           = np.array(config.env.force_init),
         )
-        env.reset(state)
 
         step   = 100
         target = np.linspace(0.0, np.pi*2, step)
+
+        env.reset(state)
         for i in range(step):
             env.set_target_position(target[i])
-            img_dict = env.render()
-            env.step_with_inplicit_step()
-            cv2.imshow("window", np.concatenate([img.channel_last for img in img_dict.values()], axis=1))
-            cv2.waitKey(50)
+            # img_dict = env.render()
+            env.view()
+            env.step()
 
 
 if __name__ == "__main__":
     import hydra
     from omegaconf import DictConfig
 
-    @hydra.main(version_base=None, config_path="../conf", config_name="config_example.yaml")
+    @hydra.main(version_base=None, config_path="../conf", config_name="config.yaml")
     def main(config: DictConfig):
         demo = DemoTargetMove()
         demo.run(config)

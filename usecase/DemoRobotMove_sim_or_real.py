@@ -1,16 +1,15 @@
 import cv2
 import numpy as np
-import torch
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from domain.environment.DClawState import DClawState as EnvState
-from domain.controller.ExamplePolicy import ExamplePolicy
 
 '''
-・Policyを使用して制御する流れを書いたサンプルコードです（policyは未学習なのでバルブは回せません）
+・適当な制御入力を入力してロボットを動かすサンプルコードです
+・シミュレーションの可視化にMujocoのビューワを使う場合のループ処理のサンプルです
 '''
 
-class DemoRobotMove:
+class DemoRobotMove_real_robot:
     def run(self, config):
         env = EnvironmentFactory().create(env_name=config.env.env_name)
         env = env(config.env)
@@ -23,19 +22,25 @@ class DemoRobotMove:
             force           = np.array(config.env.force_init),
         )
 
-        step   = 100
-        policy = ExamplePolicy()
+        step       = 100
+        dim_ctrl   = 9 # 全部で9次元の制御入力
+        ctrl       = np.zeros([step, dim_ctrl])
 
-        cv2_window_name = 'window'
-        cv2.namedWindow(cv2_window_name, cv2.WINDOW_NORMAL)
-        for s in range(10):
+        ctrl[:, 0::3] = np.tile(np.linspace(0, -np.pi*0.1, step).reshape(-1, 1), (1, 3))
+        ctrl[:, 1::3] = np.tile(np.linspace(0,  np.pi*0.1, step).reshape(-1, 1), (1, 3))
+        ctrl[:, 2::3] = np.tile(np.linspace(0,  np.pi*0.25, step).reshape(-1, 1), (1, 3))
+
+        for s in range(1):
             env.reset(state)
+            # env.canonicalize_texture() # canonicalテクスチャを設定
+            # env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
-                img_dict = env.render()                             # OpenCVベースで画像をレンダリングして取得（辞書の戻り値）
-                ctrl     = policy.get_action(img_dict["canonical"]) # 観測画像としてcanonical（configのenv_colorで指定した外観）を使う
-                env.set_ctrl(ctrl)                                  # 制御入力をセット
-                env.view()                                          # 環境を可視化
-                env.step()                                          # シミュレーションを進める
+                img   = env.render()
+                state = env.get_state()
+                print(state)
+                env.set_ctrl(ctrl[i])
+                env.view()
+                env.step()
 
 
 if __name__ == "__main__":
@@ -44,7 +49,7 @@ if __name__ == "__main__":
 
     @hydra.main(version_base=None, config_path="../conf", config_name="config.yaml")
     def main(config: DictConfig):
-        demo = DemoRobotMove()
+        demo = DemoRobotMove_real_robot()
         demo.run(config)
 
     main()
