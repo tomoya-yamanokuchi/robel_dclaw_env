@@ -13,13 +13,14 @@ class DemoRobotMove_real_robot:
     def run(self, config):
         env = EnvironmentFactory().create(env_name=config.env.env_name)
         env = env(config.env)
-
+        # import ipdb; ipdb.set_trace()
         state = EnvState(
-            robot_position  = np.array(config.env.robot_position_init),
-            robot_velocity  = np.array(config.env.robot_velocity_init),
-            object_position = np.array(config.env.object_position_init),
-            object_velocity = np.array(config.env.object_velocity_init),
-            force           = np.array(config.env.force_init),
+            robot_position        = np.array(config.env.robot_position_init),
+            robot_velocity        = np.array(config.env.robot_velocity_init),
+            object_position       = np.array(config.env.object_position_init),
+            object_velocity       = np.array(config.env.object_velocity_init),
+            force                 = np.array(config.env.force_init),
+            end_effector_position = None
         )
 
         step       = 100
@@ -37,7 +38,11 @@ class DemoRobotMove_real_robot:
             for i in range(step):
                 img   = env.render()
                 state = env.get_state()
-                print(state)
+
+                print(state.end_effector_position)
+                print(np.take(state.end_effector_position, [0, 3, 6]))
+                print(state.end_effector_position.shape)
+
                 env.set_ctrl(ctrl[i])
                 env.view()
                 env.step()

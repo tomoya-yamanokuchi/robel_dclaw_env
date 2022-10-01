@@ -22,6 +22,8 @@ from mujoco_py.modder import LightModder, CameraModder
 from .my_mujoco.modder import myTextureModder as TextureModder
 from numpy.lib.function_base import append
 from transforms3d.euler import euler2quat, quat2euler
+
+# 同階層ディレクトリからのインポート
 from .DclawEnvironmentRGBFactory import DclawEnvironmentRGBFactory
 
 # 上位ディレクトリからのインポート
@@ -32,6 +34,10 @@ from ..DClawState import DClawState
 from ..AbstractEnvironment import AbstractEnvironment
 from ...ImageObject import ImageObject
 from ... import dictionary_operation as dictOps
+from ..kinematics.ForwardKinematics import ForwardKinematics
+from ..kinematics.InverseKinematics import InverseKinematics
+from ..task_space.TaskSpace import TaskSpace
+
 
 
 class DClawSimulationEnvironment(AbstractEnvironment):
@@ -66,7 +72,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             "claw2" : self.model.geom_name2id('MFL22_phy_optoforce'),
             "claw3" : self.model.geom_name2id('THL32_phy_optoforce'),
         }
-        self.index_force = {
+        self.index_claw = {
             "claw1" : [0, 1, 2],
             "claw2" : [3, 4, 5],
             "claw3" : [6, 7, 8],
@@ -77,6 +83,10 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self.viewer                      = None
         self.texture_modder              = None
         self.camera_modder               = None
+
+        self.forward_kinematics          = ForwardKinematics()
+        self.inverse_kinematics          = InverseKinematics()
+        self.task_space                  = TaskSpace()
 
 
 
@@ -275,14 +285,19 @@ class DClawSimulationEnvironment(AbstractEnvironment):
 
 
     def get_state(self):
-        env_state   = copy.deepcopy(self.sim.get_state())
-        force       = self.get_force()
+        env_state             = copy.deepcopy(self.sim.get_state())
+        robot_position        = env_state.qpos[:9]
+        end_effector_position = self.forward_kinematics.calc(robot_position)
+        # task_space_position   = self.task_space.forward(end_effector_position)
+        force                 = self.get_force()
         state = DClawState(
-            robot_position  = env_state.qpos[:9],
-            object_position = env_state.qpos[-1:],
-            robot_velocity  = env_state.qvel[:9],
-            object_velocity = env_state.qvel[-1:],
-            force           = force,
+            robot_position        = robot_position,
+            object_position       = env_state.qpos[-1:],
+            robot_velocity        = env_state.qvel[:9],
+            object_velocity       = env_state.qvel[-1:],
+            force                 = force,
+            end_effector_position = end_effector_position[0],
+            # task_space_position   = task_space_position[0],
         )
         return state
 
@@ -296,7 +311,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
                 if geom in list(self.optoforce_geom_id_dict.values()):
                     contact_claw = [k for k, v in self.optoforce_geom_id_dict.items() if v == geom]
                     assert len(contact_claw) == 1
-                    force[self.index_force[contact_claw[0]]] = np.take(self.sim.data.sensordata, self.index_force[contact_claw[0]])
+                    force[self.index_claw[contact_claw[0]]] = np.take(self.sim.data.sensordata, self.index_claw[contact_claw[0]])
         print("force: [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}]".format(
             force[0], force[1], force[2],     force[3], force[4], force[5],     force[6], force[7], force[8]))
         return force

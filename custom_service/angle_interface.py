@@ -2,12 +2,12 @@ import numpy as np
 
 
 '''
-equation of normalization (xmax2ymax, xmin2ymin)
+equation of normalization (xmax2ymax, xmin2ymin) 
     * assumpution
-        - x   : input
-        - xmax: maximum of input
+        - x   : input 
+        - xmax: maximum of input 
         - xmin: minimum of input
-        - y   : normalized input
+        - y   : normalized input 
         - ymax: maximum of normalized input
         - ymin: minimim of normalized input
     * equation
