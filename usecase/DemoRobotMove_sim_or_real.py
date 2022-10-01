@@ -33,17 +33,17 @@ class DemoRobotMove_real_robot:
 
         for s in range(1):
             env.reset(state)
-            # env.canonicalize_texture() # canonicalテクスチャを設定
+            env.canonicalize_texture() # canonicalテクスチャを設定
             # env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
-                img   = env.render()
+                # img   = env.render()
                 state = env.get_state()
 
                 print(state.end_effector_position)
                 print(np.take(state.end_effector_position, [0, 3, 6]))
                 print(state.end_effector_position.shape)
 
-                env.set_ctrl(ctrl[i])
+                env.set_ctrl_joint(ctrl[i])
                 env.view()
                 env.step()
 

@@ -20,7 +20,7 @@ path_environment = "/".join(str(p_file).split("/")[:-2])
 sys.path.append(path_environment)
 from ..DClawState import DClawState
 from ..AbstractEnvironment import AbstractEnvironment
-
+from ..task_space.TaskSpace import TaskSpace
 
 
 class DClawRealEnvironment(AbstractEnvironment):
@@ -39,9 +39,19 @@ class DClawRealEnvironment(AbstractEnvironment):
         self.robot_node.publisher.publish_initialize_ctrl(init_command)
 
 
-    def set_ctrl(self, ctrl):
+    def set_ctrl(self, ctrl, mode: str):
+        if   mode == "joint" : self._set_ctrl_joint(ctrl)
+        elif mode == "task"  : self._set_ctrl_task(ctrl)
+        else                 : raise NotImplementedError()
+
+
+    def _set_ctrl_joint(self, ctrl):
         assert ctrl.shape == (9,), '[expected: {0}, input: {1}]'.format((9,), ctrl.shape)
         self.robot_node.publisher.publish_joint_ctrl(ctrl)
+
+
+    def _set_ctrl_task(self, ctrl):
+        return 0
 
 
     def get_state(self):

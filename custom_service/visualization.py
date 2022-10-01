@@ -23,16 +23,25 @@ def scatter_3d(x):
 
 
 
-def scatter_3d_animation(x, interval=100):
+def scatter_3d_animation(x, num_history=100, interval=100):
     assert len(x.shape) == 2
     assert x.shape[-1] == 3
 
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
 
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+    ax.set_xlim(190, 230)
+
     frames = []
     for i in range(x.shape[0]):
-        frame = ax.plot(x[:i, 0], x[:i, 1], x[:i, 2], marker='o', markersize=5, color='blue')
-        frames.append(frame)
+        xt     = x[i-np.minimum(num_history, i):i]
+        frame1 = ax.plot(xt[:, 0], xt[:, 1], xt[:, 2], marker='o', markersize=5, color='blue')
+        frame2 = ax.plot(xt[-1:, 0], xt[-1:, 1], xt[-1:, 2], marker='o', markersize=7, color='red') # 現在位置を強調するために別の色で表示
+        frames.append(frame1 + frame2)
+
     ani = ArtistAnimation(fig, frames, interval=interval)
     plt.show()
+

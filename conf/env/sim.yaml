@@ -9,7 +9,7 @@ inplicit_step         : 200
 width_capture         : 64
 height_capture        : 64
 camera_name_list      : ["canonical", "random_nonfix"]
-is_Offscreen          : True
+is_Offscreen          : False
 is_target_visible     : True
 
 # --- randomize setting ---

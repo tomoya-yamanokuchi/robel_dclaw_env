@@ -4,17 +4,12 @@ import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from domain.environment.DClawState import DClawState as EnvState
 
-'''
-・バルブの目標状態だけを動かしながら描画するサンプルコードです
-・conf/env/にあるconfig(yaml)ファイルの"is_target_visible"パラメータをTrueにして下さい
-'''
 
-class DemoTargetMove:
+class Demo_task_space:
     def run(self, config):
         env = EnvironmentFactory().create(env_name=config.env.env_name)
         env = env(config.env)
-
-        state = EnvState(
+        init_state = EnvState(
             robot_position        = np.array(config.env.robot_position_init),
             robot_velocity        = np.array(config.env.robot_velocity_init),
             object_position       = np.array(config.env.object_position_init),
@@ -23,15 +18,24 @@ class DemoTargetMove:
             end_effector_position = None
         )
 
-        step   = 100
-        target = np.linspace(0.0, np.pi*2, step)
+        step                = 200
+        dim_task_space_ctrl = 3 # 1本の指につき1次元で合計3次元
 
-        env.reset(state)
-        for i in range(step):
-            env.set_target_position(target[i])
-            img_dict = env.render()
-            env.view()
-            env.step()
+        ctrl_task = np.linspace(start=0.0, stop=2.0, num=200)
+        ctrl_task = ctrl_task.reshape(-1, 1)
+        ctrl_task = np.tile(ctrl_task, (1, dim_task_space_ctrl))
+
+        for s in range(10):
+            env.reset(init_state)
+            print(env.sim.data.qpos[-1])
+            env.canonicalize_texture() # canonicalテクスチャを設定
+            # env.randomize_texture()    # randomテクスチャを設定
+            for i in range(step):
+                # img   = env.render()
+                state = env.get_state()
+                env.set_ctrl_task(ctrl_task[i])
+                env.view()
+                env.step()
 
 
 if __name__ == "__main__":
@@ -40,7 +44,7 @@ if __name__ == "__main__":
 
     @hydra.main(version_base=None, config_path="../conf", config_name="config.yaml")
     def main(config: DictConfig):
-        demo = DemoTargetMove()
+        demo = Demo_task_space()
         demo.run(config)
 
     main()

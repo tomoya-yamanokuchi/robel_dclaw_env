@@ -2,7 +2,7 @@ import copy
 import pathlib
 import numpy as np
 from custom_service import data_shape_formating
-from ReferencePosition import ReferencePosition
+from .ReferencePosition import ReferencePosition
 
 # 上位ディレクトリからのインポート
 import sys, pprint
@@ -68,7 +68,7 @@ class TaskSpace:
         clipped_task_space_position        = task_space_position % self.max                                                                             # 値をtask_spaceの範囲内にクリップ
         distance_matrix                    = clipped_task_space_position.reshape(-1, 1) - self.reference_task_space_position.reshape(1, -1)             # referenceとの差を計算
         signed_distance_matrix             = np.sign(distance_matrix)                                                                                   # referenceとの差をの符号を取得
-        signed_distance_matrix             = self._convet_zero_to_plus1_or_minus1_for_calculating_difference_of_sign(signed_distance_matrix)             # 0だと後の計算で困るので1か-1に変換しておく
+        signed_distance_matrix             = self._convet_zero_to_plus1_or_minus1_for_calculating_difference_of_sign(signed_distance_matrix)            # 0があると後の計算で困るので1か-1に変換しておく
         index_sign_changeed                = np.nonzero(np.diff(signed_distance_matrix, n=1, axis=-1))[1]                                               # referenceとの差で符号関係が変化する点を探す（以下，以上の関係が変化する点）
         index_top2_nearest_neighbor        = np.concatenate((index_sign_changeed.reshape(-1, 1), index_sign_changeed.reshape(-1, 1)+1), axis=-1)        # 符号関係が変化する位置から補完に用いる2点を取得
         top2_nearest_task_space_position   = np.take(self.reference_task_space_position, index_top2_nearest_neighbor)                                   # 補完に用いるtask_space_space_positionを取得
@@ -105,11 +105,11 @@ if __name__ == '__main__':
     from custom_service import visualization as vis
     taskspace = TaskSpace()
 
-    t = np.linspace(start=0.0, stop=2.0, num=300)
+    t = np.linspace(start=0.0, stop=2.0, num=200)
     t = t.reshape(-1, 1)
     t = np.tile(t, (1, 3))
 
     end = taskspace.calc(t)
 
-    vis.scatter_3d(end[:, :3])
-    vis.scatter_3d_animation(end[:, :3], interval=10)
+    # vis.scatter_3d(end[:, :3])
+    vis.scatter_3d_animation(end[:, :3], num_history=100, interval=10)

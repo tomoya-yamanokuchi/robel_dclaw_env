@@ -288,7 +288,6 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         env_state             = copy.deepcopy(self.sim.get_state())
         robot_position        = env_state.qpos[:9]
         end_effector_position = self.forward_kinematics.calc(robot_position)
-        # task_space_position   = self.task_space.forward(end_effector_position)
         force                 = self.get_force()
         state = DClawState(
             robot_position        = robot_position,
@@ -297,7 +296,6 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             object_velocity       = env_state.qvel[-1:],
             force                 = force,
             end_effector_position = end_effector_position[0],
-            # task_space_position   = task_space_position[0],
         )
         return state
 
@@ -312,8 +310,8 @@ class DClawSimulationEnvironment(AbstractEnvironment):
                     contact_claw = [k for k, v in self.optoforce_geom_id_dict.items() if v == geom]
                     assert len(contact_claw) == 1
                     force[self.index_claw[contact_claw[0]]] = np.take(self.sim.data.sensordata, self.index_claw[contact_claw[0]])
-        print("force: [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}]".format(
-            force[0], force[1], force[2],     force[3], force[4], force[5],     force[6], force[7], force[8]))
+        # print("force: [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}]".format(
+        #     force[0], force[1], force[2],     force[3], force[4], force[5],     force[6], force[7], force[8]))
         return force
 
 
@@ -421,6 +419,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         qpos, qvel, sensordata = self._create_qpos_qvel_from_InitialState(DClawState_)
         self.set_state(qpos=qpos, qvel=qvel, sensordata=sensordata)
         if self.is_Offscreen: self.render(iteration=1)
+        self.sim.step()
 
 
 
@@ -471,9 +470,16 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 0]
 
 
-    def set_ctrl(self, ctrl):
+    def set_ctrl_joint(self, ctrl):
         assert ctrl.shape == (9,), '[expected: {0}, input: {1}]'.format((9,), ctrl.shape)
         self.sim.data.ctrl[:9] = ctrl
+
+
+    def set_ctrl_task(self, ctrl):
+        assert ctrl.shape == (3,), '[expected: {0}, input: {1}]'.format((3,), ctrl.shape)
+        ctrl_end_effector = self.task_space.calc(ctrl)
+        ctrl_joint        = self.inverse_kinematics.calc(ctrl_end_effector)
+        self.sim.data.ctrl[:9] = ctrl_joint.squeeze()
 
 
     def set_jnt_range(self):
