@@ -20,47 +20,76 @@ path_environment = "/".join(str(p_file).split("/")[:-2])
 sys.path.append(path_environment)
 from ..DClawState import DClawState
 from ..AbstractEnvironment import AbstractEnvironment
+from ..kinematics.ForwardKinematics import ForwardKinematics
+from ..kinematics.InverseKinematics import InverseKinematics
 from ..task_space.TaskSpace import TaskSpace
 
 
 class DClawRealEnvironment(AbstractEnvironment):
     def __init__(self, config):
         rospy.init_node(config.node_name, anonymous=True)
-        self.camera_node    = CameraNode()
-        self.robot_node     = RobotNode()
-        self.visualize_node = VisualizeNode()
-        self.sleep_time_sec = config.sleep_time_sec
+        self.camera_node        = CameraNode()
+        self.robot_node         = RobotNode()
+        self.visualize_node     = VisualizeNode()
+        self.forward_kinematics = ForwardKinematics()
+        self.inverse_kinematics = InverseKinematics()
+        self.task_space         = TaskSpace()
+        self.sleep_time_sec     = config.sleep_time_sec
 
 
     def reset(self, DClawState_: DClawState):
-        ctrl_init_positions  = DClawState_.robot_position
+        if DClawState_.task_space_positioin is None:
+            ctrl_init_positions  = DClawState_.robot_position
+        else:
+            print("----")
+            print(" ------ ", DClawState_.task_space_positioin)
+            print("-----")
+            end_effector_position = self.task_space.task2end(DClawState_.task_space_positioin)
+            joint_position        = self.inverse_kinematics.calc(end_effector_position)
+            import ipdb; ipdb.set_trace()
+            ctrl_init_positions   = joint_position.squeeze()
+
         claw_Position_P_Gain = np.array([30, 30, 30], dtype=int)
         init_command         = np.hstack([ctrl_init_positions, claw_Position_P_Gain])
         self.robot_node.publisher.publish_initialize_ctrl(init_command)
+        # self.step()
+        while not self.robot_node.subscriber.is_initialize_finished:
+            time.sleep(0.1)
+        time.sleep(5)
+        self.step()
 
 
-    def set_ctrl(self, ctrl, mode: str):
-        if   mode == "joint" : self._set_ctrl_joint(ctrl)
-        elif mode == "task"  : self._set_ctrl_task(ctrl)
-        else                 : raise NotImplementedError()
-
-
-    def _set_ctrl_joint(self, ctrl):
+    def set_ctrl_joint(self, ctrl):
         assert ctrl.shape == (9,), '[expected: {0}, input: {1}]'.format((9,), ctrl.shape)
         self.robot_node.publisher.publish_joint_ctrl(ctrl)
 
 
-    def _set_ctrl_task(self, ctrl):
-        return 0
+    def set_ctrl_task_diff(self, ctrl_task_diff):
+        assert ctrl_task_diff.shape == (3,), '[expected: {0}, input: {1}]'.format((3,), ctrl_task_diff.shape)
+        # get current task_space_position
+        robot_position         = self.robot_node.subscriber.joint_positions
+        end_effector_position  = self.forward_kinematics.calc(robot_position).squeeze()
+        task_space_positioin   = self.task_space.end2task(end_effector_position).squeeze()
+        # create new absolute task_space_position
+        ctrl_task              = task_space_positioin + ctrl_task_diff
+        # set new ctrl
+        ctrl_end_effector      = self.task_space.task2end(ctrl_task)
+        ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector)
+        self.robot_node.publisher.publish_joint_ctrl(ctrl_joint.squeeze())
 
 
     def get_state(self):
+        robot_position        = self.robot_node.subscriber.joint_positions
+        end_effector_position = self.forward_kinematics.calc(robot_position).squeeze()
+        task_space_positioin  = self.task_space.end2task(end_effector_position).squeeze()
         state = DClawState(
-            robot_position  = self.robot_node.subscriber.joint_positions,
-            object_position = self.robot_node.subscriber.valve_position.reshape(1,),
-            robot_velocity  = self.robot_node.subscriber.joint_velocities,
-            object_velocity = np.zeros(1), # ROS側で取得していない
-            force           = np.zeros(9), # ROS側で取得していない
+            robot_position        = robot_position,
+            object_position       = self.robot_node.subscriber.valve_position.reshape(1,),
+            robot_velocity        = self.robot_node.subscriber.joint_velocities,
+            object_velocity       = np.zeros(1), # ROS側で取得していない
+            # force                 = np.zeros(9), # ROS側で取得していない
+            end_effector_position = end_effector_position,
+            task_space_positioin  = task_space_positioin,
         )
         return state
 

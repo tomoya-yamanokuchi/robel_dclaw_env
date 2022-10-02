@@ -14,28 +14,30 @@ class Demo_task_space:
             robot_velocity        = np.array(config.env.robot_velocity_init),
             object_position       = np.array(config.env.object_position_init),
             object_velocity       = np.array(config.env.object_velocity_init),
-            force                 = np.array(config.env.force_init),
-            end_effector_position = None
+            end_effector_position = None,
+            task_space_positioin  = np.array(config.env.task_space_position_init),
         )
 
-        step                = 200
-        dim_task_space_ctrl = 3 # 1本の指につき1次元で合計3次元
+        step           = 30
+        dim_task_space = 3  # 1本の指につき1次元の拘束をするので合計3次元
+        ctrl_task_diff = np.zeros([step, dim_task_space]) + 0.02 # 範囲:[0, 1]
 
-        ctrl_task = np.linspace(start=0.0, stop=2.0, num=200)
-        ctrl_task = ctrl_task.reshape(-1, 1)
-        ctrl_task = np.tile(ctrl_task, (1, dim_task_space_ctrl))
-
-        for s in range(10):
+        for s in range(2):
             env.reset(init_state)
-            print(env.sim.data.qpos[-1])
-            env.canonicalize_texture() # canonicalテクスチャを設定
+            import ipdb; ipdb.set_trace()
+            print("\n*** reset ***\n")
+            # env.canonicalize_texture() # canonicalテクスチャを設定
             # env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
-                # img   = env.render()
+                img   = env.render()
                 state = env.get_state()
-                env.set_ctrl_task(ctrl_task[i])
+
+                print("task_space_position (claw1): {: .2f}".format(state.task_space_positioin[0]))
+
+                env.set_ctrl_task_diff(ctrl_task_diff[i])
                 env.view()
                 env.step()
+                import ipdb; ipdb.set_trace()
 
 
 if __name__ == "__main__":

@@ -19,8 +19,8 @@ class DemoTargetMove:
             robot_velocity        = np.array(config.env.robot_velocity_init),
             object_position       = np.array(config.env.object_position_init),
             object_velocity       = np.array(config.env.object_velocity_init),
-            force                 = np.array(config.env.force_init),
-            end_effector_position = None
+            end_effector_position = None,
+            task_space_positioin  = None,
         )
 
         step   = 100

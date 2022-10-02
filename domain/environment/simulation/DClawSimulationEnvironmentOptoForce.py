@@ -1,13 +1,20 @@
-from ntpath import join
 import sys
 import pathlib
 
 p = pathlib.Path()
 sys.path.append(str(p.cwd()))
 
+import math
+from traceback import print_tb
 import cv2
+import os
+from matplotlib import ticker
+import matplotlib.pyplot as plt
+from PIL import Image
 import numpy as np
 import time
+import pickle
+import pprint
 from typing import List
 import copy
 import mujoco_py
@@ -33,7 +40,7 @@ from ..task_space.TaskSpace import TaskSpace
 
 
 
-class DClawSimulationEnvironment(AbstractEnvironment):
+class DClawSimulationEnvironmentOptoForce(AbstractEnvironment):
     def __init__(self, config):
         self.width_capture               = config.width_capture
         self.height_capture              = config.height_capture
@@ -45,6 +52,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self.claw_jnt_range_ub           = config.claw_jnt_range_ub
         self.valve_jnt_range_lb          = config.object_jnt_range_lb
         self.valve_jnt_range_ub          = config.object_jnt_range_ub
+        # self.is_use_render               = config.is_use_render
         self.is_Offscreen                = config.is_Offscreen
         self.is_target_visible           = config.is_target_visible
         self.model                       = self.load_model(config.model_file)
@@ -58,6 +66,17 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self._valve_jnt_id               = self.model.joint_name2id('valve_OBJRx')
         self._target_bid                 = self.model.body_name2id('target')
         self._target_sid                 = self.model.site_name2id('tmark')
+
+        self.optoforce_geom_id_dict = {
+            "claw1" : self.model.geom_name2id('FFL12_phy_optoforce'),
+            "claw2" : self.model.geom_name2id('MFL22_phy_optoforce'),
+            "claw3" : self.model.geom_name2id('THL32_phy_optoforce'),
+        }
+        self.index_claw = {
+            "claw1" : [0, 1, 2],
+            "claw2" : [3, 4, 5],
+            "claw3" : [6, 7, 8],
+        }
 
         self._target_position            = None
         self.sim                         = None
@@ -268,43 +287,45 @@ class DClawSimulationEnvironment(AbstractEnvironment):
     def get_state(self):
         env_state             = copy.deepcopy(self.sim.get_state())
         robot_position        = env_state.qpos[:9]
-        end_effector_position = self.forward_kinematics.calc(robot_position).squeeze()
-        task_space_positioin  = self.task_space.end2task(end_effector_position).squeeze()
-        # force                 = self.get_force()
+        end_effector_position = self.forward_kinematics.calc(robot_position)
+        force                 = self.get_force()
         state = DClawState(
             robot_position        = robot_position,
             object_position       = env_state.qpos[-1:],
             robot_velocity        = env_state.qvel[:9],
             object_velocity       = env_state.qvel[-1:],
-            # force                 = force,
-            end_effector_position = end_effector_position,
-            task_space_positioin  = task_space_positioin,
+            force                 = force,
+            end_effector_position = end_effector_position[0],
         )
         return state
 
 
-    def set_state(self, DClawState_: DClawState):
-        # qpos
-        qpos     = np.zeros(self.sim.model.nq)
-        if DClawState_.task_space_positioin is None:
-            qpos[:9] = DClawState_.robot_position
-        else:
-            end_effector_position = self.task_space.task2end(DClawState_.task_space_positioin)
-            joint_position        = self.inverse_kinematics.calc(end_effector_position)
-            qpos[:9]              = joint_position.squeeze()
-        qpos[-1] = DClawState_.object_position
+    def get_force(self):
+        num_data_per_force_sensor = 3 # (Fx, Fy, Fz)
+        force = np.zeros(self.num_force_sensor * num_data_per_force_sensor)
+        for i in range(self.sim.data.ncon):
+            con = self.sim.data.contact[i]
+            for geom in [con.geom1, con.geom2]:
+                if geom in list(self.optoforce_geom_id_dict.values()):
+                    contact_claw = [k for k, v in self.optoforce_geom_id_dict.items() if v == geom]
+                    assert len(contact_claw) == 1
+                    force[self.index_claw[contact_claw[0]]] = np.take(self.sim.data.sensordata, self.index_claw[contact_claw[0]])
+        # print("force: [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}], [{: .3f} {: .3f} {: .3f}]".format(
+        #     force[0], force[1], force[2],     force[3], force[4], force[5],     force[6], force[7], force[8]))
+        return force
 
-        # qvel
-        qvel     = np.zeros(self.sim.model.nq)
-        qvel[:9] = DClawState_.robot_velocity
-        qvel[-1] = DClawState_.object_velocity
+
+    def set_state(self, qpos, qvel, sensordata):
+        assert(      qpos.shape == self.model.nq,          "      qpos.shape {} != self.model.nq {}".format(qpos.shape, self.model.nq))
+        assert(      qvel.shape == self.model.nv,          "      qvel.shape {} != self.model.nv {}".format(qvel.shape, self.model.nv))
+        assert(sensordata.shape == self.model.nsensordata, "sensordata.shape {} != self.model.nsensordata {}".format(sensordata.shape, self.model.nsensordata))
 
         old_state = self.sim.get_state()
         new_state = mujoco_py.MjSimState(old_state.time, qpos, qvel, old_state.act, old_state.udd_state)
         self.sim.set_state(new_state)
         self.sim.data.ctrl[:9]      = qpos[:9]
         self.sim.data.ctrl[9:]      = 0.0
-        # self.sim.data.sensordata[:] = sensordata
+        self.sim.data.sensordata[:] = sensordata
         self.sim.forward()
 
 
@@ -369,6 +390,20 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         return dynamics_parameter
 
 
+    def _create_qpos_qvel_from_InitialState(self, DClawState_: DClawState):
+        # qpos
+        qpos       = np.zeros(self.sim.model.nq)
+        qpos[:9]   = DClawState_.robot_position
+        qpos[-1]   = DClawState_.object_position
+        # qvel
+        qvel       = np.zeros(self.sim.model.nq)
+        qvel[:9]   = DClawState_.robot_velocity
+        qvel[-1]   = DClawState_.object_velocity
+
+        sensordata = DClawState_.force
+        return qpos, qvel, sensordata
+
+
     def reset(self, DClawState_: DClawState):
         assert isinstance(DClawState_, DClawState)
         self.is_texture_randomized = False
@@ -381,16 +416,18 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self.set_camera_position(self.camera)
         self.set_light_position(self.light)
         self.set_target_visible(self.is_target_visible)
-        self.set_state(DClawState_)
+        qpos, qvel, sensordata = self._create_qpos_qvel_from_InitialState(DClawState_)
+        self.set_state(qpos=qpos, qvel=qvel, sensordata=sensordata)
         if self.is_Offscreen: self.render(iteration=1)
         self.sim.step()
+
 
 
     def _create_mujoco_related_instance(self):
         self.sim = mujoco_py.MjSim(self.model)
 
-        # self.num_force_sensor = len(self.sim.model.sensor_names)
-        # assert self.num_force_sensor == 3
+        self.num_force_sensor = len(self.sim.model.sensor_names)
+        assert self.num_force_sensor == 3
 
         if self.is_Offscreen:
             self.viewer          = mujoco_py.MjRenderContextOffscreen(self.sim, 0)
@@ -438,17 +475,10 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self.sim.data.ctrl[:9] = ctrl
 
 
-    def set_ctrl_task_diff(self, ctrl_task_diff):
-        assert ctrl_task_diff.shape == (3,), '[expected: {0}, input: {1}]'.format((3,), ctrl_task_diff.shape)
-        # get current task_space_position
-        robot_position         = self.sim.data.qpos[:9]
-        end_effector_position  = self.forward_kinematics.calc(robot_position).squeeze()
-        task_space_positioin   = self.task_space.end2task(end_effector_position).squeeze()
-        # create new absolute task_space_position
-        ctrl_task              = task_space_positioin + ctrl_task_diff
-        # set new ctrl
-        ctrl_end_effector      = self.task_space.task2end(ctrl_task)
-        ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector)
+    def set_ctrl_task(self, ctrl):
+        assert ctrl.shape == (3,), '[expected: {0}, input: {1}]'.format((3,), ctrl.shape)
+        ctrl_end_effector = self.task_space.calc(ctrl)
+        ctrl_joint        = self.inverse_kinematics.calc(ctrl_end_effector)
         self.sim.data.ctrl[:9] = ctrl_joint.squeeze()
 
 

@@ -19,7 +19,9 @@ class ReferencePosition:
 
         # 各基準点の間を補完する点の数
         # 6個基準点があるのでそれに合わせる
-        self.num_augument = [5, 5, 4, 4, 3, 3]
+        # self.num_augument = [1, 1, 1, 1, 1, 1]
+        # self.num_augument = [5, 5, 4, 4, 3, 3]
+        self.num_augument = [50, 80, 50, 50, 50, 70]
 
 
     def augument_reference_resoluation(self):

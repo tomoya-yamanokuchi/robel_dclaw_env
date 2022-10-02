@@ -12,8 +12,9 @@ class DClawState:
     object_position      : np.ndarray
     robot_velocity       : np.ndarray
     object_velocity      : np.ndarray
-    force                : np.ndarray
+    # force                : np.ndarray
     end_effector_position: np.ndarray
+    task_space_positioin : np.ndarray
 
     def __post_init__(self):
         assert type(self.robot_position) == np.ndarray
@@ -32,8 +33,8 @@ class DClawState:
         elif val_type == float      :   pass
         else                        :   raise NotImplementedError()
 
-        assert type(self.force) == np.ndarray
-        assert self.force.shape == (9,)
+        # assert type(self.force) == np.ndarray
+        # assert self.force.shape == (9,)
 
         # assert type(self.end_effector_position) == np.ndarray
         # assert self.end_effector_position.shape == (9,)

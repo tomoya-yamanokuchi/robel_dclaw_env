@@ -1,8 +1,8 @@
 import copy
 import pathlib
 import numpy as np
-from custom_service import data_shape_formating
 from .ReferencePosition import ReferencePosition
+from custom_service import data_shape_formating
 
 # 上位ディレクトリからのインポート
 import sys, pprint
@@ -12,12 +12,22 @@ sys.path.append(path_environment)
 from kinematics.ForwardKinematics import ForwardKinematics
 
 '''
-[observationとしてtask_space_positionを使わない理由]
-
+[方策のobservationとしてtask_space_positionを使う場合の問題]
 - エンドエフェクタの３次元空間中において行動空間を１次元空間のようにして拘束する場合
 　定義した task_space 上で0と1のような境界部分で非連続性があるためモデル/方策学習に望ましくない
 - ロボットの状態が task_space 上に必ずしも位置しているとは限らないためobservationに対して近似が必要になる
 　（バルブと接触状態にある場合には task_space 上から指が外れてしまうことは頻発する）
+
+[行動決定のための擬似的なobservationとしてtask_space_positionを使用する理由]
+- task_space_positionを絶対値の空間で自由に決定してしまうと1次元の拘束が意味を持たなくなる
+- 例えば[0, 1]の範囲のtask_spaceなのに0.1から次に急に0.4とかの離れた行動をとってしまうと
+　明らかに1次元拘束の軌道上から外れてショートカットしたような軌道になってしまう
+- これを避けるためには差分入力の形で1stepに動けるtask_space上の距離を制限して行動を実行する必要がある
+- 差分行動を決定するためには現在のtask_space_positionが必要となる
+- しかし，エンドエフェクタ位置から対応するtask_space_positionを得る逆写像は容易ではない
+　（エンドエフェクタ位置が厳密にtask_spaceの軌道上に乗っかっている保証はないため）
+- そこであらかじめtask_space上でobservationとなる点の候補を多めに生成しておき，それらとのノルムを測り
+　最近棒のものを擬似的な観測として差分制御入力を決定するために用いる
 '''
 
 
@@ -30,6 +40,7 @@ class TaskSpace:
         self.reference_end_effector_position = self.forward_kinematics.calc_1claw(self.reference_joint_position)
         self.reference_end_effector_position = self._create_cyclic_data(self.reference_end_effector_position) # 中間点を補完する際にはtask_spaceとして閉じている必要がある
         self.reference_task_space_position   = self._create_reference_task_space_position()
+        self.num_claw                        = 3
 
 
     def _create_cyclic_data(self, x):
@@ -46,7 +57,7 @@ class TaskSpace:
         return cyclic_normalized_cumulative_euclidean_distance
 
 
-    def calc(self, task_space_position):
+    def task2end(self, task_space_position):
         task_space_position = data_shape_formating.D_to_NTD(task_space_position)
         sequence, step, dim = task_space_position.shape
         assert dim == 3 # 指1本あたり1次元に拘束するので3本で3次元
@@ -97,6 +108,27 @@ class TaskSpace:
         zero_element_index = np.where(input_array[:, index]==0)[0]
         input_array[zero_element_index, index] = value
         return input_array
+
+
+    def end2task(self, end_effector_position):
+        # import ipdb; ipdb.set_trace()
+        end_effector_position = data_shape_formating.D_to_NTD(end_effector_position)
+        sequence, step, dim   = end_effector_position.shape
+        assert dim == 9 # 指1本あたり3次元なので3本で9次元
+        task_space_position = np.zeros(self.num_claw)
+        for i, _end_effector_position in enumerate(np.split(end_effector_position, self.num_claw, axis=-1)):
+            task_space_position[i] = self._get_task_space_position_from_end_effector_position(_end_effector_position[0])
+        task_space_position = data_shape_formating.D_to_NTD(task_space_position)
+        return task_space_position
+
+
+    def _get_task_space_position_from_end_effector_position(self, end_effector_position):
+        assert end_effector_position.shape == (1, 3) # １つのendeffector座標を比較するため
+        distance               = np.linalg.norm(self.reference_end_effector_position - end_effector_position, axis=-1)
+        index_minimum_distance = np.argsort(distance)[0]
+        nearest_reference      = self.reference_task_space_position[index_minimum_distance]
+        return nearest_reference
+
 
 
 

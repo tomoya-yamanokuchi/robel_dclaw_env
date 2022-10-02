@@ -1,7 +1,7 @@
 env_name              : "sim"
 
 # --- load data ----
-model_file            : "dclaw3xh_valve3_with_force.xml"
+model_file            : "dclaw3xh_valve3_default.xml"
 env_color             : "rgb_valve"
 inplicit_step         : 200
 
@@ -9,8 +9,8 @@ inplicit_step         : 200
 width_capture         : 64
 height_capture        : 64
 camera_name_list      : ["canonical", "random_nonfix"]
-is_Offscreen          : False
-is_target_visible     : True
+is_Offscreen          : True
+is_target_visible     : False
 
 # --- randomize setting ---
 randomize_texture_mode      : "per_reset"
@@ -23,11 +23,12 @@ object_jnt_range_lb : -12.566370614359172 # -4*np.pi
 object_jnt_range_ub :  12.566370614359172 #  4*np.pi
 
 # --- initial state ----
-robot_position_init  : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
-robot_velocity_init  : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
-object_position_init : [0.0]
-object_velocity_init : [0.0]
-force_init           : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+task_space_position_init: [0.14, 0.14, 0.14]
+robot_position_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+robot_velocity_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+object_position_init    : [0.0]
+object_velocity_init    : [0.0]
+force_init              : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
 
 
 dynamics:

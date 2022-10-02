@@ -10,7 +10,7 @@ from domain.controller.ExamplePolicy import ExamplePolicy
 ・Policyを使用して制御する流れを書いたサンプルコードです（policyは未学習なのでバルブは回せません）
 '''
 
-class DemoRobotMove:
+class Demo_with_policy:
     def run(self, config):
         env = EnvironmentFactory().create(env_name=config.env.env_name)
         env = env(config.env)
@@ -20,15 +20,13 @@ class DemoRobotMove:
             robot_velocity        = np.array(config.env.robot_velocity_init),
             object_position       = np.array(config.env.object_position_init),
             object_velocity       = np.array(config.env.object_velocity_init),
-            force                 = np.array(config.env.force_init),
-            end_effector_position = None
+            end_effector_position = None,
+            task_space_positioin  = None,
         )
 
         step   = 100
         policy = ExamplePolicy()
 
-        cv2_window_name = 'window'
-        cv2.namedWindow(cv2_window_name, cv2.WINDOW_NORMAL)
         for s in range(10):
             env.reset(state)
             for i in range(step):
@@ -45,7 +43,7 @@ if __name__ == "__main__":
 
     @hydra.main(version_base=None, config_path="../conf", config_name="config.yaml")
     def main(config: DictConfig):
-        demo = DemoRobotMove()
+        demo = Demo_with_policy()
         demo.run(config)
 
     main()
