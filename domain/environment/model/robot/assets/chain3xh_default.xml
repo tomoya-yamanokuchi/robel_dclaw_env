@@ -12,6 +12,9 @@
         <geom name="FF10_metal_clamping"        mesh="metal_clamping"                       euler="0 0 1.57"    material="FF10_metal_clamping_mat"/>
         <geom name="FF10_metal_clamping_small"  mesh="metal_clamping_small" pos="0 0 0.055" euler="3.14 0 0"    material="FF10_metal_clamping_small_mat"/>
         <geom name="FF10_xh28"                  mesh="xh28"                 pos="0 0 0.068" euler="1.57 1.57 0" material="FF10_xh28_mat"/>
+        <!-- <geom mesh="metal_clamping"                       euler="0 0 1.57"    material="FF10_metal_clamping_mat"/>
+        <geom mesh="metal_clamping_small" pos="0 0 0.055" euler="3.14 0 0"    material="FF10_metal_clamping_small_mat"/>
+        <geom mesh="xh28"                 pos="0 0 0.068" euler="1.57 1.57 0" material="FF10_xh28_mat"/> -->
         <geom class="phy_metal" type="box" pos="0 0 0.056" size="0.0175 0.015 0.024" mass=".093"     />
         <geom class="phy_metal" type="box" pos="0.0 0 0.026" size="0.0125 0.0214 0.003" mass=".003"  />
         <geom class="phy_metal" type="box" pos="0 0.02 0.013" size="0.011 0.0012 0.016" mass=".002"  />
@@ -31,12 +34,11 @@
           <body name="FFL12" pos="0 0 0.068">
             <geom name="FFL12_metal_clamping" mesh="metal_clamping"                 material="FFL12_metal_clamping_mat"/>
             <geom name="FFL12_plastic_finger" mesh="plastic_finger" pos="0 0 0.046" material="FFL12_plastic_finger_mat"/>
-            <geom     class="phy_metal"   type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003" />
-            <geom     class="phy_metal"   type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002" />
-            <geom     class="phy_metal"   type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
-            <geom name="phy_tip"      class="phy_plastic" type="capsule" pos="0 0 0.053" size="0.011 0.02" mass=".018"/>
-            <site name="phy_tip_site"                     type="capsule" pos="0 0 0.053" size="0.011 0.02" rgba="0.0 1.0 0 .3"/>
-            <geom     class="phy_plastic" type="box" pos="0 0 0.03" size="0.0245 0.014 0.003" mass=".007"   />
+            <geom class="phy_metal" type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003" />
+            <geom class="phy_metal" type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002" />
+            <geom class="phy_metal" type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
+            <geom class="phy_plastic" type="capsule" pos="0 0 0.053" size="0.011 0.02" mass=".018"      />
+            <geom class="phy_plastic" type="box" pos="0 0 0.03" size="0.0245 0.014 0.003" mass=".007"   />
             <joint name="FFJ12" type="hinge" axis="1 0 0" range="-1.57 1.57"/>
             <!-- <site name="FFtip" type="sphere" pos="0 0 .076" size="0.01" rgba="1 .3 .3 1"/> -->
           </body>
@@ -51,6 +53,9 @@
         <geom name="MF20_metal_clamping"        mesh="metal_clamping"                       euler="0 0 1.57"    material="MF20_metal_clamping_mat"/>
         <geom name="MF20_metal_clamping_small"  mesh="metal_clamping_small" pos="0 0 0.055" euler="3.14 0 0"    material="MF20_metal_clamping_small_mat"/>
         <geom name="MF20_xh28"                  mesh="xh28"                 pos="0 0 0.068" euler="1.57 1.57 0" material="MF20_xh28_mat"/>
+        <!-- <geom mesh="metal_clamping"                       euler="0 0 1.57"    material="MF20_metal_clamping_mat"/>
+        <geom mesh="metal_clamping_small" pos="0 0 0.055" euler="3.14 0 0"    material="MF20_metal_clamping_small_mat"/>
+        <geom mesh="xh28"                 pos="0 0 0.068" euler="1.57 1.57 0" material="MF20_xh28_mat"/> -->
         <geom class="phy_metal" type="box" pos="0 0 0.056" size="0.0175 0.015 0.024" mass=".093"     />
         <geom class="phy_metal" type="box" pos="0.0 0 0.026" size="0.0125 0.0214 0.003" mass=".003"  />
         <geom class="phy_metal" type="box" pos="0 0.02 0.013" size="0.011 0.0012 0.016" mass=".002"  />
@@ -89,11 +94,15 @@
         <geom name="TH30_metal_clamping"        mesh="metal_clamping"                       euler="0 0 1.57"    material="TH30_metal_clamping_mat"/>
         <geom name="TH30_metal_clamping_small"  mesh="metal_clamping_small" pos="0 0 0.055" euler="3.14 0 0"    material="TH30_metal_clamping_small_mat"/>
         <geom name="TH30_xh28"                  mesh="xh28"                 pos="0 0 0.068" euler="1.57 1.57 0" material="TH30_xh28_mat"/>
+        <!-- <geom mesh="metal_clamping"                       euler="0 0 1.57"    material="TH30_metal_clamping_mat"/>
+        <geom mesh="metal_clamping_small" pos="0 0 0.055" euler="3.14 0 0"    material="TH30_metal_clamping_small_mat"/>
+        <geom mesh="xh28"                 pos="0 0 0.068" euler="1.57 1.57 0" material="TH30_xh28_mat"/> -->
         <geom class="phy_metal" type="box" pos="0 0 0.056" size="0.0175 0.015 0.024" mass=".093"     />
         <geom class="phy_metal" type="box" pos="0.0 0 0.026" size="0.0125 0.0214 0.003" mass=".003"  />
         <geom class="phy_metal" type="box" pos="0 0.02 0.013" size="0.011 0.0012 0.016" mass=".002"  />
         <geom class="phy_metal" type="box" pos="0 -0.02 0.013" size="0.011 0.0012 0.016" mass=".002" />
         <geom class="phy_metal" type="box" pos="0 0 0.033" size="0.019 0.014 0.006" mass=".005"      />
+        <!-- <joint name="THJ30" type="hinge" axis="0 1 0" range="-2 2"/> -->
         <joint name="THJ30" type="hinge" axis="0 1 0" range="-1.57 1.57"/>
         <body name="THL31" pos="0 0 0.0675">
           <geom name="THL31_metal_clamping_small" mesh="metal_clamping_small" pos="0 0 0.055"   euler="3.14 0 0"    material="THL31_metal_clamping_small_mat"/>

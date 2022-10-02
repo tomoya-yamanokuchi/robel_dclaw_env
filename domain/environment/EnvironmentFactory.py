@@ -1,4 +1,5 @@
 from .simulation.DClawSimulationEnvironment import DClawSimulationEnvironment
+# from .simulation.DClawSimulationEnvironmentOptoForce import DClawSimulationEnvironmentOptoForce
 from .real.DClawRealEnvironment import DClawRealEnvironment
 
 '''
@@ -10,7 +11,8 @@ class EnvironmentFactory:
     def create(self, env_name: str):
         assert type(env_name) == str
 
-        if   env_name == "sim"  : return DClawSimulationEnvironment
-        elif env_name == "real" : return DClawRealEnvironment
-        else                    : raise NotImplementedError()
+        if   env_name == "sim"           : return DClawSimulationEnvironment
+        # elif env_name == "sim_with_force": return DClawSimulationEnvironmentOptoForce
+        elif env_name == "real"          : return DClawRealEnvironment
+        else                             : raise NotImplementedError()
 

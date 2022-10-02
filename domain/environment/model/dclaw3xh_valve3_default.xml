@@ -25,9 +25,9 @@
       <include file="/valve/assets/valve3_default.xml"/>
     </body>
 
-    <body name="vis_contact_body" pos="0 0 0">
+    <!-- <body name="vis_contact_body" pos="0 0 0">
       <site name="vis_contact_site" type="sphere" size=".008" pos="0 0 0" rgba="1 0 0 1" euler="0 1.57 0"/>
-    </body>
+    </body> -->
 
   </worldbody>
 </mujoco>

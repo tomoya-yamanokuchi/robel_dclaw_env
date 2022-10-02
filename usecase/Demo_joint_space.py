@@ -9,17 +9,17 @@ from domain.environment.DClawState import DClawState as EnvState
 ・シミュレーションの可視化にMujocoのビューワを使う場合のループ処理のサンプルです
 '''
 
-class DemoRobotMove_real_robot:
+class Demo_joint_space:
     def run(self, config):
         env = EnvironmentFactory().create(env_name=config.env.env_name)
         env = env(config.env)
-
         state = EnvState(
-            robot_position  = np.array(config.env.robot_position_init),
-            robot_velocity  = np.array(config.env.robot_velocity_init),
-            object_position = np.array(config.env.object_position_init),
-            object_velocity = np.array(config.env.object_velocity_init),
-            force           = np.array(config.env.force_init),
+            robot_position        = np.array(config.env.robot_position_init),
+            robot_velocity        = np.array(config.env.robot_velocity_init),
+            object_position       = np.array(config.env.object_position_init),
+            object_velocity       = np.array(config.env.object_velocity_init),
+            end_effector_position = None,
+            task_space_positioin  = None,
         )
 
         step       = 100
@@ -32,13 +32,17 @@ class DemoRobotMove_real_robot:
 
         for s in range(1):
             env.reset(state)
-            # env.canonicalize_texture() # canonicalテクスチャを設定
+            env.canonicalize_texture() # canonicalテクスチャを設定
             # env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
-                img   = env.render()
+                # img   = env.render()
                 state = env.get_state()
-                print(state)
-                env.set_ctrl(ctrl[i])
+
+                # print(state.end_effector_position)
+                # print(np.take(state.end_effector_position, [0, 3, 6]))
+                # print(state.end_effector_position.shape)
+
+                env.set_ctrl_joint(ctrl[i])
                 env.view()
                 env.step()
 
@@ -49,7 +53,7 @@ if __name__ == "__main__":
 
     @hydra.main(version_base=None, config_path="../conf", config_name="config.yaml")
     def main(config: DictConfig):
-        demo = DemoRobotMove_real_robot()
+        demo = Demo_joint_space()
         demo.run(config)
 
     main()

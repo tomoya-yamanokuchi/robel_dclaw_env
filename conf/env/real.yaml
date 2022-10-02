@@ -2,11 +2,12 @@ env_name              : "real"
 
 # --- ros ---
 node_name             : "dclaw_env"
-sleep_time_sec        : 0.2
+sleep_time_sec        : 0.3
 
 # --- initial state ----
-robot_position_init  : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
-robot_velocity_init  : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
-object_position_init : [0.0]
-object_velocity_init : [0.0]
-force_init           : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+task_space_position_init: [0.14, 0.14, 0.14]
+robot_position_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+robot_velocity_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+object_position_init    : [0.0]
+object_velocity_init    : [0.0]
+force_init              : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]

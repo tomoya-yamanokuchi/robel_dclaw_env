@@ -1,8 +1,7 @@
 import rospy
 import numpy as np
-import domain.environment.real.robot.angle_interface as ai
 from std_msgs.msg import Int32, Int32MultiArray
-
+from custom_service import angle_interface as ai
 
 
 class RobotPublisher(object):
@@ -18,12 +17,13 @@ class RobotPublisher(object):
 
 
     def publish_initialize_ctrl(self, ctrl):
+        print(ctrl)
         joint_position  = ai.radian2resolution(ctrl[:9])
         position_p_gain = np.array(ctrl[9:], dtype=int)
         init_ctrl       = np.hstack([joint_position, position_p_gain])
         self.msg_initialize_ctrl.data = tuple(init_ctrl)
+        print(self.msg_initialize_ctrl.data)
         self.pub_initialize_ctrl.publish(self.msg_initialize_ctrl)
-        # self.publish_joint_ctrl(ctrl[:9])
 
 
     def publish_joint_ctrl(self, ctrl):

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <mujoco model="dclaw3xh_valve3_default">
   <include file="/scenes/scene_default.xml"/>
-  <include file="/robot/assets/dependencies_3xh_position.xml"/>
+  <include file="/robot/assets/dependencies_3xh_position_with_force.xml"/>
   <include file="/valve/assets/dependencies_valve3.xml"/>
 
   <size njmax="8000" nconmax="4000"/>

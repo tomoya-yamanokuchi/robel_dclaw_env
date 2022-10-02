@@ -1,7 +1,7 @@
 import numpy as np
 import rospy
 from std_msgs.msg import Int32, Int32MultiArray, Bool
-import domain.environment.real.robot.angle_interface as ai
+from custom_service import angle_interface as ai
 
 
 

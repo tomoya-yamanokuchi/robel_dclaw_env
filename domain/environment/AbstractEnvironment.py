@@ -43,11 +43,15 @@ class AbstractEnvironment(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def set_ctrl(self):
+    def set_ctrl_joint(self):
         pass
         """
         - set_ctrl
         """
+
+    @abstractmethod
+    def set_ctrl_task_diff(self):
+        pass
 
 
     @abstractmethod
