@@ -18,18 +18,17 @@ class Demo_task_space:
             task_space_positioin  = np.array(config.env.task_space_position_init),
         )
 
-        step           = 30
+        step           = 200
         dim_task_space = 3  # 1本の指につき1次元の拘束をするので合計3次元
         ctrl_task_diff = np.zeros([step, dim_task_space]) + 0.02 # 範囲:[0, 1]
 
-        for s in range(2):
+        for s in range(5):
             env.reset(init_state)
-            import ipdb; ipdb.set_trace()
             print("\n*** reset ***\n")
-            # env.canonicalize_texture() # canonicalテクスチャを設定
+            env.canonicalize_texture() # canonicalテクスチャを設定
             # env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
-                img   = env.render()
+                # img   = env.render()
                 state = env.get_state()
 
                 print("task_space_position (claw1): {: .2f}".format(state.task_space_positioin[0]))
@@ -37,7 +36,6 @@ class Demo_task_space:
                 env.set_ctrl_task_diff(ctrl_task_diff[i])
                 env.view()
                 env.step()
-                import ipdb; ipdb.set_trace()
 
 
 if __name__ == "__main__":
