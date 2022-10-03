@@ -22,6 +22,34 @@ def scatter_3d(x):
     plt.show()
 
 
+def scatter_3d_color_map(x, cval, cmap='bwr', cmap_label=""):
+    import matplotlib
+    matplotlib.rcParams['pdf.fonttype'] = 42
+    matplotlib.rcParams['ps.fonttype'] = 42
+    import matplotlib.pyplot as plt
+    from matplotlib import ticker, cm
+
+    assert len(x.shape) == 2
+    assert x.shape[-1] == 3
+
+    fig  = plt.figure()
+    ax   = fig.add_subplot(projection='3d')
+    scat = ax.scatter(x[:, 0], x[:, 1], x[:, 2],
+        marker     = 'o',
+        c          = cval,
+        cmap       = cmap,
+        linewidths = 0.5,
+        edgecolors = "gray"
+    )
+    cb = fig.colorbar(scat)
+    cb.set_label(cmap_label, size=16)
+    # fig.tight_layout() # これが無いと表示が少し崩れる
+
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+    plt.show()
+
 
 def scatter_3d_animation(x, num_history=100, interval=100):
     assert len(x.shape) == 2

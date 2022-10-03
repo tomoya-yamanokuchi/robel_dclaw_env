@@ -1,3 +1,7 @@
 defaults:
   - env: sim
   # - env: real
+
+run:
+  sequence: 5
+  step    : 100
