@@ -36,6 +36,7 @@ class Demo_task_space:
                 env.set_ctrl_task_diff(ctrl_task_diff[i])
                 env.view()
                 env.step()
+                import ipdb; ipdb.set_trace()
 
 
 if __name__ == "__main__":
