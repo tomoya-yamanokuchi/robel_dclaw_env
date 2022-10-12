@@ -46,16 +46,13 @@ class DClawRealEnvironment(AbstractEnvironment):
             print("-----")
             end_effector_position = self.task_space.task2end(DClawState_.task_space_positioin)
             joint_position        = self.inverse_kinematics.calc(end_effector_position)
-            import ipdb; ipdb.set_trace()
             ctrl_init_positions   = joint_position.squeeze()
 
         claw_Position_P_Gain = np.array([30, 30, 30], dtype=int)
         init_command         = np.hstack([ctrl_init_positions, claw_Position_P_Gain])
         self.robot_node.publisher.publish_initialize_ctrl(init_command)
-        # self.step()
         while not self.robot_node.subscriber.is_initialize_finished:
             time.sleep(0.1)
-        time.sleep(5)
         self.step()
 
 
@@ -97,6 +94,14 @@ class DClawRealEnvironment(AbstractEnvironment):
     def render(self):
         self.image = self.camera_node.image
         return copy.deepcopy(self.image)
+
+
+    def randomize_texture(self):
+        pass
+
+
+    def canonicalize_texture(self):
+        pass
 
 
     def view(self):

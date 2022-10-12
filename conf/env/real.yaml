@@ -5,7 +5,7 @@ node_name             : "dclaw_env"
 sleep_time_sec        : 0.3
 
 # --- initial state ----
-task_space_position_init: [0.14, 0.14, 0.14]
+task_space_position_init: [0.77, 0.77, 0.77]
 robot_position_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
 robot_velocity_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
 object_position_init    : [0.0]
