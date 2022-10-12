@@ -3,6 +3,7 @@ import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from domain.environment.DClawState import DClawState as EnvState
+from domain.video_record.bk_recorder import WebCamControl
 
 
 class Demo_task_space:
@@ -21,9 +22,13 @@ class Demo_task_space:
         step           = 100
         dim_task_space = 3  # 1本の指につき1次元の拘束をするので合計3次元
         ctrl_task_diff = np.zeros([step, dim_task_space]) + 0.02 # 範囲:[0, 1]
-        for s in range(5):
+
+        webcam = WebCamControl(2)
+
+
+        for s in range(1):
             env.reset(init_state)
-            import ipdb; ipdb.set_trace()
+            webcam.rec_start(fname='/home/tomoya-y/workspace/test_video_robel_task_space_{}.mp4'.format(s))
             print("\n*** reset ***\n")
             env.canonicalize_texture() # canonicalテクスチャを設定
             # env.randomize_texture()    # randomテクスチャを設定
@@ -36,6 +41,9 @@ class Demo_task_space:
                 env.set_ctrl_task_diff(ctrl_task_diff[i])
                 env.view()
                 env.step()
+
+            webcam.rec_stop()
+            webcam.release()
 
 
 if __name__ == "__main__":

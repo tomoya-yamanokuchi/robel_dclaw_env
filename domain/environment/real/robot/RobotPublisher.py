@@ -24,6 +24,7 @@ class RobotPublisher(object):
         self.msg_initialize_ctrl.data = tuple(init_ctrl)
         print(self.msg_initialize_ctrl.data)
         self.pub_initialize_ctrl.publish(self.msg_initialize_ctrl)
+        self.publish_joint_ctrl(ctrl[:9]) # <--必要：無いと初期化前に残っている制御入力に影響される
 
 
     def publish_joint_ctrl(self, ctrl):
