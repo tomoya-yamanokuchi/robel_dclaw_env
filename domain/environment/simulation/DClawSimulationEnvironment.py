@@ -1,5 +1,7 @@
+from distutils.log import info
 from ntpath import join
 import sys
+import pprint
 import pathlib
 
 p = pathlib.Path()
@@ -16,58 +18,66 @@ from .my_mujoco.modder import myTextureModder as TextureModder
 from numpy.lib.function_base import append
 from transforms3d.euler import euler2quat, quat2euler
 
+from custom_service.ImageObject import ImageObject
+from custom_service import dictionary_operation as dictOps
+
 # 同階層ディレクトリからのインポート
-from .DclawEnvironmentRGBFactory import DclawEnvironmentRGBFactory
+from .Texture import Texture
+from .TextureCollection import TextureCollection
+from .CanonicalRGB import CanonicalRGB
 
 # 上位ディレクトリからのインポート
 p_file = pathlib.Path(__file__)
 path_environment = "/".join(str(p_file).split("/")[:-2])
 sys.path.append(path_environment)
 from ..DClawState import DClawState
+from ..DClawCtrl import DClawCtrl
+from ..ImageObs import ImageObs
 from ..AbstractEnvironment import AbstractEnvironment
-from ...ImageObject import ImageObject
-from ... import dictionary_operation as dictOps
 from ..kinematics.ForwardKinematics import ForwardKinematics
 from ..kinematics.InverseKinematics import InverseKinematics
 from ..task_space.TaskSpace import TaskSpace
 
 
-
 class DClawSimulationEnvironment(AbstractEnvironment):
     def __init__(self, config):
-        self.width_capture               = config.width_capture
-        self.height_capture              = config.height_capture
-        self.camera_name_list            = config.camera_name_list
-        self.inplicit_step               = config.inplicit_step
-        self.env_name                    = config.env_name
-        self.env_color                   = config.env_color
-        self.claw_jnt_range_lb           = config.claw_jnt_range_lb
-        self.claw_jnt_range_ub           = config.claw_jnt_range_ub
-        self.valve_jnt_range_lb          = config.object_jnt_range_lb
-        self.valve_jnt_range_ub          = config.object_jnt_range_ub
-        self.is_Offscreen                = config.is_Offscreen
-        self.is_target_visible           = config.is_target_visible
-        self.model                       = self.load_model(config.model_file)
-        self.light_index_list            = [i for i in config.light.values()]
-        self.randomize_texture_mode      = config.randomize_texture_mode
-        self.is_noise_randomize_per_step = config.is_noise_randomize_per_step
-        self.dynamics                    = config.dynamics
-        self.camera                      = config.camera
-        self.light                       = config.light
+        self.width_capture                 = config.width_capture
+        self.height_capture                = config.height_capture
+        self.camera_name_list              = config.camera_name_list
+        self.inplicit_step                 = config.inplicit_step
+        self.env_name                      = config.env_name
+        self.env_color                     = config.env_color
+        self.claw_jnt_range_lb             = config.claw_jnt_range_lb
+        self.claw_jnt_range_ub             = config.claw_jnt_range_ub
+        self.valve_jnt_range_lb            = config.object_jnt_range_lb
+        self.valve_jnt_range_ub            = config.object_jnt_range_ub
+        self.is_Offscreen                  = config.is_Offscreen
+        self.is_target_visible             = config.is_target_visible
+        self.model                         = self.load_model(config.model_file)
+        self.light_index_list              = [i for i in config.light.values()]
+        self.randomize_texture_mode        = config.randomize_texture_mode
+        self.is_noise_randomize_per_step   = config.is_noise_randomize_per_step
+        self.task_relevant_geom_group_name = config.task_relevant_geom_group_name
+        self.dynamics                      = config.dynamics
+        self.camera                        = config.camera
+        self.light                         = config.light
 
-        self._valve_jnt_id               = self.model.joint_name2id('valve_OBJRx')
-        self._target_bid                 = self.model.body_name2id('target')
-        self._target_sid                 = self.model.site_name2id('tmark')
+        self._valve_jnt_id                 = self.model.joint_name2id('valve_OBJRx')
+        self._target_bid                   = self.model.body_name2id('target')
+        self._target_sid                   = self.model.site_name2id('tmark')
 
-        self._target_position            = None
-        self.sim                         = None
-        self.viewer                      = None
-        self.texture_modder              = None
-        self.camera_modder               = None
+        self._target_position              = None
+        self.sim                           = None
+        self.viewer                        = None
+        self.texture_modder                = None
+        self.camera_modder                 = None
+        self.is_texture_randomized         = False
 
-        self.forward_kinematics          = ForwardKinematics()
-        self.inverse_kinematics          = InverseKinematics()
-        self.task_space                  = TaskSpace()
+        self.forward_kinematics            = ForwardKinematics()
+        self.inverse_kinematics            = InverseKinematics()
+        self.task_space                    = TaskSpace()
+        self.canonical_rgb                 = CanonicalRGB()
+
 
 
 
@@ -80,19 +90,45 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         return mujoco_py.load_model_from_path(xml_path)
 
 
-    def _set_geom_names_randomize_target(self):
-        self.visible_geom_group = [0, 1, 2] # XMLファイルと整合性が取れるようにする
-        self.geom_names_randomize_target = []
+    def __createTexutureCollection(self):
+        # ------ 可視化に関係しているgeomだけを抽出する ------
+        self.visible_geom_group = [0, 1, 2] # XMLファイル内でのgroup番号と整合性が取れるように設定する
+        self.visible_geom = []
         for name in self.sim.model.geom_names:
             id    = self.sim.model.geom_name2id(name)
             group = self.sim.model.geom_group[id]
             if group in self.visible_geom_group:
-                self.geom_names_randomize_target.append(name)
+                self.visible_geom.append(name)
+
+        # import ipdb; ipdb.set_trace()
+        # ------ バルブの色を３つ揃えるための工夫 ------
+        task_relevant_geoms = [x for x in self.visible_geom if self.task_relevant_geom_group_name in x] # タスク関連のgeomを抽出
+
+        [self.visible_geom.remove(name) for name in task_relevant_geoms] # 抽出したgeomをもとのlistから削除
+
+        # タスク関連のgeomとデータ形式を合わせるためもとのlist[str]の各要素をlistで包む
+        for i in range(len(self.visible_geom)):
+            self.visible_geom[i] = [self.visible_geom[i]]
+
+        # タスク関連geomをその他のgeomと結合させる
+        self.visible_geom.append(task_relevant_geoms)
+
+        # テクスチャのコレクションを作成
+        self.texture_collection = TextureCollection()
+        for id, geom_names in enumerate(self.visible_geom):
+            for name in geom_names:
+                texture = Texture(name=name, id=id, info=dict())
+                self.texture_collection.add(texture)
+        # import ipdb; ipdb.set_trace()
+
 
 
     def view(self):
         if self.is_Offscreen:
-            cv2.imshow(self.cv2_window_name, np.concatenate([img.channel_last for img in self.img_dict.values()], axis=1))
+            img_ran  = self.img_dict["random_nonfix"].channel_last
+            img_can  = self.img_dict["canonical"].channel_last
+            img_diff = img_ran - img_can
+            cv2.imshow(self.cv2_window_name, np.concatenate([img_ran, img_can, img_diff], axis=1))
             cv2.waitKey(50)
         else:
             self.viewer.render()
@@ -103,13 +139,11 @@ class DClawSimulationEnvironment(AbstractEnvironment):
 
 
     def _reverse_channel(self, img):
-        # for convert Color BGR2RGB
+        # for convert Color BGR-to-RGB
         return img[:,:,::-1].copy()
 
 
     def _render_and_convert_color(self, camera_name):
-        # if self._target_position is not None:
-            # self.sim.model.body_quat[self._target_bid] = euler2quat(0, 0, float(self._target_position))
         img = self.sim.render(width=self.width_capture, height=self.height_capture, camera_name=camera_name, depth=False)
         img = self._flip(img)
         img = self._reverse_channel(img)
@@ -121,17 +155,25 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         for i in use_light_index_list:
             self.model.light_active[i] = 1
 
+
     def _set_texture_rand_all_with_return_info(self):
         self.texture = {}
-        for name in self.geom_names_randomize_target:
-            self.texture[name] = self.texture_modder.my_rand_all(name)
+        max_id       = max(self.texture_collection.get_id())
+        #  系列ごとのランダム化に使用するtextureを作成
+        for id in range(max_id+1):
+            self.texture[str(id)] = self.texture_modder.get_rand_texture()
+        # texture_collectionに作成したtextureの情報を反映させる
+        for id in range(max_id+1):
+            self.texture_collection.assign_info_with_id(id=id, info=self.texture[str(id)])
+
 
     def _set_texture_static_all(self):
-        for geom_name, texture in self.texture.items():
-            self.texture_modder.my_set_texture(geom_name, texture, is_noise_randomize=self.is_noise_randomize_per_step)
+        for texture in self.texture_collection.texture:
+            self.texture_modder.my_set_texture(texture.name, texture.info, is_noise_randomize=self.is_noise_randomize_per_step)
+
 
     def _set_texture_rand_all(self):
-        for name in self.geom_names_randomize_target:
+        for name in self.visible_geom:
             self.texture_modder.rand_all(name)
 
 
@@ -139,28 +181,45 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         if self.randomize_texture_mode == "loaded_static":
            self._set_texture_static_all()
 
-        elif self.randomize_texture_mode == "per_reset":
+        elif (self.randomize_texture_mode == "per_reset") or (self.randomize_texture_mode == "static"):
             if self.is_texture_randomized is False:
-                # print(self.is_texture_randomized)
                 self._set_texture_rand_all_with_return_info()
                 self.is_texture_randomized = True
             self._set_texture_static_all()
 
         elif self.randomize_texture_mode == "per_step":
-            # print("ddddd")
             self._set_texture_rand_all()
             self.is_texture_randomized = True
 
 
+    def task_relevant_randomize_texture(self):
+        max_id = max(self.texture_collection.get_id()) # 多分バルブ環境でしか動かない（ハードコーディング部分）
+        for texture in self.texture_collection.get_textures_from_id(id=max_id):
+            self.texture_modder.my_set_texture(texture.name, texture.info, is_noise_randomize=False)
+
+
     def canonicalize_texture(self):
-        for name in self.geom_names_randomize_target:
-            # print("name : {}, rgb {}".format(name, self.rgb[name]))
-            self.texture_modder.set_rgb(name, self.rgb[name])
+        for name, rgb in self.canonical_rgb.rgb.items():
+            self.texture_modder.set_rgb(name, rgb)
+
+
+    def set_rgb(self):
+        for texture in self.texture_collection.texture:
+            self.texture_modder.set_rgb(texture.name, texture.info["rgb"])
 
 
     def _render(self, camera_name: str="canonical"):
-        if   "canonical" in camera_name: shadowsize = 0;    self.canonicalize_texture()
-        elif    "random" in camera_name: shadowsize = 1024; self.randomize_texture()
+        if   "canonical" in camera_name:
+            shadowsize = 0
+            self.canonicalize_texture()
+            self.task_relevant_randomize_texture() # あってもなくても動く
+            self.sim.model.light_ambient[:] = 0 # 試す
+
+        elif    "random" in camera_name:
+            shadowsize = 0
+            self.randomize_texture()
+            self.sim.model.light_ambient[:] = 0 # 試す
+
         elif  "overview" in camera_name: shadowsize = 0;    self.randomize_texture()
         else                           : raise NotImplementedError()
         self.set_light_castshadow(shadowsize=shadowsize)
@@ -172,6 +231,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self.model.vis.quality.shadowsize = shadowsize
         is_castshadow = 0 if shadowsize==0 else 1
         for name in self.model.light_names:
+            # import ipdb; ipdb.set_trace()
             self.light_modder.set_castshadow(name, is_castshadow)
 
 
@@ -185,7 +245,11 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             for camera_name in camera_name_list:
                 img_dict[camera_name] = self._render(camera_name)
         self.img_dict = img_dict
-        return copy.deepcopy(self.img_dict)
+        return ImageObs(
+            canonical     = img_dict["canonical"].channel_last,
+            random_nonfix = img_dict["random_nonfix"].channel_last,
+            mode          ="step"
+        )
 
 
     def check_camera_pos(self):
@@ -371,9 +435,8 @@ class DClawSimulationEnvironment(AbstractEnvironment):
 
     def reset(self, DClawState_: DClawState):
         assert isinstance(DClawState_, DClawState)
-        self.is_texture_randomized = False
-        if self.sim is None:
-            self._create_mujoco_related_instance()
+        if self.randomize_texture_mode != "static": self.is_texture_randomized = False
+        if self.sim is None: self._create_mujoco_related_instance()
         self.sim.reset()
         self.set_jnt_range()
         self.set_ctrl_range()
@@ -403,15 +466,11 @@ class DClawSimulationEnvironment(AbstractEnvironment):
 
         # self.viewer.vopt.flags[mujoco_py.const.VIS_CONTACTFORCE] = 1 # force sensorではないbuild-inのcontactを可視化
         # -------------------
-        self.texture_modder  = TextureModder(self.sim);                                         print(" init --> texture_modder")
-        self.camera_modder   = CameraModder(self.sim);                                          print(" init --> camera_modder")
-        self.light_modder    = LightModder(self.sim);                                           print(" init --> light_modder")
-        self.default_cam_pos = self.camera_modder.get_pos("canonical");                         print(" init --> default_cam_pos")
-        self._set_geom_names_randomize_target();                                                print(" init --> _set_geom_names_randomize_target()")
-        factory              = DclawEnvironmentRGBFactory(self.geom_names_randomize_target);    print(" init --> factory")
-        self.rgb             = factory.create(self.env_color);                                  print(" init --> self.rgb")
-
-
+        self.texture_modder  = TextureModder(self.sim)                       ; print(" init --> texture_modder")
+        self.camera_modder   = CameraModder(self.sim)                        ; print(" init --> camera_modder")
+        self.light_modder    = LightModder(self.sim)                         ; print(" init --> light_modder")
+        self.default_cam_pos = self.camera_modder.get_pos("canonical")       ; print(" init --> default_cam_pos")
+        self.__createTexutureCollection()                                    ; print(" init --> _set_geom_names_randomize_target()")
 
 
     def set_target_position(self, target_position):
@@ -441,15 +500,23 @@ class DClawSimulationEnvironment(AbstractEnvironment):
     def set_ctrl_task_diff(self, ctrl_task_diff):
         assert ctrl_task_diff.shape == (3,), '[expected: {0}, input: {1}]'.format((3,), ctrl_task_diff.shape)
         # get current task_space_position
-        robot_position         = self.sim.data.qpos[:9]
-        end_effector_position  = self.forward_kinematics.calc(robot_position).squeeze()
-        task_space_positioin   = self.task_space.end2task(end_effector_position).squeeze()
+        robot_position         = self.sim.data.qpos[:9]                                     # 現在の関節角度を取得
+        end_effector_position  = self.forward_kinematics.calc(robot_position).squeeze()     # エンドエフェクタ座標を計算
+        task_space_positioin   = self.task_space.end2task(end_effector_position).squeeze()  # エンドエフェクタ座標をタスクスペースの値に変換
         # create new absolute task_space_position
-        ctrl_task              = task_space_positioin + ctrl_task_diff
+        ctrl_task              = task_space_positioin + ctrl_task_diff                      # 現在のタスクスペースの値に差分を足して新たな目標値を計算
         # set new ctrl
-        ctrl_end_effector      = self.task_space.task2end(ctrl_task)
-        ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector)
-        self.sim.data.ctrl[:9] = ctrl_joint.squeeze()
+        ctrl_end_effector      = self.task_space.task2end(ctrl_task)                        # 新たな目標値に対応するエンドエフェクタ座標を計算
+        ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector)            # エンドエフェクタ座標からインバースキネマティクスで関節角度を計算
+        self.sim.data.ctrl[:9] = ctrl_joint.squeeze()                                       # 制御入力としてsimulationで設定
+
+        dclawCtrl = DClawCtrl(
+            task_space_abs_position  = ctrl_task.squeeze(),
+            task_space_diff_position = ctrl_task_diff.squeeze(),
+            end_effector_position    = ctrl_end_effector.squeeze(),
+            joint_space_position     = ctrl_joint.squeeze(),
+        )
+        return dclawCtrl
 
 
     def set_jnt_range(self):

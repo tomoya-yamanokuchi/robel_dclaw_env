@@ -1,7 +1,7 @@
 from torch import nn
 from .calc_size import calc_size
-from domain.convert_data import to_tensor
-from ..ImageObject import ImageObject
+from custom_service.convert_data import to_tensor
+from custom_service.ImageObject import ImageObject
 
 '''
 ・サンプルです

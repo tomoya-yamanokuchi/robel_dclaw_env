@@ -13,6 +13,6 @@ class EnvironmentFactory:
 
         if   env_name == "sim"           : return DClawSimulationEnvironment
         # elif env_name == "sim_with_force": return DClawSimulationEnvironmentOptoForce
-        elif env_name == "real"          : return DClawRealEnvironment
+        # elif env_name == "real"          : return DClawRealEnvironment
         else                             : raise NotImplementedError()
 
