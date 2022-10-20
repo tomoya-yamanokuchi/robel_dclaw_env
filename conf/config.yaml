@@ -3,5 +3,5 @@ defaults:
   # - env: real
 
 run:
-  sequence: 5
-  step    : 25
+  sequence: 30
+  step    : 10

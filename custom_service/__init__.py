@@ -4,5 +4,6 @@ from custom_service import visualization
 from custom_service import convert_data
 from custom_service import dictionary_operation
 from custom_service.ImageObject import ImageObject
+from custom_service.split_list import split_list
 
 __version__ = '0.1.0'

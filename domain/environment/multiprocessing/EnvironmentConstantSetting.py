@@ -15,6 +15,7 @@ class EnvironmentConstantSetting:
     env_subclass: AbstractEnvironment
     config      : OmegaConf
     init_state  : DClawState
+    dataset_name: str
 
     def __post_init__(self):
         # assert issubclass(self.config_env, OmegaConf)
