@@ -1,4 +1,5 @@
 import os
+from alembic import sys
 import psutil
 import shelve
 import pathlib
@@ -59,9 +60,12 @@ class SimulationDataRepository:
         # print(" open shelv as: " + flag)
         # print("=======================")
 
-        print(self.dataset_save_dir + '/' + filename)
+        print(" ----->>>>>> : ", self.dataset_save_dir + '/' + filename)
+
+        sys.exit()
 
         self.repository = shelve.open(self.dataset_save_dir + '/' + filename, flag=flag)
+
 
         # # メモリ使用量を取得 ----------------
         # mem = psutil.virtual_memory()
