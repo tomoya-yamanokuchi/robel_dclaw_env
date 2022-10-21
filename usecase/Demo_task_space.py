@@ -28,7 +28,7 @@ class Demo_task_space:
             env.canonicalize_texture() # canonicalテクスチャを設定
             # env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
-                img   = env.render()
+                # img   = env.render()
                 state = env.get_state()
 
                 print("task_space_position (claw1): {: .2f}".format(state.task_space_positioin[0]))

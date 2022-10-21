@@ -9,13 +9,12 @@ inplicit_step         : 200
 width_capture         : 64
 height_capture        : 64
 camera_name_list      : ["random_nonfix", "canonical"]
-is_Offscreen          : True
+is_Offscreen          : False
 is_target_visible     : False
 
 # --- randomize setting ---
 randomize_texture_mode       : "per_reset"
 is_noise_randomize_per_step  : True
-task_relevant_geom_group_name: ""
 
 # --- joint range limit (radian) ---
 claw_jnt_range_lb   : [-0.3491, -0.5236, -1e-6,   -0.3491, -0.5236, -1e-6,   -0.3491, -0.5236, -1e-6]

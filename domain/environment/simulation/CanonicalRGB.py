@@ -35,6 +35,7 @@ class CanonicalRGB:
             "FFL12_metal_clamping"      : robot_rgb,
             "FFL12_plastic_finger"      : finger_rgb,
             # --> claw2
+            "MFbase_xh28"               : robot_rgb,
             "MF20_metal_clamping"       : robot_rgb,
             "MF20_metal_clamping_small" : robot_rgb,
             "MF20_xh28"                 : robot_rgb,

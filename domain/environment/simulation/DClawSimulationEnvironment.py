@@ -99,6 +99,9 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             if group in self.visible_geom_group:
                 self.visible_geom.append(name)
 
+        # pprint.pprint(self.visible_geom)
+        # import ipdb; ipdb.set_trace()
+
         # タスク関連のgeomとデータ形式を合わせるためもとのlist[str]の各要素をlistで包む
         for i in range(len(self.visible_geom)):
             self.visible_geom[i] = [self.visible_geom[i]]
