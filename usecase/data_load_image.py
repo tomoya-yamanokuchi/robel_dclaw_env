@@ -1,0 +1,32 @@
+import os, pprint
+from natsort import natsorted
+import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
+from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
+import cv2
+import numpy as np
+cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+
+
+repository = Repository(
+    dataset_dir  = "./dataset",
+    dataset_name = "dataset_2022102122524",
+)
+
+db_files = os.listdir(repository.dataset_save_dir)
+db_files = natsorted(db_files)
+pprint.pprint(db_files)
+
+for db in db_files:
+    # import ipdb; ipdb.set_trace()
+    db_name, suffix = db.split(".")
+    repository.open(filename=db_name)
+    img_can = repository.repository["image"].canonical
+    img_ran = repository.repository["image"].random_nonfix
+    step, width, height, channel = img_can.shape
+    for t in range(step):
+        print("() [{}] step: {}".format(db, t))
+        cv2.imshow('img', np.concatenate((img_ran[t], img_can[t]), axis=1))
+        cv2.waitKey(10)
+        # print(repository.repository["state"].robot_position)
+    # import ipdb; ipdb.set_trace()
+    repository.close()

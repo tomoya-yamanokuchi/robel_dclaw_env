@@ -1,14 +1,10 @@
 import os
 import time
-# from line_profiler.line_profiler import LineProfiler
 import numpy as np
 import multiprocessing
-
-from sqlalchemy import Unicode
 from .EnvironmentConstantSetting import EnvironmentConstantSetting
 from custom_service import split_list
-from .UnitProcess import UnitProcess
-from .UnitProcessCollection import UnitProcessCollection
+
 
 
 class EnvironmentMultiprocessing:
@@ -52,20 +48,20 @@ class EnvironmentMultiprocessing:
 
 
     def run_from_chunked_ctrl(self, function, constant_setting: EnvironmentConstantSetting, chunked_ctrl: list):
-        '''
-        メモリリークに対処できない
-        '''
         assert isinstance(constant_setting,  EnvironmentConstantSetting)
         assert type(chunked_ctrl) == list
         start_time  = time.time()
         max_process = min(len(chunked_ctrl), int(os.cpu_count()/3))
-        # import ipdb; ipdb.set_trace()
-        multiprocessing.set_start_method(method=self.method, force=self.force)
-        # 入出力のキューを初期化
-        queue_input     = multiprocessing.JoinableQueue()
-        queue_result    = multiprocessing.Queue()
+        self._print_info(max_process)
 
-        # プロセスを開始
+        # set_start_methodの順番が大事（Queueの初期化前でないと動かない？）
+        multiprocessing.set_start_method(method=self.method, force=self.force)
+
+        # <--- initialize queue ---->
+        queue_input  = multiprocessing.JoinableQueue()
+        queue_result = multiprocessing.Queue()
+
+        # <--- start multiprocessing ---->
         for i in range(max_process):
             process = multiprocessing.Process(
                 target = function,
@@ -73,83 +69,18 @@ class EnvironmentMultiprocessing:
             )
             process.start()
 
-        # キューに制御入力をputする
-        for ctrl_index, ctrl_chunked in enumerate(chunked_ctrl):
-            queue_input.put((ctrl_index, ctrl_chunked))
-        # 終了のためのキューをputする
-        for _i in range(max_process):
-            queue_input.put((None, None))
+        # <--- put control input into queue ---->
+        proc_unit_chunked_ctrl = np.array_split(chunked_ctrl, max_process)
+        for ctrl_index, unit_chunked_ctrl in enumerate(proc_unit_chunked_ctrl):
+            queue_input.put((ctrl_index, unit_chunked_ctrl))
 
-        queue_input.join() # 終了まで待つ
+        queue_input.join() # wait until finish
         result_list = self.get_result_list_from_queue(queue_result) # 結果をインデックスに基づいて順番どおりに取り出す
         queue_input.close()
         queue_result.close()
         end_time    = time.time()
         proc_time   = end_time - start_time
         return result_list, proc_time
-
-
-
-    def run_unit(self, function, constant_setting: EnvironmentConstantSetting, chunked_ctrl: list):
-        assert isinstance(constant_setting,  EnvironmentConstantSetting)
-        assert type(chunked_ctrl) == list
-        start_time  = time.time()
-        max_process = min(len(chunked_ctrl), int(os.cpu_count()/3))
-
-
-        queue_input  = multiprocessing.Queue()
-        queue_result = multiprocessing.Queue()
-
-        multiprocessing.set_start_method(method=self.method, force=self.force)
-
-        unit_process_collection = UnitProcessCollection()
-        for i in range(max_process):
-            unit_process_collection.add(UnitProcess(i, function, constant_setting))
-
-        for index, ctrl in enumerate(chunked_ctrl):
-            queue_input.put(ctrl)
-
-        import ipdb; ipdb.set_trace()
-
-        while not queue_input.empty():
-            print("queue_input.qsize() = {}".format(queue_input.qsize()))
-            time.sleep(0.5)
-
-            for unit_process in unit_process_collection.collection:
-                import ipdb; ipdb.set_trace()
-                if not unit_process.is_alive():
-                    print("not alive : id {}".format(unit_process.id))
-                    unit_process.start(ctrl)
-
-        unit_process_collection.join()
-
-
-        import ipdb; ipdb.set_trace()
-        queue_input.close()
-        queue_result.close()
-
-        end_time    = time.time()
-        proc_time   = end_time - start_time
-        return proc_time
-
-
-
-
-
-
-    def run_Pool_from_chunked_ctrl(self, function, constant_setting: EnvironmentConstantSetting, chunked_ctrl: list):
-        assert isinstance(constant_setting,  EnvironmentConstantSetting)
-        assert type(chunked_ctrl) == list
-        start_time  = time.time()
-        max_process = min(len(chunked_ctrl), int(os.cpu_count()/3))
-
-        with multiprocessing.Pool(processes=max_process) as pool:
-            sleeps = [pool.apply_async(function, (constant_setting, index, ctrl)) for index, ctrl in enumerate(chunked_ctrl)]
-            [f.get() for f in sleeps]
-
-        end_time    = time.time()
-        proc_time   = end_time - start_time
-        return proc_time
 
 
     def get_result_list_from_queue(self, queue):
@@ -171,9 +102,10 @@ class EnvironmentMultiprocessing:
         return return_result
 
 
-    def _print_info(self, chunked_num_per_queue, ctrl_num):
+    def _print_info(self, max_process):
         print("--------------------------------------------------------")
-        print("  chunked num_per_queue: {}".format(chunked_num_per_queue))
-        print("      chunked total_num: {}".format(sum(chunked_num_per_queue)))
-        print("     original total_num: {}".format(ctrl_num))
+        print("            max_process: {}".format(max_process))
+        # print("  chunked num_per_queue: {}".format(chunked_num_per_queue))
+        # print("      chunked total_num: {}".format(sum(chunked_num_per_queue)))
+        # print("     original total_num: {}".format(ctrl_num))
         print("--------------------------------------------------------")

@@ -60,9 +60,9 @@ class SimulationDataRepository:
         # print("=======================")
         self.repository = shelve.open(self.dataset_save_dir + '/' + filename, flag=flag)
 
-        # メモリ使用量を取得 ----------------
-        mem = psutil.virtual_memory()
-        np.save(self.dataset_save_dir + '/' + filename + "_mem", np.array(mem.percent))
+        # # メモリ使用量を取得 ----------------
+        # mem = psutil.virtual_memory()
+        # np.save(self.dataset_save_dir + '/' + filename + "_mem", np.array(mem.percent))
 
 
     def close(self):

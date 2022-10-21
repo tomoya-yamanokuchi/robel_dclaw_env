@@ -19,9 +19,9 @@ def rollout(constant_setting, queue_input, queue_result):
     マルチプロセッシングで実行する関数
     '''
     ctrl_index, chunked_ctrl_task_diff = queue_input.get() # キューからインデックスと制御入力を取り出す
-
+    num_chunked_ctrl = len(chunked_ctrl_task_diff)
     assert type(ctrl_index) == int
-    print("ctrl_index ----> ", ctrl_index)
+    # print("ctrl_index ----> ", ctrl_index)
 
     # 開始までの待ち時間をランダムに決定
     np.random.seed(ctrl_index)
@@ -39,8 +39,11 @@ def rollout(constant_setting, queue_input, queue_result):
     for batch_index, ctrl_task_diff in enumerate(chunked_ctrl_task_diff):
         num_batch, step, dim = ctrl_task_diff.shape
         assert dim == 3
+        env.randomize_texture_mode = "per_reset" # テクスチャをバッチ単位で変更するためここで変える
+        env.reset(init_state)
+        env.randomize_texture_mode = "static" # バッチ内では固定させる
         for n in range(num_batch):
-            repository.open(filename='domain{}{}_action{}'.format(ctrl_index, batch_index, n))
+            repository.open(filename='domain{}-{}_action{}'.format(ctrl_index, batch_index, n))
             env.reset(init_state)
             image_list = []
             state_list = []
@@ -61,7 +64,7 @@ def rollout(constant_setting, queue_input, queue_result):
             repository.assign('state', state_list, EnvState)
             repository.assign('ctrl',   ctrl_list, CtrlState)
             repository.close()
-            print("[index {}] sequence {}/{}".format(ctrl_index, n+1, num_batch))
+            print("[index {}-({}/{})] sequence {}/{}".format(ctrl_index, batch_index+1, num_chunked_ctrl, n+1, num_batch))
     queue_result.put((ctrl_index, [ctrl_index])) # 結果とバッチインデックスをキューに入れる
     queue_input.task_done() # キューを終了する
 
@@ -140,7 +143,7 @@ class Demo_task_space:
             dataset_name = dataset_name,
         )
 
-        result_list, proc_time = multiproc.run_unit(
+        result_list, proc_time = multiproc.run_from_chunked_ctrl(
             function         = rollout,
             constant_setting = constant_setting,
             chunked_ctrl     = chunked_ctrl,
