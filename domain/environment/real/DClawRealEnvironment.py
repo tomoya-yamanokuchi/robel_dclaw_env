@@ -18,6 +18,7 @@ from .robot.RobotNode import RobotNode
 p_file = pathlib.Path(__file__)
 path_environment = "/".join(str(p_file).split("/")[:-2])
 sys.path.append(path_environment)
+from ..DClawCtrl import DClawCtrl
 from ..DClawState import DClawState
 from ..AbstractEnvironment import AbstractEnvironment
 from ..kinematics.ForwardKinematics import ForwardKinematics
@@ -74,6 +75,14 @@ class DClawRealEnvironment(AbstractEnvironment):
         ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector)
         self.robot_node.publisher.publish_joint_ctrl(ctrl_joint.squeeze())
 
+        dclawCtrl = DClawCtrl(
+            task_space_abs_position  = ctrl_task.squeeze(),
+            task_space_diff_position = ctrl_task_diff.squeeze(),
+            end_effector_position    = ctrl_end_effector.squeeze(),
+            joint_space_position     = ctrl_joint.squeeze(),
+        )
+        return dclawCtrl
+
 
     def get_state(self):
         robot_position        = self.robot_node.subscriber.joint_positions
@@ -83,8 +92,8 @@ class DClawRealEnvironment(AbstractEnvironment):
             robot_position        = robot_position,
             object_position       = self.robot_node.subscriber.valve_position.reshape(1,),
             robot_velocity        = self.robot_node.subscriber.joint_velocities,
-            object_velocity       = np.zeros(1), # ROS側で取得していない
-            # force                 = np.zeros(9), # ROS側で取得していない
+            object_velocity       = np.zeros(1), # ROS側では取得していない
+            # force                 = np.zeros(9), # ROS側では取得していない
             end_effector_position = end_effector_position,
             task_space_positioin  = task_space_positioin,
         )
