@@ -9,7 +9,8 @@ cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 
 repository = Repository(
     dataset_dir  = "./dataset",
-    dataset_name = "dataset_2022102122524",
+    # dataset_name = "dataset_2022102122524",
+    dataset_name = "dataset_2022102111341",
 )
 
 db_files  = os.listdir(repository.dataset_save_dir)
