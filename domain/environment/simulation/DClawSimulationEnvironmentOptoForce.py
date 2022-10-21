@@ -32,8 +32,8 @@ path_environment = "/".join(str(p_file).split("/")[:-2])
 sys.path.append(path_environment)
 from ..DClawState import DClawState
 from ..AbstractEnvironment import AbstractEnvironment
-from ...ImageObject import ImageObject
-from ... import dictionary_operation as dictOps
+from ....custom_service.ImageObject import ImageObject
+from ....custom_service import dictionary_operation as dictOps
 from ..kinematics.ForwardKinematics import ForwardKinematics
 from ..kinematics.InverseKinematics import InverseKinematics
 from ..task_space.TaskSpace import TaskSpace

@@ -1,10 +1,6 @@
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-
 from domain.environment.task_space.TaskSpace import TaskSpace
 from custom_service import visualization as vis
-
-
-
 
 
 
@@ -19,8 +15,4 @@ vis.scatter_3d_color_map(
 )
 
 # vis.scatter_3d_animation(task_space.reference_end_effector_position, num_history=350, interval=30)
-
-
-
-
 

@@ -23,7 +23,7 @@ class Demo_task_space:
         ctrl_task_diff = np.zeros([step, dim_task_space]) + 0.02 # 範囲:[0, 1]
         for s in range(5):
             env.reset(init_state)
-            import ipdb; ipdb.set_trace()
+            # import ipdb; ipdb.set_trace()
             print("\n*** reset ***\n")
             env.canonicalize_texture() # canonicalテクスチャを設定
             # env.randomize_texture()    # randomテクスチャを設定
