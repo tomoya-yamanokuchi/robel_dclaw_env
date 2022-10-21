@@ -57,7 +57,6 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self.light_index_list              = [i for i in config.light.values()]
         self.randomize_texture_mode        = config.randomize_texture_mode
         self.is_noise_randomize_per_step   = config.is_noise_randomize_per_step
-        self.task_relevant_geom_group_name = config.task_relevant_geom_group_name
         self.dynamics                      = config.dynamics
         self.camera                        = config.camera
         self.light                         = config.light
@@ -100,18 +99,9 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             if group in self.visible_geom_group:
                 self.visible_geom.append(name)
 
-        # import ipdb; ipdb.set_trace()
-        # ------ バルブの色を３つ揃えるための工夫 ------
-        task_relevant_geoms = [x for x in self.visible_geom if self.task_relevant_geom_group_name in x] # タスク関連のgeomを抽出
-
-        [self.visible_geom.remove(name) for name in task_relevant_geoms] # 抽出したgeomをもとのlistから削除
-
         # タスク関連のgeomとデータ形式を合わせるためもとのlist[str]の各要素をlistで包む
         for i in range(len(self.visible_geom)):
             self.visible_geom[i] = [self.visible_geom[i]]
-
-        # タスク関連geomをその他のgeomと結合させる
-        self.visible_geom.append(task_relevant_geoms)
 
         # テクスチャのコレクションを作成
         self.texture_collection = TextureCollection()
@@ -119,16 +109,13 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             for name in geom_names:
                 texture = Texture(name=name, id=id, info=dict())
                 self.texture_collection.add(texture)
-        # import ipdb; ipdb.set_trace()
-
 
 
     def view(self):
         if self.is_Offscreen:
             img_ran  = self.img_dict["random_nonfix"].channel_last
             img_can  = self.img_dict["canonical"].channel_last
-            img_diff = img_ran - img_can
-            cv2.imshow(self.cv2_window_name, np.concatenate([img_ran, img_can, img_diff], axis=1))
+            cv2.imshow(self.cv2_window_name, np.concatenate([img_ran, img_can], axis=1))
             cv2.waitKey(50)
         else:
             self.viewer.render()
@@ -173,8 +160,10 @@ class DClawSimulationEnvironment(AbstractEnvironment):
 
 
     def _set_texture_rand_all(self):
-        for name in self.visible_geom:
-            self.texture_modder.rand_all(name)
+        # for name in self.visible_geom:
+        #     self.texture_modder.rand_all(name)
+        self._set_texture_rand_all_with_return_info()
+        self._set_texture_static_all()
 
 
     def randomize_texture(self):
@@ -209,17 +198,8 @@ class DClawSimulationEnvironment(AbstractEnvironment):
 
 
     def _render(self, camera_name: str="canonical"):
-        if   "canonical" in camera_name:
-            shadowsize = 0
-            self.canonicalize_texture()
-            self.task_relevant_randomize_texture() # あってもなくても動く
-            self.sim.model.light_ambient[:] = 0 # 試す
-
-        elif    "random" in camera_name:
-            shadowsize = 0
-            self.randomize_texture()
-            self.sim.model.light_ambient[:] = 0 # 試す
-
+        if   "canonical" in camera_name: shadowsize = 0;    self.canonicalize_texture()
+        elif    "random" in camera_name: shadowsize = 1028; self.randomize_texture()
         elif  "overview" in camera_name: shadowsize = 0;    self.randomize_texture()
         else                           : raise NotImplementedError()
         self.set_light_castshadow(shadowsize=shadowsize)
