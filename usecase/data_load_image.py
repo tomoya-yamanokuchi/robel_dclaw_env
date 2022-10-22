@@ -10,7 +10,7 @@ cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 repository = Repository(
     dataset_dir  = "./dataset",
     # dataset_name = "dataset_2022102122524",
-    dataset_name = "dataset_2022102111341",
+    dataset_name = "dataset_20221022145521",
 )
 
 db_files  = os.listdir(repository.dataset_save_dir)
@@ -22,8 +22,8 @@ for index, db in enumerate(db_files):
     # import ipdb; ipdb.set_trace()
     db_name, suffix = db.split(".")
     repository.open(filename=db_name)
-    img_can = repository.repository["image"].canonical
-    img_ran = repository.repository["image"].random_nonfix
+    img_can = repository.repository["image"]["canonical"]
+    img_ran = repository.repository["image"]["random_nonfix"]
     step, width, height, channel = img_can.shape
     for t in range(step):
         print("({}/{}) [{}] step: {}".format(index+1, num_files, db, t))

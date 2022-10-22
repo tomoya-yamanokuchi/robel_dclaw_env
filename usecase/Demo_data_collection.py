@@ -85,9 +85,9 @@ class Demo_task_space:
                 # env.view()
                 env.step()
 
-            repository.assign('image', image_list, ImageObs)
-            repository.assign('state', state_list, EnvState)
-            repository.assign('ctrl',   ctrl_list, CtrlState)
+            repository.assign("image", image_list, ImageObs)
+            repository.assign("state", state_list, EnvState)
+            repository.assign("ctrl",  ctrl_list, CtrlState)
             repository.close()
             print("- sequence {}/{}".format(s+1, num_ctrl))
 

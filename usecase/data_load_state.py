@@ -15,7 +15,7 @@ from matplotlib import ticker, cm
 
 repository = Repository(
     dataset_dir  = "./dataset",
-    dataset_name = "dataset_2022102121549",
+    dataset_name = "dataset_20221022145521",
 )
 
 db_files = os.listdir(repository.dataset_save_dir)
@@ -28,7 +28,7 @@ for db in db_files:
     db_name, suffix = db.split(".")
     repository.open(filename=db_name)
     state = repository.repository["state"]
-    robot_position.append(state.robot_position)
+    robot_position.append(state["robot_position"])
     repository.close()
 
 

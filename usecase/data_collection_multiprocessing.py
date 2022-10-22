@@ -60,9 +60,9 @@ def rollout(constant_setting, queue_input, queue_result):
                 # env.view()
                 env.step()
 
-            repository.assign('image', image_list, ImageObs)
-            repository.assign('state', state_list, EnvState)
-            repository.assign('ctrl',   ctrl_list, CtrlState)
+            repository.assign("image", image_list, ImageObs)
+            repository.assign("state", state_list, EnvState)
+            repository.assign("ctrl",  ctrl_list, CtrlState)
             repository.close()
             print("[index {}-({}/{})] sequence {}/{}".format(ctrl_index, batch_index+1, num_chunked_ctrl, n+1, num_batch))
     queue_result.put((ctrl_index, [ctrl_index])) # 結果とバッチインデックスをキューに入れる
