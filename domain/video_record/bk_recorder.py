@@ -42,7 +42,7 @@ class WebCamControl:
             while True:
                 _, frame = self.cam.read()
                 imgs.append(frame.copy())
-                print(imgs[0].shape)
+                # print(imgs[0].shape)
                 try:
                     fl = stop_queue.get_nowait()
                 except:
