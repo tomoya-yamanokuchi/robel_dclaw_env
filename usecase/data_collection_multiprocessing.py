@@ -39,9 +39,9 @@ def rollout(constant_setting, queue_input, queue_result):
     for batch_index, ctrl_task_diff in enumerate(chunked_ctrl_task_diff):
         num_batch, step, dim = ctrl_task_diff.shape
         assert dim == 3
-        env.randomize_texture_mode = "per_reset" # テクスチャをバッチ単位で変更するためここで変える
+        env.randomize_texture_mode = "per_step" # テクスチャをバッチ単位で変更するためここで変える
         env.reset(init_state)
-        env.randomize_texture_mode = "static" # バッチ内では固定させる
+        # env.randomize_texture_mode = "static" # バッチ内では固定させる
         for n in range(num_batch):
             repository.open(filename='domain{}-{}_action{}'.format(ctrl_index, batch_index, n))
             env.reset(init_state)

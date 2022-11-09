@@ -3,5 +3,6 @@ defaults:
   # - env: real
 
 run:
-  sequence: 25
+  # sequence: 275 # train (please consider [/ motion set num])
+  sequence: 25 # valid (please consider [/ motion set num])
   step    : 25

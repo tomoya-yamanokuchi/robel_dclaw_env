@@ -4,6 +4,8 @@ import sys
 import pprint
 import pathlib
 
+from soupsieve import comments
+
 p = pathlib.Path()
 sys.path.append(str(p.cwd()))
 
@@ -37,6 +39,10 @@ from ..AbstractEnvironment import AbstractEnvironment
 from ..kinematics.ForwardKinematics import ForwardKinematics
 from ..kinematics.InverseKinematics import InverseKinematics
 from ..task_space.TaskSpace import TaskSpace
+
+# import cv2
+# cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+
 
 
 class DClawSimulationEnvironment(AbstractEnvironment):
@@ -167,6 +173,20 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             self.texture_collection.assign_info_with_id(id=id, info=self.texture[str(id)])
 
 
+    def _set_texture_rand_task_irrelevant_with_return_info(self):
+        self.texture = {}
+        max_id       = max(self.texture_collection.get_id())
+        #  系列ごとのランダム化に使用するtextureを作成
+        for id in range(max_id+1):
+            if not id == max_id:
+                self.texture[str(id)] = self.texture_modder.get_rand_texture()
+        # texture_collectionに作成したtextureの情報を反映させる
+        for id in range(max_id+1):
+            if not id == max_id:
+                self.texture_collection.assign_info_with_id(id=id, info=self.texture[str(id)])
+
+
+
     def _set_texture_static_all(self):
         for texture in self.texture_collection.texture:
             self.texture_modder.my_set_texture(texture.name, texture.info, is_noise_randomize=self.is_noise_randomize_per_step)
@@ -188,8 +208,15 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             self._set_texture_static_all()
 
         elif self.randomize_texture_mode == "per_step":
-            self._set_texture_rand_all()
-            self.is_texture_randomized = True
+            '''
+                ・self.texture_collection の状態に注意
+                ・ユニークな self.texture_collection を applyすることでtextureを変更している
+            '''
+            if self.is_texture_randomized is False:
+                self._set_texture_rand_all_with_return_info()
+                self.is_texture_randomized = True
+            self._set_texture_rand_task_irrelevant_with_return_info()
+            self._set_texture_static_all()
 
 
     def task_relevant_randomize_texture(self):
@@ -245,10 +272,19 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             for camera_name in camera_name_list:
                 img_dict[camera_name] = self._render(camera_name)
         self.img_dict = img_dict
+
+        # --------------------------- debug start ----------------------------
+        # img_ran  = img_dict["random_nonfix"].channel_last
+        # img_can  = img_dict["canonical"].channel_last
+        # img_diff = np.abs(img_ran - img_can)
+        # cv2.imshow("img", np.concatenate((img_ran, img_can, img_diff), axis=1))
+        # cv2.waitKey(50)
+        # --------------------------- debug end ----------------------------
+
         return ImageObs(
             canonical     = img_dict["canonical"].channel_last,
             random_nonfix = img_dict["random_nonfix"].channel_last,
-            mode          ="step"
+            mode          = "step"
         )
 
 

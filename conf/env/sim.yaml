@@ -13,8 +13,8 @@ is_Offscreen          : True
 is_target_visible     : False
 
 # --- randomize setting ---
-randomize_texture_mode       : "per_reset"
-is_noise_randomize_per_step  : True
+randomize_texture_mode       : "per_step"
+is_noise_randomize_per_step  : False
 task_relevant_geom_group_name: "valve"
 
 # --- joint range limit (radian) ---
