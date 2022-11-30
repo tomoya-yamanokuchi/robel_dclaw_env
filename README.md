@@ -1,7 +1,14 @@
 robel-dclaw
 
 ## DClaw環境
+![Screenshot from 2022-11-30 20-19-12](https://user-images.githubusercontent.com/49630508/204783027-c0209e65-b207-4086-b2c2-5f77ba115652.png)
 ![Screenshot from 2022-08-20 02-22-30](https://user-images.githubusercontent.com/49630508/185674226-85950dba-7e45-49fa-9070-62758f353227.png)
+
+
+## バルブの目印
+- half-length of the cylinder = 0.005[m]
+- full-length of the cylinder = 0.01[m] = 1[cm]
+- 従って，目印の幅は1[cm]
 
 
 ## EnvStateの定義

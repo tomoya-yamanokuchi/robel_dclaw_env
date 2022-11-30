@@ -114,6 +114,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
                 self.texture_collection.add(texture)
 
 
+
     def view(self):
         if self.is_Offscreen:
             img_ran  = self.img_dict["random_nonfix"].channel_last

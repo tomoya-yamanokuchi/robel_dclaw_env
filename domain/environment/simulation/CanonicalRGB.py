@@ -9,13 +9,22 @@ This works fine on python 3.7 and higher versions.
 
 # gray = int((255 * 0.5) + 0.5)
 # import ipdb; ipdb.set_trace()
-floor_rgb               = np.array([200, 200, 200], dtype=np.uint8)
+# floor_rgb               = np.array([200, 200, 200], dtype=np.uint8)
+floor_rgb               = np.array([ 27, 176,  27], dtype=np.uint8)
+
 robot_rgb               = np.array([ 38,  38,  38], dtype=np.uint8)
 finger_rgb              = np.array([255, 127,   0], dtype=np.uint8)
-valve_3fin_handle_1_rgb = np.array([255, 0, 0], dtype=np.uint8)
-valve_3fin_handle_2_rgb = np.array([0, 255, 0], dtype=np.uint8)
-valve_3fin_handle_3_rgb = np.array([0, 0, 255], dtype=np.uint8)
+# valve_3fin_handle_1_rgb = np.array([255, 0, 0], dtype=np.uint8)
+# valve_3fin_handle_2_rgb = np.array([0, 255, 0], dtype=np.uint8)
+# valve_3fin_handle_3_rgb = np.array([0, 0, 255], dtype=np.uint8)
+
+valve_3fin_handle_1_rgb = np.array([255, 255, 255], dtype=np.uint8)
+valve_3fin_handle_2_rgb = np.array([255, 255, 255], dtype=np.uint8)
+valve_3fin_handle_3_rgb = np.array([255, 255, 255], dtype=np.uint8)
+
 valve_3fin_center_rgb   = np.array([255, 255, 255], dtype=np.uint8)
+# valve_3fin_line_rgb     = np.array([0, 0, 0], dtype=np.uint8)
+valve_3fin_line_rgb     = np.array([50, 50, 50], dtype=np.uint8)
 
 
 @dataclass(frozen=False)
@@ -59,6 +68,7 @@ class CanonicalRGB:
             "vis_valve_3fin_handle_2"   : valve_3fin_handle_2_rgb,
             "vis_valve_3fin_handle_3"   : valve_3fin_handle_3_rgb,
             "vis_valve_3fin_center"     : valve_3fin_center_rgb  ,
+            "vis_valve_3fin_line"       : valve_3fin_line_rgb  ,
         }
     ))
 

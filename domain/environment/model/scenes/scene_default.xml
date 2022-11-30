@@ -16,18 +16,18 @@
     <texture name="FFL12_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="FFL12_optoforce_sensor_tex"     type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="FFL12_optoforce_base_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
-    <material name="FFbase_xh28_mat"                shininess="0.03" specular="0.75" texture="FFbase_xh28_tex"></material>
-    <material name="FF10_xh28_mat"                  shininess="0.03" specular="0.75" texture="FF10_xh28_tex"></material>
-    <material name="FF10_metal_clamping_mat"        shininess="0.03" specular="0.75" texture="FF10_metal_clamping_tex"></material>
-    <material name="FF10_metal_clamping_small_mat"  shininess="0.03" specular="0.75" texture="FF10_metal_clamping_small_tex"></material>
-    <material name="FFL11_xh28_mat"                 shininess="0.03" specular="0.75" texture="FFL11_xh28_tex"></material>
-    <material name="FFL11_metal_clamping_mat"       shininess="0.03" specular="0.75" texture="FFL11_metal_clamping_tex"></material>
-    <material name="FFL11_metal_clamping_small_mat" shininess="0.03" specular="0.75" texture="FFL11_metal_clamping_small_tex"></material>
-    <material name="FFL11_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="FFL11_plastic_finger_tex"></material>
-    <material name="FFL12_metal_clamping_mat"       shininess="0.03" specular="0.75" texture="FFL12_metal_clamping_tex"></material>
-    <material name="FFL12_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="FFL12_plastic_finger_tex"></material>
-    <material name="FFL12_optoforce_sensor_mat"     shininess="0.03" specular="0.75" texture="FFL12_optoforce_sensor_tex"></material>
-    <material name="FFL12_optoforce_base_mat"       shininess="0.03" specular="0.75" texture="FFL12_optoforce_base_tex"></material>
+    <material name="FFbase_xh28_mat"                rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FFbase_xh28_tex"></material>
+    <material name="FF10_xh28_mat"                  rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FF10_xh28_tex"></material>
+    <material name="FF10_metal_clamping_mat"        rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FF10_metal_clamping_tex"></material>
+    <material name="FF10_metal_clamping_small_mat"  rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FF10_metal_clamping_small_tex"></material>
+    <material name="FFL11_xh28_mat"                 rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FFL11_xh28_tex"></material>
+    <material name="FFL11_metal_clamping_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FFL11_metal_clamping_tex"></material>
+    <material name="FFL11_metal_clamping_small_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FFL11_metal_clamping_small_tex"></material>
+    <material name="FFL11_plastic_finger_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FFL11_plastic_finger_tex"></material>
+    <material name="FFL12_metal_clamping_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FFL12_metal_clamping_tex"></material>
+    <material name="FFL12_plastic_finger_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FFL12_plastic_finger_tex"></material>
+    <material name="FFL12_optoforce_sensor_mat"     rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FFL12_optoforce_sensor_tex"></material>
+    <material name="FFL12_optoforce_base_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="FFL12_optoforce_base_tex"></material>
 
     <!-- Finger 2 -->
     <texture name="MFbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
@@ -42,18 +42,18 @@
     <texture name="MFL22_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="MFL22_optoforce_sensor_tex"     type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="MFL22_optoforce_base_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
-    <material name="MFbase_xh28_mat"                shininess="0.03" specular="0.75" texture="MFbase_xh28_tex"></material>
-    <material name="MF20_xh28_mat"                  shininess="0.03" specular="0.75" texture="MF20_xh28_tex"></material>
-    <material name="MF20_metal_clamping_mat"        shininess="0.03" specular="0.75" texture="MF20_metal_clamping_tex"></material>
-    <material name="MF20_metal_clamping_small_mat"  shininess="0.03" specular="0.75" texture="MF20_metal_clamping_small_tex"></material>
-    <material name="MFL21_xh28_mat"                 shininess="0.03" specular="0.75" texture="MFL21_xh28_tex"></material>
-    <material name="MFL21_metal_clamping_mat"       shininess="0.03" specular="0.75" texture="MFL21_metal_clamping_tex"></material>
-    <material name="MFL21_metal_clamping_small_mat" shininess="0.03" specular="0.75" texture="MFL21_metal_clamping_small_tex"></material>
-    <material name="MFL21_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="MFL21_plastic_finger_tex"></material>
-    <material name="MFL22_metal_clamping_mat"       shininess="0.03" specular="0.75" texture="MFL22_metal_clamping_tex"></material>
-    <material name="MFL22_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="MFL22_plastic_finger_tex"></material>
-    <material name="MFL22_optoforce_sensor_mat"     shininess="0.03" specular="0.75" texture="MFL22_optoforce_sensor_tex"></material>
-    <material name="MFL22_optoforce_base_mat"       shininess="0.03" specular="0.75" texture="MFL22_optoforce_base_tex"></material>
+    <material name="MFbase_xh28_mat"                rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MFbase_xh28_tex"></material>
+    <material name="MF20_xh28_mat"                  rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MF20_xh28_tex"></material>
+    <material name="MF20_metal_clamping_mat"        rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MF20_metal_clamping_tex"></material>
+    <material name="MF20_metal_clamping_small_mat"  rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MF20_metal_clamping_small_tex"></material>
+    <material name="MFL21_xh28_mat"                 rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MFL21_xh28_tex"></material>
+    <material name="MFL21_metal_clamping_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MFL21_metal_clamping_tex"></material>
+    <material name="MFL21_metal_clamping_small_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MFL21_metal_clamping_small_tex"></material>
+    <material name="MFL21_plastic_finger_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MFL21_plastic_finger_tex"></material>
+    <material name="MFL22_metal_clamping_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MFL22_metal_clamping_tex"></material>
+    <material name="MFL22_plastic_finger_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MFL22_plastic_finger_tex"></material>
+    <material name="MFL22_optoforce_sensor_mat"     rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MFL22_optoforce_sensor_tex"></material>
+    <material name="MFL22_optoforce_base_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="MFL22_optoforce_base_tex"></material>
 
     <!-- Finger 3 -->
     <texture name="THbase_xh28_tex"                type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
@@ -68,49 +68,52 @@
     <texture name="THL32_plastic_finger_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="THL32_optoforce_sensor_tex"     type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="THL32_optoforce_base_tex"       type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
-    <material name="THbase_xh28_mat"                shininess="0.03" specular="0.75" texture="THbase_xh28_tex"></material>
-    <material name="TH30_xh28_mat"                  shininess="0.03" specular="0.75" texture="TH30_xh28_tex"></material>
-    <material name="TH30_metal_clamping_mat"        shininess="0.03" specular="0.75" texture="TH30_metal_clamping_tex"></material>
-    <material name="TH30_metal_clamping_small_mat"  shininess="0.03" specular="0.75" texture="TH30_metal_clamping_small_tex"></material>
-    <material name="THL31_xh28_mat"                 shininess="0.03" specular="0.75" texture="THL31_xh28_tex"></material>
-    <material name="THL31_metal_clamping_mat"       shininess="0.03" specular="0.75" texture="THL31_metal_clamping_tex"></material>
-    <material name="THL31_metal_clamping_small_mat" shininess="0.03" specular="0.75" texture="THL31_metal_clamping_small_tex"></material>
-    <material name="THL31_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="THL31_plastic_finger_tex"></material>
-    <material name="THL32_metal_clamping_mat"       shininess="0.03" specular="0.75" texture="THL32_metal_clamping_tex"></material>
-    <material name="THL32_plastic_finger_mat"       shininess="0.03" specular="0.75" texture="THL32_plastic_finger_tex"></material>
-    <material name="THL32_optoforce_sensor_mat"     shininess="0.03" specular="0.75" texture="THL32_optoforce_sensor_tex"></material>
-    <material name="THL32_optoforce_base_mat"       shininess="0.03" specular="0.75" texture="THL32_optoforce_base_tex"></material>
+    <material name="THbase_xh28_mat"                rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="THbase_xh28_tex"></material>
+    <material name="TH30_xh28_mat"                  rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="TH30_xh28_tex"></material>
+    <material name="TH30_metal_clamping_mat"        rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="TH30_metal_clamping_tex"></material>
+    <material name="TH30_metal_clamping_small_mat"  rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="TH30_metal_clamping_small_tex"></material>
+    <material name="THL31_xh28_mat"                 rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="THL31_xh28_tex"></material>
+    <material name="THL31_metal_clamping_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="THL31_metal_clamping_tex"></material>
+    <material name="THL31_metal_clamping_small_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="THL31_metal_clamping_small_tex"></material>
+    <material name="THL31_plastic_finger_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="THL31_plastic_finger_tex"></material>
+    <material name="THL32_metal_clamping_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="THL32_metal_clamping_tex"></material>
+    <material name="THL32_plastic_finger_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="THL32_plastic_finger_tex"></material>
+    <material name="THL32_optoforce_sensor_mat"     rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="THL32_optoforce_sensor_tex"></material>
+    <material name="THL32_optoforce_base_mat"       rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="THL32_optoforce_base_tex"></material>
 
 
     <!-- xh28 -->
     <texture name="xh28_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
-    <material name="xh28_mat" shininess="0.03" specular="0.75" texture="xh28_tex"></material>
+    <material name="xh28_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="xh28_tex"></material>
 
     <!-- acrylic_circle -->
     <texture name="acrylic_circle_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
-    <material name="acrylic_circle_mat" shininess="0.03" specular="0.75" texture="acrylic_circle_tex"></material>
+    <material name="acrylic_circle_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="acrylic_circle_tex"></material>
 
     <!-- floor -->
     <texture name="floor_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
-    <material name="floor_mat" shininess="0.03" specular="0.75" texture="floor_tex"></material>
+    <material name="floor_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="floor_tex"></material>
 
     <!-- mount -->
     <texture name="mount_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
-    <material name="mount_mat" shininess="0.03" specular="0.75" texture="mount_tex"></material>
+    <material name="mount_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="mount_tex"></material>
 
     <!-- valve_3 -->
     <texture name="valve_3_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
-    <material name="valve_3_mat" shininess="0.03" specular="0.75" texture="valve_3_tex"></material>
+    <material name="valve_3_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="valve_3_tex"></material>
 
     <!-- valve_3 individual -->
     <texture name="valve_3fin_handle_1_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="valve_3fin_handle_2_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="valve_3fin_handle_3_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
     <texture name="valve_3fin_center_tex"   type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
-    <material name="valve_3fin_handle_1_mat" shininess="0.03" specular="0.75" texture="valve_3fin_handle_1_tex"></material>
-    <material name="valve_3fin_handle_2_mat" shininess="0.03" specular="0.75" texture="valve_3fin_handle_2_tex"></material>
-    <material name="valve_3fin_handle_3_mat" shininess="0.03" specular="0.75" texture="valve_3fin_handle_3_tex"></material>
-    <material name="valve_3fin_center_mat"   shininess="0.03" specular="0.75" texture="valve_3fin_center_tex"></material>
+    <texture name="valve_3fin_line_tex"     type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <material name="valve_3fin_handle_1_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="valve_3fin_handle_1_tex"></material>
+    <material name="valve_3fin_handle_2_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="valve_3fin_handle_2_tex"></material>
+    <material name="valve_3fin_handle_3_mat" rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="valve_3fin_handle_3_tex"></material>
+    <material name="valve_3fin_center_mat"   rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="valve_3fin_center_tex"></material>
+    <material name="valve_3fin_line_mat"     rgba="1 1 1 1" shininess="0.03" specular="0.75" texture="valve_3fin_line_tex"></material>
+
   </asset>
 
   <visual>
