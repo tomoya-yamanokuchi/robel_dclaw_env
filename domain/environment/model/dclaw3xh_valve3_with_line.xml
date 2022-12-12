@@ -22,8 +22,8 @@
       <include file="./robot/assets/chain3xh_overlay.xml"/>
     </body>
     <body name="object" pos="0 0 0.0001">
-      <include file="/valve/assets/valve3_default.xml"/>
-      <!-- <include file="/valve/assets/valve3_with_line.xml"/> -->
+      <!-- <include file="/valve/assets/valve3_default.xml"/> -->
+      <include file="/valve/assets/valve3_with_line.xml"/>
       <!-- <include file="/valve/assets/valve3_narrow.xml"/> -->
     </body>
 
