@@ -36,6 +36,7 @@ class DClawRealEnvironment(AbstractEnvironment):
         self.inverse_kinematics = InverseKinematics()
         self.task_space         = TaskSpace()
         self.sleep_time_sec     = config.sleep_time_sec
+        self.actuator_params    = config.actuator_params
 
 
     def reset(self, DClawState_: DClawState):
@@ -49,9 +50,15 @@ class DClawRealEnvironment(AbstractEnvironment):
             joint_position        = self.inverse_kinematics.calc(end_effector_position)
             ctrl_init_positions   = joint_position.squeeze()
 
-        claw_Position_P_Gain = np.array([30, 30, 30], dtype=int)
-        init_command         = np.hstack([ctrl_init_positions, claw_Position_P_Gain])
-        self.robot_node.publisher.publish_initialize_ctrl(init_command)
+        assert len(self.actuator_params.current_limit) == 3
+        assert len(self.actuator_params.position_P_Gain) == 3
+        current_limit   = np.hstack([self.actuator_params.current_limit]*3).astype(int)
+        position_P_Gain = np.hstack([self.actuator_params.position_P_Gain]*3).astype(int)
+        self.robot_node.publisher.publish_initialize_ctrl(
+            ctrl            = ctrl_init_positions,
+            current_limit   = current_limit,
+            position_P_Gain = position_P_Gain,
+        )
         while not self.robot_node.subscriber.is_initialize_finished:
             time.sleep(0.1)
         self.step()

@@ -16,15 +16,26 @@ class RobotPublisher(object):
         self.msg_valve_ctrl      = Int32MultiArray()
 
 
-    def publish_initialize_ctrl(self, ctrl):
-        print(ctrl)
-        joint_position  = ai.radian2resolution(ctrl[:9])
-        position_p_gain = np.array(ctrl[9:], dtype=int)
-        init_ctrl       = np.hstack([joint_position, position_p_gain])
+    def __print_initialization_info(self, msg_initialize_ctrl):
+        print("\n\n")
+        print("=====================================================================================")
+        print("  initial joint_positions : ", msg_initialize_ctrl.data[:9])
+        print("            Current_Limit : ", msg_initialize_ctrl.data[9:18])
+        print("          Position_P_Gain : ", msg_initialize_ctrl.data[18:])
+        print("=====================================================================================")
+        print("\n\n")
+
+
+    def publish_initialize_ctrl(self, ctrl, current_limit, position_P_Gain):
+        assert            ctrl.shape == (9,), print("ctrl.shape[0] == ", ctrl.shape[0])
+        assert   current_limit.shape == (9,), print("current_limit.shape[0] == ", current_limit.shape[0])
+        assert position_P_Gain.shape == (9,), print("position_P_Gain.shape[0] == ", position_P_Gain.shape[0])
+        joint_position = ai.radian2resolution(ctrl)
+        init_ctrl      = np.hstack([joint_position, current_limit, position_P_Gain])
         self.msg_initialize_ctrl.data = tuple(init_ctrl)
-        print(self.msg_initialize_ctrl.data)
+        self.__print_initialization_info(self.msg_initialize_ctrl)
         self.pub_initialize_ctrl.publish(self.msg_initialize_ctrl)
-        self.publish_joint_ctrl(ctrl[:9]) # <--必要：無いと初期化前に残っている制御入力に影響される
+        self.publish_joint_ctrl(ctrl[:9]) # <--必要：無いと初期化前に残っている制御入力が入力され続けてしまう
 
 
     def publish_joint_ctrl(self, ctrl):

@@ -1,6 +1,6 @@
 defaults:
-  - env: sim
-  # - env: real
+  # - env: sim
+  - env: real
 
 run:
   sequence: 5

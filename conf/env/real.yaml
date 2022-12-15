@@ -11,3 +11,9 @@ robot_velocity_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
 object_position_init    : [0.0]
 object_velocity_init    : [0.0]
 force_init              : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+
+actuator_params:
+  current_limit  :  [180, 120, 60] # to be replicated for 3claws
+  position_P_Gain:  [180, 120, 60] # to be replicated for 3claws
+  # current_limit  :  [30, 30, 30] # to be replicated for 3claws
+  # position_P_Gain:  [30, 30, 30] # to be replicated for 3claws
