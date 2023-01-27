@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <mujocoinclude>
   <body name="dClaw" euler="3.14 0 0" childclass="dclaw3xh">
-    <geom mesh="acrylic_circle"                                           material="acrylic_circle_mat"/>
+    <!-- <geom mesh="acrylic_circle"                                           material="acrylic_circle_mat"/> -->
     <geom class="phy_metal" type="cylinder" size="0.075 0.004" mass=".11" />
     <site name="S_grasp" pos="0 0 0.24" type="sphere" size="0.01" group="4"/>
     <!-- INDEX/FIRST FINGER -->

@@ -54,6 +54,18 @@ class DClawState:
         assert  x.shape[-1] == dim
 
 
+    def get_step(self, index):
+        return DClawState(
+            robot_position        = self.robot_position[index]          if self.robot_position        is not None else None,
+            robot_velocity        = self.robot_velocity[index]          if self.robot_velocity        is not None else None,
+            object_position       = self.object_position[index]         if self.object_position       is not None else None,
+            object_velocity       = self.object_velocity[index]         if self.object_velocity       is not None else None,
+            end_effector_position = self.end_effector_position[index]   if self.end_effector_position is not None else None,
+            task_space_positioin  = self.task_space_positioin[index]    if self.task_space_positioin  is not None else None,
+            mode                  = "step"
+        )
+
+
 if __name__ == '__main__':
     import numpy as np
 

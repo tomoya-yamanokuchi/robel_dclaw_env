@@ -12,7 +12,16 @@ repository = Repository(
     # dataset_name = "dataset_2022102122524",
     # dataset_name = "dataset_20221022145521",
     # dataset_name = "dataset_202211723404",
-    dataset_name = "dataset_202211801247_valve_valid200",
+    # dataset_name = "dataset_202211801247_valve_valid200",
+    # dataset_name = "dataset_2023127154338"
+    # dataset_name = "dataset_2023127155110",
+    # dataset_name = "dataset_2023127162923"
+    # dataset_name  = "dataset_2023127163116"
+    # dataset_name="dataset_2023127173515"
+    # dataset_name="dataset_2023127174111"
+    # dataset_name="dataset_2023127212428"
+    # dataset_name="dataset_dclaw_deterministic_test400"
+    dataset_name="dataset_dclaw_deterministic_train2400"
 )
 
 db_files  = os.listdir(repository.dataset_save_dir)
@@ -28,10 +37,10 @@ for index, db in enumerate(db_files):
     img_ran  = repository.repository["image"]["random_nonfix"]
     img_diff = np.abs(img_can - img_ran)
     step, width, height, channel = img_can.shape
-    for t in range(step):
-        print("({}/{}) [{}] step: {}".format(index+1, num_files, db, t))
-        cv2.imshow('img', np.concatenate((img_ran[t], img_can[t], img_diff[t]), axis=1))
-        cv2.waitKey(100)
-        # print(repository.repository["state"].robot_position)
-    # import ipdb; ipdb.set_trace()
+
+    t = 0
+    print("({}/{}) [{}] step: {}".format(index+1, num_files, db, t))
+    cv2.imshow('img', np.concatenate((img_ran[t], img_can[t], img_diff[t]), axis=1))
+    cv2.waitKey(1000)
+
     repository.close()

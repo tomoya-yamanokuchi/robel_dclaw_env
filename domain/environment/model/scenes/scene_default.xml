@@ -111,6 +111,10 @@
     <material name="valve_3fin_handle_2_mat" shininess="0.03" specular="0.75" texture="valve_3fin_handle_2_tex"></material>
     <material name="valve_3fin_handle_3_mat" shininess="0.03" specular="0.75" texture="valve_3fin_handle_3_tex"></material>
     <material name="valve_3fin_center_mat"   shininess="0.03" specular="0.75" texture="valve_3fin_center_tex"></material>
+
+
+    <!-- <material name="FFL12_optoforce_base_mat" shininess="0.03" specular="0.75" texture="FFL12_optoforce_base_tex"></material> -->
+
   </asset>
 
   <visual>

@@ -11,15 +11,15 @@ from ..AbstractEnvironment import AbstractEnvironment
 
 
 @dataclass
-class EnvironmentConstantSetting:
+class EnvironmentConstantSetting_with_InitState:
     env_subclass: AbstractEnvironment
     config      : OmegaConf
-    # init_state  : DClawState
+    init_state  : DClawState
     dataset_name: str
 
-    # def __post_init__(self):
+    def __post_init__(self):
         # assert issubclass(self.config_env, OmegaConf)
-        # assert isinstance(self.init_state, DClawState)
+        assert isinstance(self.init_state, DClawState)
 
     # @property
     # def optimizer_update_index(self):

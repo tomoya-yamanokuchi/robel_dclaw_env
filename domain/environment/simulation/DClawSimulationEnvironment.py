@@ -263,7 +263,9 @@ class DClawSimulationEnvironment(AbstractEnvironment):
 
 
     def render(self, camera_name_list: str=None, iteration: int=1):
-        assert self.is_Offscreen is True, "Please set is_Offscreen = True"
+        if self.is_Offscreen is False:
+            return None # "Please set is_Offscreen = True"
+
         if camera_name_list is None:
             camera_name_list = self.camera_name_list
 

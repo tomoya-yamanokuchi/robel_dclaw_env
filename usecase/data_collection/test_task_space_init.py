@@ -1,4 +1,4 @@
-import cv2
+import cv2, time
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
@@ -7,6 +7,22 @@ from domain.environment.DClawState import DClawState as EnvState
 
 class Demo_task_space:
     def run(self, config):
+
+
+        # config.env.task_space_position_init = [0.19, 0.19, 0.19] # 指右上寄せ
+
+        config.env.task_space_position_init = [0.14, 0.19, 0.19]; u_diff =  0.02 # 指右上寄せ
+        config.env.task_space_position_init = [0.14, 0.05, 0.05]; u_diff = -0.02 # 指右上寄せ
+
+        config.env.task_space_position_init = [0.19, 0.14, 0.19]; u_diff =  0.02 # 指右上寄せ
+        config.env.task_space_position_init = [0.05, 0.14, 0.05]; u_diff = -0.02 # 指右上寄せ
+
+        config.env.task_space_position_init = [0.19, 0.19, 0.14]; u_diff =  0.02 # 指右上寄せ
+        config.env.task_space_position_init = [0.05, 0.05, 0.14]; u_diff = -0.02 # 指右上寄せ
+
+        # config.env.task_space_position_init = [0.05, 0.05, 0.05] # 指右上寄せ
+        config.env.camera.z_distance        = 0.4
+
         env = EnvironmentFactory().create(env_name=config.env.env_name)
         env = env(config.env)
         init_state = EnvState(
@@ -20,7 +36,7 @@ class Demo_task_space:
 
         step           = 100
         dim_task_space = 3  # 1本の指につき1次元の拘束をするので合計3次元
-        ctrl_task_diff = np.zeros([step, dim_task_space]) + 0.02 # 範囲:[0, 1]
+        ctrl_task_diff = np.zeros([step, dim_task_space]) + u_diff # 範囲:[0, 1]
         for s in range(5):
             env.reset(init_state)
             # import ipdb; ipdb.set_trace()
@@ -31,18 +47,20 @@ class Demo_task_space:
                 img   = env.render()
                 state = env.get_state()
 
-                print("task_space_position (claw1): {: .2f}".format(state.task_space_positioin[0]))
+                print("            object_position: {: .4f}".format(state.object_position[0]))
+                print("task_space_position (claw1): {: .4f}".format(state.task_space_positioin[0]))
 
                 env.set_ctrl_task_diff(ctrl_task_diff[i])
                 env.view()
                 env.step()
+                import ipdb; ipdb.set_trace()
 
 
 if __name__ == "__main__":
     import hydra
     from omegaconf import DictConfig
 
-    @hydra.main(version_base=None, config_path="../conf", config_name="config.yaml")
+    @hydra.main(version_base=None, config_path="../../conf", config_name="config.yaml")
     def main(config: DictConfig):
         demo = Demo_task_space()
         demo.run(config)

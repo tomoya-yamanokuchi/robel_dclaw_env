@@ -1,7 +1,8 @@
 env_name              : "sim"
 
 # --- load data ----
-model_file            : "dclaw3xh_valve3_default.xml"
+# model_file            : "dclaw3xh_valve3_default.xml"
+model_file            : "dclaw3xh_valve3_with_line.xml"
 env_color             : "rgb_valve"
 inplicit_step         : 200
 
