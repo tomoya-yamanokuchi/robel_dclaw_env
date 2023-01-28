@@ -56,8 +56,8 @@ def rollout(constant_setting, queue_input, queue_result):
         num_batch, step, dim = ctrl_task_diff.shape
         assert dim == 3
         env.randomize_texture_mode = "per_reset" # (1) テクスチャをバッチ単位で変更するためper_resetに設定
-        env.reset(init_state.get_step(0))        # (2) resetによってテクスチャをランダム化
-        env.randomize_texture_mode = "static"    # (3) バッチ内ではテクスチャを固定させるためstaticに設定
+        # env.reset(init_state.get_step(0))        # (2) resetによってテクスチャをランダム化
+        # env.randomize_texture_mode = "static"    # (3) バッチ内ではテクスチャを固定させるためstaticに設定
         for n in range(num_batch):
             repository.open(filename='domain{}-{}_action{}'.format(ctrl_index, batch_index, n))
 

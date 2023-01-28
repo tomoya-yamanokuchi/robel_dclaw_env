@@ -4,8 +4,6 @@ import sys
 import pprint
 import pathlib
 
-from soupsieve import comments
-
 p = pathlib.Path()
 sys.path.append(str(p.cwd()))
 

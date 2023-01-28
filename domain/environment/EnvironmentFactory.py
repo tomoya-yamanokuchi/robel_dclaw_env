@@ -1,6 +1,6 @@
 from .simulation.DClawSimulationEnvironment import DClawSimulationEnvironment
 # from .simulation.DClawSimulationEnvironmentOptoForce import DClawSimulationEnvironmentOptoForce
-from .real.DClawRealEnvironment import DClawRealEnvironment
+# from .real.DClawRealEnvironment import DClawRealEnvironment
 
 '''
 ・環境を生成するクラスです
