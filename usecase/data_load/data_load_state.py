@@ -4,8 +4,8 @@ import numpy as np
 from natsort import natsorted
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
-import cv2
-cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+# import cv2
+# cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
@@ -15,9 +15,13 @@ from matplotlib import ticker, cm
 
 repository = Repository(
     dataset_dir  = "./dataset",
-    dataset_name = "dataset_20221022145521",
+    # dataset_name = "dataset_20221022145521",
+    dataset_name="dataset_202323161720"
 )
+# query_state = "object_position"
+query_state = "robot_position"
 
+# ------------------------------------------------
 db_files = os.listdir(repository.dataset_save_dir)
 db_files = natsorted(db_files)
 pprint.pprint(db_files)
@@ -28,14 +32,12 @@ for db in db_files:
     db_name, suffix = db.split(".")
     repository.open(filename=db_name)
     state = repository.repository["state"]
-    robot_position.append(state["robot_position"])
+    # import ipdb; ipdb.set_trace()
+    robot_position.append(state[query_state])
     repository.close()
 
 
 robot_position = np.stack(robot_position, axis=0)
-
-# import ipdb; ipdb.set_trace()
-
 
 
 plt.plot(robot_position[:, :, 0].transpose())

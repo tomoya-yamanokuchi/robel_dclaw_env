@@ -1,9 +1,13 @@
-import os, pprint
-from natsort import natsorted
-import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
+import os
+import pprint
+
 import cv2
 import numpy as np
+from natsort import natsorted
+# ------------------------------------
+import sys; import pathlib; p=pathlib.Path("./"); sys.path.append(str(p.parent.resolve()))
+from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
+
 cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 
 
@@ -22,7 +26,11 @@ repository = Repository(
     # dataset_name="dataset_202312721534"
     # dataset_name="dataset_202312721742"
     # dataset_name="dataset_202312721120"
-    dataset_name="dataset_2023128163352"
+    # dataset_name="dataset_2023128163352"
+    # dataset_name="dataset_dclaw_deterministic_unique_content_train2400"
+    # dataset_name="dataset_202323161720"
+    # dataset_name="dataset_202323162724"
+    dataset_name="dataset_dclaw_deterministic_valve_aligned_train2400"
 )
 
 db_files  = os.listdir(repository.dataset_save_dir)
@@ -41,7 +49,7 @@ for index, db in enumerate(db_files):
     for t in range(step):
         print("({}/{}) [{}] step: {}".format(index+1, num_files, db, t))
         cv2.imshow('img', np.concatenate((img_ran[t], img_can[t], img_diff[t]), axis=1))
-        cv2.waitKey(100)
+        cv2.waitKey(1000) if t == 0 else cv2.waitKey(100)
         # print(repository.repository["state"].robot_position)
     # import ipdb; ipdb.set_trace()
     repository.close()
