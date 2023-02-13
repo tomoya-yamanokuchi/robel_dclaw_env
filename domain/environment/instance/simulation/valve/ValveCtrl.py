@@ -7,7 +7,7 @@ import numpy as np
 '''
 
 @dataclass(frozen=True)
-class DClawCtrl:
+class ValveCtrl:
     task_space_abs_position : np.ndarray
     task_space_diff_position: np.ndarray
     end_effector_position   : np.ndarray

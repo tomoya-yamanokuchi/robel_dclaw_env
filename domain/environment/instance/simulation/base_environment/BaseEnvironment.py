@@ -1,49 +1,28 @@
-from distutils.log import info
-from ntpath import join
 import sys
-import pprint
-import pathlib
-
-p = pathlib.Path()
-sys.path.append(str(p.cwd()))
-
 import cv2
 import numpy as np
 import time
 from typing import List
+from pprint import pprint
 import copy
 import mujoco_py
 from mujoco_py.modder import LightModder, CameraModder
-import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
-from ..my_mujoco.modder import myTextureModder as TextureModder
-from numpy.lib.function_base import append
 from transforms3d.euler import euler2quat, quat2euler
-
-from custom_service.ImageObject import ImageObject
+# -------- import from service --------
 from custom_service import dictionary_operation as dictOps
-
-# 同階層ディレクトリからのインポート
+# -------- import from same level directory --------
+from .my_mujoco.modder import myTextureModder as TextureModder
 from .Texture import Texture
 from .TextureCollection import TextureCollection
-from .CanonicalRGB import CanonicalRGB
-
-# 上位ディレクトリからのインポート
-p_file = pathlib.Path(__file__)
-path_environment = "/".join(str(p_file).split("/")[:-2])
-sys.path.append(path_environment)
-from ..DClawState import DClawState
-from ..DClawCtrl import DClawCtrl
-from ..ImageObs import ImageObs
-from ..AbstractEnvironment import AbstractEnvironment
-from ..kinematics.ForwardKinematics import ForwardKinematics
-from ..kinematics.InverseKinematics import InverseKinematics
-from ..task_space.TaskSpace import TaskSpace
-
-# import cv2
-# cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+from ....Image import Image
+from .image.ImageObject import ImageObject
+from .AbstractEnvironment import AbstractEnvironment
+# -------- import from upper level directory --------
+import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
 
 
-class DClawSimulationEnvironment(AbstractEnvironment):
+
+class BaseEnvironment(AbstractEnvironment):
     def __init__(self, config):
         self.width_capture                 = config.width_capture
         self.height_capture                = config.height_capture
@@ -77,11 +56,9 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self.camera_modder                 = None
         self.is_texture_randomized         = False
 
-        self.forward_kinematics            = ForwardKinematics()
-        self.inverse_kinematics            = InverseKinematics()
-        self.task_space                    = TaskSpace()
-        self.canonical_rgb                 = CanonicalRGB()
 
+        # self.task_space                    = TaskSpace()
+        # self.canonical_rgb                 = CanonicalRGB()
 
 
     def load_model(self, model_file):
@@ -123,7 +100,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             for name in geom_names:
                 texture = Texture(name=name, id=id, info=dict())
                 self.texture_collection.add(texture)
-        # import ipdb; ipdb.set_trace()
+        import ipdb; ipdb.set_trace()
 
 
 
@@ -138,19 +115,10 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             self.viewer.render()
 
 
-    def _flip(self, img):
-        return img[::-1].copy()
-
-
-    def _reverse_channel(self, img):
-        # for convert Color BGR-to-RGB
-        return img[:,:,::-1].copy()
-
-
-    def _render_and_convert_color(self, camera_name):
+    def _render_flip_convert_color(self, camera_name):
         img = self.sim.render(width=self.width_capture, height=self.height_capture, camera_name=camera_name, depth=False)
-        img = self._flip(img)
-        img = self._reverse_channel(img)
+        img = img[::-1]     # flip
+        img = img[:,:,::-1] # reverse_channel
         return ImageObject(img)
 
 
@@ -195,7 +163,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             self.texture_modder.rand_all(name)
 
 
-    def randomize_texture(self):
+    def _randomize_texture(self):
         if self.randomize_texture_mode == "loaded_static":
            self._set_texture_static_all()
 
@@ -220,36 +188,17 @@ class DClawSimulationEnvironment(AbstractEnvironment):
     def task_relevant_randomize_texture(self):
         max_id = max(self.texture_collection.get_id()) # 多分バルブ環境でしか動かない（ハードコーディング部分）
         for texture in self.texture_collection.get_textures_from_id(id=max_id):
+            # import ipdb; ipdb.set_trace()
+            print(texture.info)
+            import ipdb; ipdb.set_trace()
             self.texture_modder.my_set_texture(texture.name, texture.info, is_noise_randomize=False)
-
-
-    def canonicalize_texture(self):
-        for name, rgb in self.canonical_rgb.rgb.items():
-            self.texture_modder.set_rgb(name, rgb)
+        import ipdb; ipdb.set_trace()
 
 
     def set_rgb(self):
         for texture in self.texture_collection.texture:
             self.texture_modder.set_rgb(texture.name, texture.info["rgb"])
 
-
-    def _render(self, camera_name: str="canonical"):
-        if   "canonical" in camera_name:
-            shadowsize = 0
-            self.canonicalize_texture()
-            self.task_relevant_randomize_texture() # あってもなくても動く
-            self.sim.model.light_ambient[:] = 0 # 試す
-
-        elif    "random" in camera_name:
-            shadowsize = 0
-            self.randomize_texture()
-            self.sim.model.light_ambient[:] = 0 # 試す
-
-        elif  "overview" in camera_name: shadowsize = 0;    self.randomize_texture()
-        else                           : raise NotImplementedError()
-        self.set_light_castshadow(shadowsize=shadowsize)
-        self.set_light_on(self.light_index_list)
-        return self._render_and_convert_color(camera_name)
 
 
     def set_light_castshadow(self, shadowsize):
@@ -260,46 +209,41 @@ class DClawSimulationEnvironment(AbstractEnvironment):
             self.light_modder.set_castshadow(name, is_castshadow)
 
 
-    def render(self, camera_name_list: str=None, iteration: int=1):
-        if self.is_Offscreen is False:
-            return None # "Please set is_Offscreen = True"
-
-        if camera_name_list is None:
-            camera_name_list = self.camera_name_list
-
-        img_dict = {}
-        for i in range(iteration):
-            for camera_name in camera_name_list:
-                img_dict[camera_name] = self._render(camera_name)
-        self.img_dict = img_dict
-
-        # --------------------------- debug start ----------------------------
-        # img_ran  = img_dict["random_nonfix"].channel_last
-        # img_can  = img_dict["canonical"].channel_last
-        # img_diff = np.abs(img_ran - img_can)
-        # cv2.imshow("img", np.concatenate((img_ran, img_can, img_diff), axis=1))
-        # cv2.waitKey(50)
-        # --------------------------- debug end ----------------------------
-
-        return ImageObs(
-            canonical     = img_dict["canonical"].channel_last,
-            random_nonfix = img_dict["random_nonfix"].channel_last,
+    def render_env(self, canonical_rgb_dict):
+        if not self.is_Offscreen: return None
+        return Image(
+            canonical     = self.render_canonical(canonical_rgb_dict),
+            random_nonfix = self.render_randomized(),
             mode          = "step"
         )
 
 
-    def check_camera_pos(self):
-        self.sim.reset()
-        for i in range(100):
-            diff = 0.1
-            self.model.cam_pos[0][0] = self.rs.uniform(self.default_cam_pos[0][0] - diff, self.default_cam_pos[0][0] + diff)  # x-axis
-            self.model.cam_pos[0][1] = self.rs.uniform(self.default_cam_pos[0][1] - diff, self.default_cam_pos[0][1] + diff)  # x-axis
-            self.model.cam_pos[0][2] = self.rs.uniform(self.default_cam_pos[0][2] - diff, self.default_cam_pos[0][2] + diff)  # z-axis
-            self.sim.step()
-            self.render()
+    def _canonicalize_texture(self, canonical_rgb_dict):
+        for name, rgb in canonical_rgb_dict.items():
+            self.texture_modder.set_rgb(name, rgb)
 
 
-    def set_camera_position(self, camera_parameter: dict):
+    def render_canonical(self, canonical_rgb_dict):
+        shadowsize = 0
+        self._canonicalize_texture(canonical_rgb_dict)
+        self.task_relevant_randomize_texture() # あってもなくても動く
+        self.sim.model.light_ambient[:] = 0    # 試す
+        self.set_light_castshadow(shadowsize=shadowsize)
+        self.set_light_on(self.light_index_list)
+        return self._render_flip_convert_color("canonical").channel_last
+
+
+    def render_randomized(self):
+        shadowsize = 0
+        self._randomize_texture()
+        self.sim.model.light_ambient[:] = 0 # 試す
+        self.set_light_castshadow(shadowsize=shadowsize)
+        self.set_light_on(self.light_index_list)
+        return self._render_flip_convert_color("random_nofix").channel_last
+
+
+
+    def __set_camera_position(self, camera_parameter: dict):
         pos    = [0]*3
         pos[0] = camera_parameter["x_coordinate"]
         pos[1] = camera_parameter["y_coordinate"]
@@ -334,7 +278,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
 
 
 
-    def set_light_position(self, light_position: dict):
+    def __set_light_position(self, light_position: dict):
         assert len(light_position.keys()) == 2
         self.use_light_index_list_random = [int(light_position["light1"]), int(light_position["light2"])]
 
@@ -383,32 +327,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         return state
 
 
-    def set_state(self, DClawState_: DClawState):
-        # qpos
-        qpos     = np.zeros(self.sim.model.nq)
-        if DClawState_.task_space_positioin is None:
-            qpos[:9] = DClawState_.robot_position
-        else:
-            end_effector_position = self.task_space.task2end(DClawState_.task_space_positioin)
-            joint_position        = self.inverse_kinematics.calc(end_effector_position)
-            qpos[:9]              = joint_position.squeeze()
-        qpos[-1] = DClawState_.object_position
-
-        # qvel
-        qvel     = np.zeros(self.sim.model.nq)
-        qvel[:9] = DClawState_.robot_velocity
-        qvel[-1] = DClawState_.object_velocity
-
-        old_state = self.sim.get_state()
-        new_state = mujoco_py.MjSimState(old_state.time, qpos, qvel, old_state.act, old_state.udd_state)
-        self.sim.set_state(new_state)
-        self.sim.data.ctrl[:9]      = qpos[:9]
-        self.sim.data.ctrl[9:]      = 0.0
-        # self.sim.data.sensordata[:] = sensordata
-        self.sim.forward()
-
-
-    def set_dynamics_parameter(self, randparams_dict: dict) -> None:
+    def __set_dynamics_parameter(self, randparams_dict: dict) -> None:
         set_dynamics_parameter_function = {
             "kp_claw"            :  self.set_claw_actuator_gain_position,
             "damping_claw"       :  self.set_claw_damping,
@@ -469,44 +388,46 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         return dynamics_parameter
 
 
-    def reset(self, DClawState_: DClawState):
-        assert isinstance(DClawState_, DClawState)
-        if self.randomize_texture_mode != "static": self.is_texture_randomized = False
-        if self.sim is None: self._create_mujoco_related_instance()
+    def reset_env(self, set_state, env_state):
+        self._reset_texture_randomization_state()
+        self._create_mujoco_related_instance()
         self.sim.reset()
-        self.set_jnt_range()
-        self.set_ctrl_range()
-        self.set_dynamics_parameter(self.dynamics)
-        self.set_camera_position(self.camera)
-        self.set_light_position(self.light)
-        self.set_target_visible(self.is_target_visible)
-        self.set_state(DClawState_)
-        if self.is_Offscreen: self.render(iteration=1)
+        self._set_environment_parameters()
+        set_state(env_state)
         self.sim.step()
 
 
+    def _reset_texture_randomization_state(self):
+        if self.randomize_texture_mode != "static":
+            self.is_texture_randomized = False
+
+
     def _create_mujoco_related_instance(self):
-        self.sim = mujoco_py.MjSim(self.model)
+        if self.sim is not None: return 0
+        self.sim             = mujoco_py.MjSim(self.model) ; print(" init --> MjSim")
+        self.texture_modder  = TextureModder(self.sim)     ; print(" init --> TextureModder")
+        self.camera_modder   = CameraModder(self.sim)      ; print(" init --> CameraModder")
+        self.light_modder    = LightModder(self.sim)       ; print(" init --> LightModder")
+        self.__createTexutureCollection()                  ; print(" init --> TexutureCollection()")
+        self.__create_viewer()                             ; print(" init --> MjViewer")
 
-        # self.num_force_sensor = len(self.sim.model.sensor_names)
-        # assert self.num_force_sensor == 3
 
-        if self.is_Offscreen:
-            self.viewer          = mujoco_py.MjRenderContextOffscreen(self.sim, 0)
-            self.cv2_window_name = 'viewer'
-            cv2.namedWindow(self.cv2_window_name, cv2.WINDOW_NORMAL)
-            print(" init --> viewer"); time.sleep(2)
-        else:
-            self.viewer = mujoco_py.MjViewer(self.sim)
-            print(" init --> "); time.sleep(2)
+    def _set_environment_parameters(self):
+        self.__set_jnt_range()
+        self.__set_ctrl_range()
+        self.__set_dynamics_parameter(self.dynamics)
+        self.__set_camera_position(self.camera)
+        self.__set_light_position(self.light)
+        self.__set_target_visible(self.is_target_visible)
 
-        # self.viewer.vopt.flags[mujoco_py.const.VIS_CONTACTFORCE] = 1 # force sensorではないbuild-inのcontactを可視化
-        # -------------------
-        self.texture_modder  = TextureModder(self.sim)                       ; print(" init --> texture_modder")
-        self.camera_modder   = CameraModder(self.sim)                        ; print(" init --> camera_modder")
-        self.light_modder    = LightModder(self.sim)                         ; print(" init --> light_modder")
-        self.default_cam_pos = self.camera_modder.get_pos("canonical")       ; print(" init --> default_cam_pos")
-        self.__createTexutureCollection()                                    ; print(" init --> _set_geom_names_randomize_target()")
+
+    def __create_viewer(self):
+        if not self.is_Offscreen:
+            self.viewer = mujoco_py.MjViewer(self.sim); time.sleep(1); return 0
+        self.viewer = mujoco_py.MjRenderContextOffscreen(self.sim, 0); time.sleep(1)
+        self.cv2_window_name = 'viewer'
+        cv2.namedWindow(self.cv2_window_name, cv2.WINDOW_NORMAL)
+
 
 
     def set_target_position(self, target_position):
@@ -520,7 +441,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self.sim.model.body_quat[self._target_bid] = euler2quat(0, 0, float(self._target_position))
 
 
-    def set_target_visible(self, is_visible):
+    def __set_target_visible(self, is_visible):
         if is_visible:
             if self.env_name == "blue": self.sim.model.site_rgba[self._target_sid] = [1.,  0.92156863, 0.23137255, 1]
             else                      : self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 1]
@@ -555,7 +476,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         return dclawCtrl
 
 
-    def set_jnt_range(self):
+    def __set_jnt_range(self):
         claw_jnt_range_num = len(self.claw_jnt_range_ub)
         # --- claw ---
         jnt_index = 0
@@ -577,7 +498,7 @@ class DClawSimulationEnvironment(AbstractEnvironment):
         self.sim.model.jnt_range[self._valve_jnt_id, 1] = self.valve_jnt_range_ub
 
 
-    def set_ctrl_range(self):
+    def __set_ctrl_range(self):
         claw_index = [
             [0, 1, 2],
             [3, 4, 5],

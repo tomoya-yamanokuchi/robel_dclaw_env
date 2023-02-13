@@ -15,7 +15,6 @@ class ImageObject:
         elif len(shape) !=3:
             raise NotImplementedError()
 
-
     @property
     def channel_last(self):
         return self.value

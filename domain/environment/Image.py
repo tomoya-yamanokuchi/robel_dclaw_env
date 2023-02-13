@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import numpy as np
-from custom_service.ImageObject import ImageObject
 
 '''
 ・Dclaw環境に状態を与える時に使用するクラスです
@@ -8,7 +7,7 @@ from custom_service.ImageObject import ImageObject
 '''
 
 @dataclass(frozen=True)
-class ImageObs:
+class Image:
     canonical    : np.ndarray
     random_nonfix: np.ndarray
     mode         : str = "step"
@@ -40,14 +39,14 @@ class ImageObs:
 if __name__ == '__main__':
     import numpy as np
 
-    img = ImageObs(
+    img = Image(
         canonical     = np.zeros([64, 64, 3]),
         random_nonfix = np.zeros([64, 64, 3]),
         mode          = "step"
     )
     print(img.canonical.shape)
 
-    img = ImageObs(
+    img = Image(
         canonical     = np.zeros([25, 62, 64, 3]),
         random_nonfix = np.zeros([25, 64, 64, 3]),
         mode          = "sequence"

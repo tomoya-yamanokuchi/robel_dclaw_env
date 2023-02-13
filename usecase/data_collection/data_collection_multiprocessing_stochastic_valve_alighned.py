@@ -7,7 +7,7 @@ import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from domain.environment.DClawState import DClawState as EnvState
 from domain.environment.DClawCtrl import DClawCtrl as CtrlState
-from domain.environment.ImageObs import ImageObs
+from domain.environment.simulation.base_environment.ImageObs import ImageObs
 from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
 
 from domain.environment.multiprocessing.EnvironmentMultiprocessing_develop import EnvironmentMultiprocessing

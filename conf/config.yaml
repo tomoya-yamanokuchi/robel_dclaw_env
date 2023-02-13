@@ -1,5 +1,5 @@
 defaults:
-  - env: sim/block
+  - env: sim/valve
   # - env: real
 
 run:

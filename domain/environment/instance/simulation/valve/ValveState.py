@@ -8,7 +8,7 @@ import numpy as np
 '''
 
 @dataclass(frozen=True)
-class DClawState:
+class ValveState:
     '''
     modeについて：
         永続化するときには系列になった値オブジェクトとして保存したいが，系列とステップごととで

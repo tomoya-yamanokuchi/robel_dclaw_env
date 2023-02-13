@@ -19,7 +19,7 @@ p_file = pathlib.Path(__file__)
 path_environment = "/".join(str(p_file).split("/")[:-2])
 sys.path.append(path_environment)
 from ..DClawState import DClawState
-from ..AbstractEnvironment import AbstractEnvironment
+from ..simulation.base_environment.AbstractEnvironment import AbstractEnvironment
 from ..kinematics.ForwardKinematics import ForwardKinematics
 from ..kinematics.InverseKinematics import InverseKinematics
 from ..task_space.TaskSpace import TaskSpace

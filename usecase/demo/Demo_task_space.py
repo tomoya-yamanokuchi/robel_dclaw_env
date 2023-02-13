@@ -2,14 +2,16 @@ import cv2
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
-from domain.environment.DClawState import DClawState as EnvState
+from domain.environment.StateFactory import StateFactory
 
 
 class Demo_task_space:
     def run(self, config):
-        env = EnvironmentFactory().create(env_name=config.env.env_name)
+        env   = EnvironmentFactory().create(env_name=config.env.env_name)
+        state = StateFactory().create(env_name=config.env.env_name)
+
         env = env(config.env)
-        init_state = EnvState(
+        init_state = state(
             robot_position        = np.array(config.env.robot_position_init),
             robot_velocity        = np.array(config.env.robot_velocity_init),
             object_position       = np.array(config.env.object_position_init),
