@@ -1,0 +1,56 @@
+env_name              : "sim"
+
+# --- load data ----
+# model_file            : "dclaw3xh_valve3_default.xml"
+# model_file            : "dclaw3xh_valve3_with_line.xml"
+model_file            : "dclaw3xh_trapezoid_block_mating.xml"
+env_color             : "rgb_valve"
+inplicit_step         : 200
+
+# --- render options ---
+width_capture         : 64
+height_capture        : 64
+camera_name_list      : ["random_nonfix", "canonical"]
+is_Offscreen          : True
+is_target_visible     : False
+
+# --- randomize setting ---
+randomize_texture_mode       : "per_step"
+is_noise_randomize_per_step  : False
+task_relevant_geom_group_name: "valve"
+
+# --- joint range limit (radian) ---
+claw_jnt_range_lb   : [-0.3491, -0.5236, -1e-6,   -0.3491, -0.5236, -1e-6,   -0.3491, -0.5236, -1e-6]
+claw_jnt_range_ub   : [ 0.7854,  0.5236,  1e-6,    0.7854,  0.5236,  1e-6,    0.7854,  0.5236,  1e-6]
+object_jnt_range_lb : -12.566370614359172 # -4*np.pi
+object_jnt_range_ub :  12.566370614359172 #  4*np.pi
+
+# --- initial state ----
+task_space_position_init: [0.14, 0.14, 0.14]
+robot_position_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+robot_velocity_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+object_position_init    : [0.0]
+object_velocity_init    : [0.0]
+force_init              : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+
+
+dynamics:
+    # ---- claw setting ----
+    kp_claw             : 20.0
+    damping_claw        : 0.1625
+    frictionloss_claw   : 0.05
+    # ---- valve setting ----
+    kp_valve            : 0.0
+    kv_valve            : 0.0
+    damping_valve       : 0.2
+    frictionloss_valve  : 0.3
+
+camera:
+    x_coordinate        : 0.0
+    y_coordinate        : 0.0
+    z_distance          : 0.325
+    orientation         : 0.0
+
+light:
+    light1              : 0
+    light2              : 16

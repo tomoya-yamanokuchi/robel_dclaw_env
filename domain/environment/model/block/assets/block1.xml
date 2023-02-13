@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<mujocoinclude name="block1">
+  <joint type="free" name="block1_jnt"/>
+  <body name="block1" pos=".0 0.00 .01" euler="0 0 0">
+    <!-- visual -->
+    <geom class="station_viz_block1" type="box" pos="0 0 0"      size=".01 .03 .01" name="block1_geom_vis1"/>
+    <geom class="station_viz_block1" type="box" pos=".02 .02 0"  size=".01 .01 .01" name="block1_geom_vis2"/>
+    <geom class="station_viz_block1" type="box" pos=".02 -.02 0" size=".01 .01 .01" name="block1_geom_vis3"/>
+    <!-- physical -->
+    <geom class="station_phy_plastic"     type="box" pos="0 0 0"      size=".01 .03 .01"/>
+    <geom class="station_phy_plastic"     type="box" pos=".02 .02 0"  size=".01 .01 .01"/>
+    <geom class="station_phy_plastic"     type="box" pos=".02 -.02 0" size=".01 .01 .01"/>
+  </body>
+</mujocoinclude>

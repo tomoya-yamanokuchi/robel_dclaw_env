@@ -14,7 +14,8 @@ from typing import List
 import copy
 import mujoco_py
 from mujoco_py.modder import LightModder, CameraModder
-from .my_mujoco.modder import myTextureModder as TextureModder
+import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
+from ..my_mujoco.modder import myTextureModder as TextureModder
 from numpy.lib.function_base import append
 from transforms3d.euler import euler2quat, quat2euler
 
@@ -40,7 +41,6 @@ from ..task_space.TaskSpace import TaskSpace
 
 # import cv2
 # cv2.namedWindow('img', cv2.WINDOW_NORMAL)
-
 
 
 class DClawSimulationEnvironment(AbstractEnvironment):
@@ -84,13 +84,13 @@ class DClawSimulationEnvironment(AbstractEnvironment):
 
 
 
-
     def load_model(self, model_file):
         repository_name  = "robel-dclaw-env"
         sys_path_leaf    = [path.split("/")[-1] for path in sys.path]   # 全てのパスの末端ディレクトリを取得
         assert repository_name in sys_path_leaf                         # 末端ディレクトリにリポジトリ名が含まれているか確認
         index_model_path = sys_path_leaf.index(repository_name)         # リポジトリがあるパスを抽出
         xml_path         = "{}/domain/environment/model/{}".format(sys.path[index_model_path], model_file)
+        # import ipdb; ipdb.set_trace()
         return mujoco_py.load_model_from_path(xml_path)
 
 

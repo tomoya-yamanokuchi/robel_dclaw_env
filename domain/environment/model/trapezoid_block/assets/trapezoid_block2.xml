@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<mujocoinclude name="trapezoid_block2">
+  <joint type="free" name="block2_jnt"/>
+  <body name="trapezoid_block2" pos=".0 0.00 .01" euler="0 0 0">
+    <!-- visual -->
+    <geom class="station_viz_trapezoid_block2"  type="box" pos="0 0 0"              size=".01 .0305 .01"  name="trapezoid_block2_geom_vis1"/>
+    <geom class="station_viz_trapezoid_block2"  type="box" pos="-.02 .0 0"          size=".01 .008 .01" name="trapezoid_block2_geom_vis2"/>
+    <geom class="station_viz_trapezoid_block2"  type="box" pos="-.01015 -0.0137 0"  size=".02 .005 .01" name="trapezoid_block2_geom_vis2_1" euler="0 0 -0.5235987755982988"/>
+    <geom class="station_viz_trapezoid_block2"  type="box" pos="-.01015  0.0137 0"  size=".02 .005 .01" name="trapezoid_block2_geom_vis2_2" euler="0 0  0.5235987755982988"/>
+
+    <!-- physical -->
+    <geom class="station_phy_plastic"           type="box" pos="0 0 0"              size=".01 .0305 .01" mass="0.1" />
+    <geom class="station_phy_plastic"           type="box" pos="-.02 .0 0"          size=".01 .008 .01"  mass="0.1" />
+    <geom class="station_phy_plastic"           type="box" pos="-.01015 -0.0137 0"  size=".02 .005 .01"  mass="0.1" euler="0 0 -0.5235987755982988"/>
+    <geom class="station_phy_plastic"           type="box" pos="-.01015  0.0137 0"  size=".02 .005 .01"  mass="0.1" euler="0 0  0.5235987755982988"/>
+  </body>
+</mujocoinclude>

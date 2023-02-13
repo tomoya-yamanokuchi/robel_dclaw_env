@@ -1,4 +1,5 @@
-from .simulation.DClawSimulationEnvironment import DClawSimulationEnvironment
+from .simulation.valve.DClawSimulationEnvironment import DClawSimulationEnvironment
+# from .simulation.p .DClawSimulationEnvironment import DClawSimulationEnvironment
 # from .simulation.DClawSimulationEnvironmentOptoForce import DClawSimulationEnvironmentOptoForce
 # from .real.DClawRealEnvironment import DClawRealEnvironment
 

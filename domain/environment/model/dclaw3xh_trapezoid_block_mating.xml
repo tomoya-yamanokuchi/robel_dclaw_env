@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<mujoco model="dclaw3xh_trapezoid_block_mating">
+  <include file="/scenes/scene_default.xml"/>
+  <include file="/robot/assets/dependencies_3xh_position.xml"/>
+  <include file="/trapezoid_block/assets/dependencies_trapezoid_block.xml"/>
+
+  <size njmax="8000" nconmax="4000"/>
+
+  <worldbody>
+    <camera name="cam_canonical_pos_fix"    mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="cam_random_pos_fix"       mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="cam_canonical_pos_nonfix" mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="cam_random_pos_nonfix"    mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+
+    <camera name="cam_canonical_overview"   mode= "fixed" euler="0 1 1.57" pos="0.3 0 0.4"/>
+    <camera name="cam_top"   mode= "fixed" euler="0 0 1.57" pos="0 0 3"/>
+
+    <!-- <camera name="targeting"      pos="1 1 2"     mode="targetbodycom"  target="dClaw"/> -->
+    <!-- <camera name="object_target"  pos="0 0 0.33"  mode="targetbody"     target="object"/> -->
+    <body name="mount" pos="0 0 0.195" euler="0 0 0">
+      <include file="./robot/assets/chain3xh_default.xml"/>
+      <include file="./robot/assets/chain3xh_overlay.xml"/>
+    </body>
+
+    <body name="object1" pos="-0.04 0.0 0.0001">
+      <include file="/trapezoid_block/assets/trapezoid_block1.xml"/>
+    </body>
+
+    <body name="object2" pos="0.025 0.0 0.0001">
+    <!-- <body name="object2" pos="0.0 0.0 0.0001"> -->
+    <!-- <body name="object2" pos="0.04 0.04 0.0001" quat="0.92387953 0.         0.       0.38268343"> -->
+      <include file="/trapezoid_block/assets/trapezoid_block2.xml"/>
+    </body>
+
+    <body name="target1" pos="-0.04 0.0 0.025">
+      <site name="tmark1_1" type="box" pos="0 0 0"      size=".01 .03 .01" rgba="0 0.7 0.0 1" />
+      <site name="tmark1_2" type="box" pos=".02 .02 0"  size=".01 .01 .01" rgba="0 0.7 0.0 1" />
+      <site name="tmark1_3" type="box" pos=".02 -.02 0" size=".01 .01 .01" rgba="0 0.7 0.0 1" />
+    </body>
+
+    <body name="target2" pos="0.04 0.04 0.025" quat="0.92387953 0.       0.    0.38268343">
+      <site name="tmark2_1" type="box" pos="0 0 0"      size=".01 .03 .01"  rgba="0 0.7 0.0 1" />
+      <site name="tmark2_2" type="box" pos="-.02 .0 0"  size=".01 .009 .01" rgba="0 0.7 0.0 1" />
+    </body>
+
+  </worldbody>
+</mujoco>

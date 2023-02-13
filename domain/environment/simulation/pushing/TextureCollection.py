@@ -1,4 +1,3 @@
-from matplotlib.pyplot import pink
 from .Texture import Texture
 import numpy as np
 

@@ -39,8 +39,10 @@ db_files  = natsorted(db_files)
 num_files = len(db_files)
 pprint.pprint(db_files)
 
+
+import ipdb; ipdb.set_trace()
 for index, db in enumerate(db_files):
-    # import ipdb; ipdb.set_trace()
+    import ipdb; ipdb.set_trace()
     db_name, suffix = db.split(".")
     repository.open(filename=db_name)
     img_can  = repository.repository["image"]["canonical"]

@@ -1,12 +1,12 @@
 defaults:
-  - env: sim
+  - env: sim/block
   # - env: real
 
 run:
   step    : 25
 
   # sequence: 275 # train (please consider [/ motion set num])
-  # sequence: 5 # valid (please consider [/ motion set num])
+  sequence: 5 # valid (please consider [/ motion set num])
 
-  sequence: 400 # train (please consider [/ motion set num])
+  # sequence: 400 # train (please consider [/ motion set num])
   # sequence: 50 # valid (please consider [/ motion set num])
