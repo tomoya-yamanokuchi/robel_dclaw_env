@@ -27,8 +27,6 @@ class Demo_task_space:
             env.reset(init_state)
             # import ipdb; ipdb.set_trace()
             print("\n*** reset ***\n")
-            env.canonicalize_texture() # canonicalテクスチャを設定
-            # env.randomize_texture()    # randomテクスチャを設定
             for i in range(step):
                 img   = env.render()
                 state = env.get_state()

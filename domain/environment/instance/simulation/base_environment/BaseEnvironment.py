@@ -57,10 +57,6 @@ class BaseEnvironment(AbstractEnvironment):
         self.is_texture_randomized         = False
 
 
-        # self.task_space                    = TaskSpace()
-        # self.canonical_rgb                 = CanonicalRGB()
-
-
     def load_model(self, model_file):
         repository_name  = "robel-dclaw-env"
         sys_path_leaf    = [path.split("/")[-1] for path in sys.path]   # 全てのパスの末端ディレクトリを取得
@@ -100,19 +96,18 @@ class BaseEnvironment(AbstractEnvironment):
             for name in geom_names:
                 texture = Texture(name=name, id=id, info=dict())
                 self.texture_collection.add(texture)
-        import ipdb; ipdb.set_trace()
-
+        # import ipdb; ipdb.set_trace()
 
 
     def view(self):
-        if self.is_Offscreen:
-            img_ran  = self.img_dict["random_nonfix"].channel_last
-            img_can  = self.img_dict["canonical"].channel_last
-            img_diff = img_ran - img_can
-            cv2.imshow(self.cv2_window_name, np.concatenate([img_ran, img_can, img_diff], axis=1))
-            cv2.waitKey(50)
-        else:
-            self.viewer.render()
+        if not self.is_Offscreen:
+            self.viewer.render(); return 0
+        img_ran  = self.image.random_nonfix
+        img_can  = self.image.canonical
+        img_diff = img_ran - img_can
+        cv2.imshow(self.cv2_window_name, np.concatenate([img_ran, img_can, img_diff], axis=1))
+        cv2.waitKey(50)
+
 
 
     def _render_flip_convert_color(self, camera_name):
@@ -211,35 +206,36 @@ class BaseEnvironment(AbstractEnvironment):
 
     def render_env(self, canonical_rgb_dict):
         if not self.is_Offscreen: return None
-        return Image(
-            canonical     = self.render_canonical(canonical_rgb_dict),
-            random_nonfix = self.render_randomized(),
+        self.image = Image(
+            canonical     = self._render_canonical(canonical_rgb_dict),
+            random_nonfix = self._render_randomized(),
             mode          = "step"
         )
+        return self.image
 
 
-    def _canonicalize_texture(self, canonical_rgb_dict):
+    def __canonicalize_texture(self, canonical_rgb_dict):
         for name, rgb in canonical_rgb_dict.items():
             self.texture_modder.set_rgb(name, rgb)
 
 
-    def render_canonical(self, canonical_rgb_dict):
+    def _render_canonical(self, canonical_rgb_dict):
         shadowsize = 0
-        self._canonicalize_texture(canonical_rgb_dict)
-        self.task_relevant_randomize_texture() # あってもなくても動く
+        self.__canonicalize_texture(canonical_rgb_dict)
+        # self.task_relevant_randomize_texture() # あってもなくても動く
         self.sim.model.light_ambient[:] = 0    # 試す
         self.set_light_castshadow(shadowsize=shadowsize)
         self.set_light_on(self.light_index_list)
         return self._render_flip_convert_color("canonical").channel_last
 
 
-    def render_randomized(self):
+    def _render_randomized(self):
         shadowsize = 0
         self._randomize_texture()
         self.sim.model.light_ambient[:] = 0 # 試す
         self.set_light_castshadow(shadowsize=shadowsize)
         self.set_light_on(self.light_index_list)
-        return self._render_flip_convert_color("random_nofix").channel_last
+        return self._render_flip_convert_color("random_nonfix").channel_last
 
 
 
@@ -452,28 +448,6 @@ class BaseEnvironment(AbstractEnvironment):
     def set_ctrl_joint(self, ctrl):
         assert ctrl.shape == (9,), '[expected: {0}, input: {1}]'.format((9,), ctrl.shape)
         self.sim.data.ctrl[:9] = ctrl
-
-
-    def set_ctrl_task_diff(self, ctrl_task_diff):
-        assert ctrl_task_diff.shape == (3,), '[expected: {0}, input: {1}]'.format((3,), ctrl_task_diff.shape)
-        # get current task_space_position
-        robot_position         = self.sim.data.qpos[:9]                                     # 現在の関節角度を取得
-        end_effector_position  = self.forward_kinematics.calc(robot_position).squeeze()     # エンドエフェクタ座標を計算
-        task_space_positioin   = self.task_space.end2task(end_effector_position).squeeze()  # エンドエフェクタ座標をタスクスペースの値に変換
-        # create new absolute task_space_position
-        ctrl_task              = task_space_positioin + ctrl_task_diff                      # 現在のタスクスペースの値に差分を足して新たな目標値を計算
-        # set new ctrl
-        ctrl_end_effector      = self.task_space.task2end(ctrl_task)                        # 新たな目標値に対応するエンドエフェクタ座標を計算
-        ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector)            # エンドエフェクタ座標からインバースキネマティクスで関節角度を計算
-        self.sim.data.ctrl[:9] = ctrl_joint.squeeze()                                       # 制御入力としてsimulationで設定
-
-        dclawCtrl = DClawCtrl(
-            task_space_abs_position  = ctrl_task.squeeze(),
-            task_space_diff_position = ctrl_task_diff.squeeze(),
-            end_effector_position    = ctrl_end_effector.squeeze(),
-            joint_space_position     = ctrl_joint.squeeze(),
-        )
-        return dclawCtrl
 
 
     def __set_jnt_range(self):
