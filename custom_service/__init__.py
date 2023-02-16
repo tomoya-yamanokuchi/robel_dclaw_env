@@ -3,6 +3,7 @@ from custom_service import data_shape_formating
 from custom_service import visualization
 from custom_service import convert_data
 from custom_service import dictionary_operation
+from custom_service.normalize import normalize
 # from domain.environment.simulation.base_environment.ImageObject import ImageObject
 # from custom_service.split_list import split_list
 

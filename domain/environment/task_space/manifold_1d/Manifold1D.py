@@ -5,11 +5,14 @@ from .ReferencePosition import ReferencePosition
 from custom_service import data_shape_formating
 
 # 上位ディレクトリからのインポート
-import sys, pprint
-p_file = pathlib.Path(__file__)
-path_environment = "/".join(str(p_file).split("/")[:-2])
-sys.path.append(path_environment)
-from kinematics.ForwardKinematics import ForwardKinematics
+# import sys, pprint
+# p_file = pathlib.Path(__file__)
+# path_environment = "/".join(str(p_file).split("/")[:-2])
+# sys.path.append(path_environment)
+
+import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
+from domain.environment.kinematics.ForwardKinematics import ForwardKinematics
+from  domain.environment.task_space.AbstractTaskSpace import AbstractTaskSpace
 
 '''
 [方策のobservationとしてtask_space_positionを使う場合の問題]
@@ -31,7 +34,7 @@ from kinematics.ForwardKinematics import ForwardKinematics
 '''
 
 
-class TaskSpace:
+class Manifold1D(AbstractTaskSpace):
     def __init__(self):
         self.min                             = 0.0
         self.max                             = 1.0

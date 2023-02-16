@@ -1,6 +1,7 @@
 defaults:
-  - env: sim/valve
-  # - env: real
+  # - env: sim/valve
+  - env: sim/pushing
+  # - env: real/valve
 
 run:
   step    : 25

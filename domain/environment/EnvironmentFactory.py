@@ -1,7 +1,8 @@
 from .instance.simulation.valve.ValveSimulationEnvironment import ValveSimulationEnvironment
+from .instance.simulation.pushing.PushingSimulationEnvironment import PushingSimulationEnvironment
 # from .simulation.p .DClawSimulationEnvironment import DClawSimulationEnvironment
 # from .simulation.DClawSimulationEnvironmentOptoForce import DClawSimulationEnvironmentOptoForce
-# from .real.DClawRealEnvironment import DClawRealEnvironment
+# from .instance.real.DClawRealEnvironment import DClawRealEnvironment
 
 '''
 ・環境を生成するクラスです
@@ -13,7 +14,7 @@ class EnvironmentFactory:
         assert type(env_name) == str
 
         if   env_name == "sim_valve"           : return ValveSimulationEnvironment
-        # elif env_name == "sim_with_force": return DClawSimulationEnvironmentOptoForce
+        if   env_name == "sim_pushing"         : return PushingSimulationEnvironment
         # elif env_name == "real"          : return DClawRealEnvironment
-        else                             : raise NotImplementedError()
+        raise NotImplementedError()
 

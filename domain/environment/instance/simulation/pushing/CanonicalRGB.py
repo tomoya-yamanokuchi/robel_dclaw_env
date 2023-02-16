@@ -51,11 +51,12 @@ class CanonicalRGB:
             "THL31_metal_clamping"      : robot_rgb,
             "THL32_metal_clamping"      : robot_rgb,
             "THL32_plastic_finger"      : finger_rgb,
-            # ------ valve ------
-            "vis_valve_3fin_handle_1"   : valve_rgb,
-            "vis_valve_3fin_handle_2"   : valve_rgb,
-            "vis_valve_3fin_handle_3"   : valve_rgb,
-            "vis_valve_3fin_center"     : valve_rgb,
+            # ------ block ------
+            "trapezoid_block1_geom_vis1"    : valve_rgb,
+            "trapezoid_block1_geom_vis2"    : valve_rgb,
+            "trapezoid_block1_geom_vis2_1"  : valve_rgb,
+            "trapezoid_block1_geom_vis3"    : valve_rgb,
+            "trapezoid_block1_geom_vis3_1"  : valve_rgb,
         }
     ))
 

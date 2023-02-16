@@ -45,16 +45,13 @@ class BaseEnvironment(AbstractEnvironment):
         self.camera                        = config.camera
         self.light                         = config.light
 
-        self._valve_jnt_id                 = self.model.joint_name2id('valve_OBJRx')
-        self._target_bid                   = self.model.body_name2id('target')
-        self._target_sid                   = self.model.site_name2id('tmark')
-
         self._target_position              = None
         self.sim                           = None
         self.viewer                        = None
         self.texture_modder                = None
         self.camera_modder                 = None
         self.is_texture_randomized         = False
+
 
 
     def load_model(self, model_file):
@@ -384,21 +381,12 @@ class BaseEnvironment(AbstractEnvironment):
         return dynamics_parameter
 
 
-    def reset_env(self, set_state, env_state):
-        self._reset_texture_randomization_state()
-        self._create_mujoco_related_instance()
-        self.sim.reset()
-        self._set_environment_parameters()
-        set_state(env_state)
-        self.sim.step()
-
-
-    def _reset_texture_randomization_state(self):
+    def reset_texture_randomization_state(self):
         if self.randomize_texture_mode != "static":
             self.is_texture_randomized = False
 
 
-    def _create_mujoco_related_instance(self):
+    def create_mujoco_related_instance(self):
         if self.sim is not None: return 0
         self.sim             = mujoco_py.MjSim(self.model) ; print(" init --> MjSim")
         self.texture_modder  = TextureModder(self.sim)     ; print(" init --> TextureModder")
@@ -408,13 +396,10 @@ class BaseEnvironment(AbstractEnvironment):
         self.__create_viewer()                             ; print(" init --> MjViewer")
 
 
-    def _set_environment_parameters(self):
-        self.__set_jnt_range()
-        self.__set_ctrl_range()
+    def set_environment_parameters(self):
         self.__set_dynamics_parameter(self.dynamics)
         self.__set_camera_position(self.camera)
         self.__set_light_position(self.light)
-        self.__set_target_visible(self.is_target_visible)
 
 
     def __create_viewer(self):
@@ -437,57 +422,9 @@ class BaseEnvironment(AbstractEnvironment):
         self.sim.model.body_quat[self._target_bid] = euler2quat(0, 0, float(self._target_position))
 
 
-    def __set_target_visible(self, is_visible):
-        if is_visible:
-            if self.env_name == "blue": self.sim.model.site_rgba[self._target_sid] = [1.,  0.92156863, 0.23137255, 1]
-            else                      : self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 1]
-        else:
-            self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 0]
-
-
     def set_ctrl_joint(self, ctrl):
         assert ctrl.shape == (9,), '[expected: {0}, input: {1}]'.format((9,), ctrl.shape)
         self.sim.data.ctrl[:9] = ctrl
-
-
-    def __set_jnt_range(self):
-        claw_jnt_range_num = len(self.claw_jnt_range_ub)
-        # --- claw ---
-        jnt_index = 0
-        if claw_jnt_range_num == 3:
-            for i in range(3):
-                for k in range(3):
-                    self.sim.model.jnt_range[jnt_index, 0] = self.claw_jnt_range_lb[k]
-                    self.sim.model.jnt_range[jnt_index, 1] = self.claw_jnt_range_ub[k]
-                    jnt_index += 1
-        elif claw_jnt_range_num == 9:
-            for jnt_index in range(9):
-                self.sim.model.jnt_range[jnt_index, 0] = self.claw_jnt_range_lb[jnt_index]
-                self.sim.model.jnt_range[jnt_index, 1] = self.claw_jnt_range_ub[jnt_index]
-        else:
-            raise NotImplementedError()
-
-        # --- valve ---
-        self.sim.model.jnt_range[self._valve_jnt_id, 0] = self.valve_jnt_range_lb
-        self.sim.model.jnt_range[self._valve_jnt_id, 1] = self.valve_jnt_range_ub
-
-
-    def __set_ctrl_range(self):
-        claw_index = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-        ]
-        for claw_index_unit in claw_index:
-            self.sim.model.actuator_ctrlrange[claw_index_unit[0], 0] = np.deg2rad(-90)
-            self.sim.model.actuator_ctrlrange[claw_index_unit[0], 1] = np.deg2rad(90)
-
-            self.sim.model.actuator_ctrlrange[claw_index_unit[1], 0] = np.deg2rad(-90)
-            self.sim.model.actuator_ctrlrange[claw_index_unit[1], 1] = np.deg2rad(90)
-
-            self.sim.model.actuator_ctrlrange[claw_index_unit[2], 0] = np.deg2rad(-90)
-            self.sim.model.actuator_ctrlrange[claw_index_unit[2], 1] = np.deg2rad(90)
-        return 0
 
 
     def _step_with_inplicit_step(self):

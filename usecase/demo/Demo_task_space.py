@@ -19,11 +19,15 @@ class Demo_task_space:
             end_effector_position = None,
             task_space_positioin  = np.array(config.env.task_space_position_init),
         )
+        # import ipdb; ipdb.set_trace()
 
         step           = 100
-        dim_task_space = 3  # 1本の指につき1次元の拘束をするので合計3次元
+
+        # dim_task_space = 3  # (valve) 1本の指につき1次元の拘束をするので合計3次元
+        dim_task_space = 6  # (pushing) 1本の指につき1次元の拘束をするので合計3次元
+
         ctrl_task_diff = np.zeros([step, dim_task_space]) + 0.02 # 範囲:[0, 1]
-        for s in range(5):
+        for s in range(3):
             env.reset(init_state)
             # import ipdb; ipdb.set_trace()
             print("\n*** reset ***\n")
