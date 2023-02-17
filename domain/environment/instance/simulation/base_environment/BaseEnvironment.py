@@ -302,24 +302,6 @@ class BaseEnvironment(AbstractEnvironment):
         return params
 
 
-    def get_state(self):
-        env_state             = copy.deepcopy(self.sim.get_state())
-        robot_position        = env_state.qpos[:9]
-        end_effector_position = self.forward_kinematics.calc(robot_position).squeeze()
-        task_space_positioin  = self.task_space.end2task(end_effector_position).squeeze()
-        # force                 = self.get_force()
-        state = DClawState(
-            robot_position        = robot_position,
-            object_position       = env_state.qpos[-1:],
-            robot_velocity        = env_state.qvel[:9],
-            object_velocity       = env_state.qvel[-1:],
-            # force                 = force,
-            end_effector_position = end_effector_position,
-            task_space_positioin  = task_space_positioin,
-        )
-        return state
-
-
     def __set_dynamics_parameter(self, randparams_dict: dict) -> None:
         set_dynamics_parameter_function = {
             "kp_claw"            :  self.set_claw_actuator_gain_position,
@@ -427,7 +409,7 @@ class BaseEnvironment(AbstractEnvironment):
         self.sim.data.ctrl[:9] = ctrl
 
 
-    def _step_with_inplicit_step(self):
+    def _step_with_inplicit_step(self, is_view):
         '''
         ・一回の sim.step() では，制御入力で与えた目標位置まで到達しないため，これを避けたい時に使います
         ・sim-to-realでは1ステップの状態遷移の違いがそのままダイナミクスのreality-gapとなるため，
@@ -436,7 +418,12 @@ class BaseEnvironment(AbstractEnvironment):
         '''
         for i in range(self.inplicit_step):
             self.sim.step()
+            if is_view: self.view()
+
+    def step(self, is_view=False):
+        self._step_with_inplicit_step(is_view)
 
 
-    def step(self):
-        self._step_with_inplicit_step()
+    @property
+    def ctrl(self):
+        return self.sim.data.ctrl

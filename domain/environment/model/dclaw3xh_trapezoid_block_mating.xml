@@ -7,10 +7,10 @@
   <size njmax="8000" nconmax="4000"/>
 
   <worldbody>
-    <camera name="canonical"            mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.4"/>
-    <camera name="random"               mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.4"/>
-    <camera name="canonical_nonfix"     mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.4"/>
-    <camera name="random_nonfix"        mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.4"/>
+    <camera name="canonical"            mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="random"               mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="canonical_nonfix"     mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="random_nonfix"        mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
     <camera name="canonical_overview"   mode= "fixed" euler="0 1 1.57" pos="0.3 0 0.4"/>
     <camera name="top"                  mode= "fixed" euler="0 0 1.57" pos="0 0 3"/>
 

@@ -9,7 +9,7 @@ inplicit_step         : 200
 width_capture         : 64
 height_capture        : 64
 camera_name_list      : ["random_nonfix", "canonical"]
-is_Offscreen          : True
+is_Offscreen          : False
 is_target_visible     : False
 
 # --- randomize setting ---
@@ -45,7 +45,7 @@ dynamics:
 camera:
     x_coordinate        : 0.0
     y_coordinate        : 0.0
-    z_distance          : 0.325
+    z_distance          : 0.192
     orientation         : 0.0
 
 light:

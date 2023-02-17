@@ -44,7 +44,8 @@ class PushingSimulationEnvironment(BaseEnvironment):
 
 
     def render(self):
-        return self.render_env(self.canonical_rgb.rgb)
+        if self.is_Offscreen    : return self.render_env(self.canonical_rgb.rgb)
+        if not self.is_Offscreen: return None
 
 
     def set_state(self, state):
@@ -97,8 +98,8 @@ class PushingSimulationEnvironment(BaseEnvironment):
     def set_ctrl_task_diff(self, ctrl_task_diff):
         assert ctrl_task_diff.shape == (self.dim_ctrl,), '[expected: {0}, input: {1}]'.format((3,), ctrl_task_diff.shape)
         # get current task_space_position
-        robot_position         = self.sim.data.qpos[:9]                                     # 現在の関節角度を取得
-        end_effector_position  = self.forward_kinematics.calc(robot_position).squeeze()     # エンドエフェクタ座標を計算
+        joint_position         = self.sim.data.qpos[:9]                                     # 現在の関節角度を取得
+        end_effector_position  = self.forward_kinematics.calc(joint_position).squeeze()     # エンドエフェクタ座標を計算
         task_space_positioin   = self.task_space.end2task(end_effector_position).squeeze()  # エンドエフェクタ座標をタスクスペースの値に変換
         # create new absolute task_space_position
         ctrl_task              = task_space_positioin + ctrl_task_diff                      # 現在のタスクスペースの値に差分を足して新たな目標値を計算

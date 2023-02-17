@@ -24,13 +24,7 @@ from domain.environment.kinematics.InverseKinematics import InverseKinematics
 from domain.environment.task_space.AbstractTaskSpace import AbstractTaskSpace
 
 
-
-
-
 class EndEffector2D(AbstractTaskSpace):
-
-
-
     def __init__(self):
         self.__joint_position_num    = 9
         self.num_claw                = 3
@@ -65,45 +59,6 @@ class EndEffector2D(AbstractTaskSpace):
         end_effector_position = [self._task2end_1claw(x) for x in np.split(task_space_position, self.num_claw, axis=-1)]
         return np.concatenate(end_effector_position, axis=-1)
 
-
-    # def get_task_space_position_from_joint_position_NTD(self, joint_position):
-    #     sequence, step, dim = joint_position.shape
-    #     return np.stack([self.get_task_space_position_from_joint_position_TD(joint_position[n]) for n in range(sequence)], axis=0)
-
-
-    # def get_task_space_position_from_joint_position_TD(self, joint_position):
-    #     step, dim = joint_position.shape
-    #     return np.concatenate([self.get_task_space_position_from_joint_position(JointSpacePosition(joint_position[t][np.newaxis,np.newaxis,:])).value for t in range(step)], axis=1)[0]
-
-
-
-    def get_ctrl_from_joint_position(self, JointPosition_):
-        assert JointSpacePosition.__module__ in type(JointPosition_).__module__
-
-        joint_space_position = JointPosition_.value[0]
-        _end_effector_position = [0]*self.__claw_num
-        for index_claw, joint_space_position_1claw in enumerate(np.split(joint_space_position, self.__claw_num, axis=-1)):
-            _end_effector_position[index_claw] = self._forward_kinematics.calc_1claw(joint_space_position_1claw)
-        EndEffectorPositionClawIdx0_ = EndEffectorPositionClawIdx0(np.concatenate(_end_effector_position, axis=-1)[np.newaxis, :, :])
-        return EndEffectorPositionClawIdx0_
-
-
-    # @abstractmethod
-    def get_task_space_position_from_ctrl(self, ctrl):
-        # assert isinstance(ctrl, EndEffectorPositionClawIdx0)
-        # assert EndEffectorPositionClawIdx0.__module__ in type(ctrl).__module__
-        end_effector_position = ctrl.value[0]
-        task_space_position   = self.get_task_space_position_from_end_effector_position_1claw(end_effector_position)
-        return TaskSpacePosition2D(task_space_position)
-
-    # # @abstractmethod
-    # def get_task_space_position_from_joint_position(self, joint_position, is_return_break_limit=0):
-    #     assert JointSpacePosition.__module__ in type(joint_position).__module__
-    #     end_effector_position        = self._forward_kinematics.calc_3claw(joint_position.value[0])
-    #     EndEffectorPositionClawIdx0_ = EndEffectorPositionClawIdx0(end_effector_position)
-    #     TaskSpacePosition_           = self.get_task_space_position_from_ctrl(EndEffectorPositionClawIdx0_)
-    #     if is_return_break_limit == 0: return TaskSpacePosition_
-    #     else:                          return TaskSpacePosition_, EndEffectorPositionClawIdx0_.break_limit
 
     # @abstractmethod
     def end2task(self, end_effector_position):

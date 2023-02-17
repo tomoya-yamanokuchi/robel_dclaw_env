@@ -1,4 +1,4 @@
-import cv2
+import cv2, time
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
@@ -9,6 +9,7 @@ class Demo_task_space:
     def run(self, config):
         env   = EnvironmentFactory().create(env_name=config.env.env_name)
         state = StateFactory().create(env_name=config.env.env_name)
+        # ctrl  = Ctrl
 
         env = env(config.env)
         init_state = state(
@@ -26,7 +27,7 @@ class Demo_task_space:
         # dim_task_space = 3  # (valve) 1本の指につき1次元の拘束をするので合計3次元
         dim_task_space = 6  # (pushing) 1本の指につき1次元の拘束をするので合計3次元
 
-        ctrl_task_diff = np.zeros([step, dim_task_space]) + 0.02 # 範囲:[0, 1]
+        ctrl_task_diff = np.zeros([step, dim_task_space]) # 範囲:[0, 1]
         for s in range(3):
             env.reset(init_state)
             # import ipdb; ipdb.set_trace()
@@ -38,8 +39,11 @@ class Demo_task_space:
                 print("task_space_position (claw1): {: .2f}".format(state.task_space_positioin[0]))
 
                 env.set_ctrl_task_diff(ctrl_task_diff[i])
-                env.view()
-                env.step()
+                print(env.ctrl)
+                # env.view()
+                env.step(is_view=True)
+                time.sleep(0.5)
+                import ipdb; ipdb.set_trace()
 
 
 if __name__ == "__main__":
