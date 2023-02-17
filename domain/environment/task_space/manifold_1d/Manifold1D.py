@@ -138,7 +138,7 @@ class Manifold1D(AbstractTaskSpace):
 if __name__ == '__main__':
 
     from custom_service import visualization as vis
-    taskspace = TaskSpace()
+    taskspace = Manifold1D()
 
     t = np.linspace(start=0.0, stop=2.0, num=200)
     t = t.reshape(-1, 1)
