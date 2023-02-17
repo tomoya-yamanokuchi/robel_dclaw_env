@@ -22,7 +22,7 @@ def scatter_3d(x):
     plt.show()
 
 
-def scatter_3d_color_map(x, cval, cmap='bwr', cmap_label=""):
+def scatter_3d_color_map(x, cval, marker_size=30, cmap='bwr', cmap_label=""):
     import matplotlib
     matplotlib.rcParams['pdf.fonttype'] = 42
     matplotlib.rcParams['ps.fonttype'] = 42
@@ -37,10 +37,16 @@ def scatter_3d_color_map(x, cval, cmap='bwr', cmap_label=""):
     scat = ax.scatter(x[:, 0], x[:, 1], x[:, 2],
         marker     = 'o',
         c          = cval,
+        s          = marker_size,
         cmap       = cmap,
         linewidths = 0.5,
         edgecolors = "gray"
     )
+
+    # import ipdb; ipdb.set_trace()
+    for i in range(x.shape[0]):
+        ax.text(x[i, 0], x[i, 1], x[i, 2], "{:.2}".format(cval[i]), color="gray")
+
     cb = fig.colorbar(scat)
     cb.set_label(cmap_label, size=16)
     # fig.tight_layout() # これが無いと表示が少し崩れる
