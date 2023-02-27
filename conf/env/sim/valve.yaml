@@ -34,15 +34,15 @@ force_init              : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
 
 
 dynamics:
-    # ---- claw setting ----
-    kp_claw             : 20.0
-    damping_claw        : 0.1625
-    frictionloss_claw   : 0.05
-    # ---- valve setting ----
-    kp_valve            : 0.0
-    kv_valve            : 0.0
-    damping_valve       : 0.2
-    frictionloss_valve  : 0.3
+    robot:
+        kp_claw             : 20.0
+        damping_claw        : 0.1625
+        frictionloss_claw   : 0.05
+    object:
+        kp_valve            : 0.0
+        kv_valve            : 0.0
+        damping_valve       : 0.2
+        frictionloss_valve  : 0.3
 
 camera:
     x_coordinate        : 0.0

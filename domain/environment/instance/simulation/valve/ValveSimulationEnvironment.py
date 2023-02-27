@@ -24,16 +24,19 @@ class ValveSimulationEnvironment(BaseEnvironment):
         self.task_space         = TaskSpace()
         self.canonical_rgb      = CanonicalRGB()
 
-        self._valve_jnt_id = self.model.joint_name2id('valve_OBJRx')
-        self._target_bid   = self.model.body_name2id('target')
-        self._target_sid   = self.model.site_name2id('tmark')
+        self.valve_jnt_range_lb = config.object_jnt_range_lb
+        self.valve_jnt_range_ub = config.object_jnt_range_ub
+
+        self._valve_jnt_id      = self.model.joint_name2id('valve_OBJRx')
+        self._target_bid        = self.model.body_name2id('target')
+        self._target_sid        = self.model.site_name2id('tmark')
 
 
     def reset(self, state):
         self.reset_texture_randomization_state()
         self.create_mujoco_related_instance()
         self.sim.reset()
-        self.set_environment_parameters()
+        self.set_environment_parameters(self._set_object_dynamics_parameter)
         self.set_target_visible()
         self.set_jnt_range()
         self.set_ctrl_range()
@@ -163,3 +166,28 @@ class ValveSimulationEnvironment(BaseEnvironment):
             else                      : self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 1]
         else:
             self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 0]
+
+
+    def _set_object_dynamics_parameter(self, randparams_dict: dict) -> None:
+        set_dynamics_parameter_function = {
+            "kp_valve"           :  self._set_valve_actuator_gain_position,
+            "kv_valve"           :  self._set_valve_actuator_gain_velocity,
+            "damping_valve"      :  self._set_valve_damping,
+            "frictionloss_valve" :  self._set_valve_frictionloss,
+        }
+        for key, value in randparams_dict.items():
+            set_dynamics_parameter_function[key](value)
+
+    def _set_valve_actuator_gain_position(self, kp):
+        self.sim.model.actuator_gainprm[-2, 0] =  kp
+        self.sim.model.actuator_biasprm[-2, 1] = -kp
+
+    def _set_valve_actuator_gain_velocity(self, kv):
+        self.sim.model.actuator_gainprm[-1, 0] =  kv
+        self.sim.model.actuator_biasprm[-1, 2] = -kv
+
+    def _set_valve_damping(self, value):
+        self.sim.model.dof_damping[-1] = value
+
+    def _set_valve_frictionloss(self, value):
+        self.sim.model.dof_frictionloss[-1] = value

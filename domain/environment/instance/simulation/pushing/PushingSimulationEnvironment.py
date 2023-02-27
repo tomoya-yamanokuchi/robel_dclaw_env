@@ -14,6 +14,8 @@ from domain.environment.instance.simulation.base_environment.BaseEnvironment imp
 from domain.environment.kinematics.ForwardKinematics import ForwardKinematics
 from domain.environment.kinematics.InverseKinematics import InverseKinematics
 from domain.environment.task_space.end_effector_action_pace.EndEffector2D import EndEffector2D as TaskSpace
+from domain.environment.kinematics.KinematicsDefinition import KinematicsDefinition
+from custom_service import print_info
 
 
 class PushingSimulationEnvironment(BaseEnvironment):
@@ -25,6 +27,7 @@ class PushingSimulationEnvironment(BaseEnvironment):
         self.canonical_rgb      = CanonicalRGB()
         self.dim_ctrl           = 6 # == dim_task_space_ctrl
 
+        self.kinematics         = KinematicsDefinition()
         # self._valve_jnt_id = self.model.joint_name2id('valve_OBJRx')
         # self._target_bid   = self.model.body_name2id('target')
         # self._target_sid   = self.model.site_name2id('tmark')
@@ -34,7 +37,7 @@ class PushingSimulationEnvironment(BaseEnvironment):
         self.reset_texture_randomization_state()
         self.create_mujoco_related_instance()
         self.sim.reset()
-        self.set_environment_parameters()
+        self.set_environment_parameters(self._set_object_dynamics_parameter)
         self.set_target_visible()
         self.set_jnt_range()
         self.set_ctrl_range()
@@ -52,12 +55,23 @@ class PushingSimulationEnvironment(BaseEnvironment):
         assert isinstance(state, State)
         qpos      = self._set_qpos(state)
         qvel      = self._set_qvel(state)
+
+        # print_info.print_joint_positions(qpos)
+
         old_state = self.sim.get_state()
         new_state = mujoco_py.MjSimState(old_state.time, qpos, qvel, old_state.act, old_state.udd_state)
         self.sim.set_state(new_state)
         self.sim.data.ctrl[:9] = qpos[:9]
         self.sim.data.ctrl[9:] = 0.0
+
         self.sim.forward()
+
+
+        # for i in range(1000000):
+        #     print_info.print_ctrl(self.ctrl)
+        #     self.sim.step()
+        #     self.view()
+        #     # import ipdb; ipdb.set_trace()
 
 
     def _set_qpos(self, state):
@@ -68,6 +82,7 @@ class PushingSimulationEnvironment(BaseEnvironment):
         joint_position        = self.inverse_kinematics.calc(end_effector_position.squeeze(0))
         qpos[:9]              = joint_position.squeeze()
         qpos[18:]             = state.object_position # <--- env specific!
+        # import ipdb; ipdb.set_trace()
         return qpos
 
 
@@ -103,10 +118,16 @@ class PushingSimulationEnvironment(BaseEnvironment):
         task_space_positioin   = self.task_space.end2task(end_effector_position).squeeze()  # エンドエフェクタ座標をタスクスペースの値に変換
         # create new absolute task_space_position
         ctrl_task              = task_space_positioin + ctrl_task_diff                      # 現在のタスクスペースの値に差分を足して新たな目標値を計算
+
+        print_info.print_task_space_positions(ctrl_task)
+
         # set new ctrl
+        # import ipdb; ipdb.set_trace()
         ctrl_end_effector      = self.task_space.task2end(ctrl_task).squeeze(axis=0)        # 新たな目標値に対応するエンドエフェクタ座標を計算
         ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector)            # エンドエフェクタ座標からインバースキネマティクスで関節角度を計算
         self.sim.data.ctrl[:9] = ctrl_joint.squeeze()                                       # 制御入力としてsimulationで設定
+
+        # import ipdb; ipdb.set_trace()
 
         dclawCtrl = Ctrl(
             task_space_abs_position  = ctrl_task.squeeze(),
@@ -135,6 +156,7 @@ class PushingSimulationEnvironment(BaseEnvironment):
         else:
             raise NotImplementedError()
 
+        # import ipdb; ipdb.set_trace()
         # # --- valve ---
         # self.sim.model.jnt_range[self._valve_jnt_id, 0] = self.valve_jnt_range_lb
         # self.sim.model.jnt_range[self._valve_jnt_id, 1] = self.valve_jnt_range_ub
@@ -147,16 +169,18 @@ class PushingSimulationEnvironment(BaseEnvironment):
             [6, 7, 8],
         ]
         for claw_index_unit in claw_index:
-            self.sim.model.actuator_ctrlrange[claw_index_unit[0], 0] = np.deg2rad(-90)
-            self.sim.model.actuator_ctrlrange[claw_index_unit[0], 1] = np.deg2rad(90)
+            self.sim.model.actuator_ctrlrange[claw_index_unit[0], 0] = self.kinematics.theta0_lb
+            self.sim.model.actuator_ctrlrange[claw_index_unit[0], 1] = self.kinematics.theta0_ub
 
-            self.sim.model.actuator_ctrlrange[claw_index_unit[1], 0] = np.deg2rad(-90)
-            self.sim.model.actuator_ctrlrange[claw_index_unit[1], 1] = np.deg2rad(90)
+            self.sim.model.actuator_ctrlrange[claw_index_unit[1], 0] = self.kinematics.theta1_lb
+            self.sim.model.actuator_ctrlrange[claw_index_unit[1], 1] = self.kinematics.theta1_ub
 
-            self.sim.model.actuator_ctrlrange[claw_index_unit[2], 0] = np.deg2rad(-90)
-            self.sim.model.actuator_ctrlrange[claw_index_unit[2], 1] = np.deg2rad(90)
+            self.sim.model.actuator_ctrlrange[claw_index_unit[2], 0] = self.kinematics.theta2_lb
+            self.sim.model.actuator_ctrlrange[claw_index_unit[2], 1] = self.kinematics.theta2_ub
+
+    def set_target_visible(self):
         return 0
 
 
-    def set_target_visible(self):
+    def _set_object_dynamics_parameter(self, randparams_dict: dict) -> None:
         return 0

@@ -1,5 +1,5 @@
 
-from .instance.simulation.pushing.PushingCtrl import PushingCtrl
+from .instance.simulation.pushing.PushingSetCtrl import PushingCtrl
 
 # from .  .DClawSimulationEnvironment import DClawSimulationEnvironment
 # from .simulation.p .DClawSimulationEnvironment import DClawSimulationEnvironment

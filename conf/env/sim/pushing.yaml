@@ -18,10 +18,9 @@ is_noise_randomize_per_step  : False
 task_relevant_geom_group_name: "valve"
 
 # --- joint range limit (radian) ---
-claw_jnt_range_lb   : [-0.3491, -0.5236, -1e-6,   -0.3491, -0.5236, -1e-6,   -0.3491, -0.5236, -1e-6]
-claw_jnt_range_ub   : [ 0.7854,  0.5236,  1e-6,    0.7854,  0.5236,  1e-6,    0.7854,  0.5236,  1e-6]
-object_jnt_range_lb : -12.566370614359172 # -4*np.pi
-object_jnt_range_ub :  12.566370614359172 #  4*np.pi
+claw_jnt_range_lb : [-0.51, -1.70, -2.00,   -0.51, -1.70, -2.00,   -0.51, -1.70, -2.00] # please refere to KinematicsDefinition
+claw_jnt_range_ub : [ 1.60,  1.70,  2.00,    1.60,  1.70,  2.00,    1.60,  1.70,  2.00] # please refere to KinematicsDefinition
+
 
 # --- initial state ----
 task_space_position_init: [0.5, 0.0,     0.5, 0.0,     0.5, 0.0]
@@ -32,15 +31,11 @@ object_velocity_init    : [0, 0, 0, 0, 0, 0]
 
 
 dynamics:
-    # ---- claw setting ----
-    kp_claw             : 20.0
-    damping_claw        : 0.1625
-    frictionloss_claw   : 0.05
-    # ---- valve setting ----
-    kp_valve            : 0.0
-    kv_valve            : 0.0
-    damping_valve       : 0.2
-    frictionloss_valve  : 0.3
+    robot:
+        kp_claw             : 20.0
+        damping_claw        : 0.1625
+        frictionloss_claw   : 0.05
+    object:
 
 camera:
     x_coordinate        : 0.0

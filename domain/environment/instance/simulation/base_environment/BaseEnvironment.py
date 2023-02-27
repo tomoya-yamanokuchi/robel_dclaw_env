@@ -32,8 +32,6 @@ class BaseEnvironment(AbstractEnvironment):
         self.env_color                     = config.env_color
         self.claw_jnt_range_lb             = config.claw_jnt_range_lb
         self.claw_jnt_range_ub             = config.claw_jnt_range_ub
-        self.valve_jnt_range_lb            = config.object_jnt_range_lb
-        self.valve_jnt_range_ub            = config.object_jnt_range_ub
         self.is_Offscreen                  = config.is_Offscreen
         self.is_target_visible             = config.is_target_visible
         self.model                         = self.load_model(config.model_file)
@@ -236,7 +234,7 @@ class BaseEnvironment(AbstractEnvironment):
 
 
 
-    def __set_camera_position(self, camera_parameter: dict):
+    def _set_camera_position(self, camera_parameter: dict):
         pos    = [0]*3
         pos[0] = camera_parameter["x_coordinate"]
         pos[1] = camera_parameter["y_coordinate"]
@@ -271,7 +269,7 @@ class BaseEnvironment(AbstractEnvironment):
 
 
 
-    def __set_light_position(self, light_position: dict):
+    def _set_light_position(self, light_position: dict):
         assert len(light_position.keys()) == 2
         self.use_light_index_list_random = [int(light_position["light1"]), int(light_position["light2"])]
 
@@ -302,65 +300,27 @@ class BaseEnvironment(AbstractEnvironment):
         return params
 
 
-    def __set_dynamics_parameter(self, randparams_dict: dict) -> None:
+    def _set_robot_dynamics_parameter(self, randparams_dict: dict) -> None:
         set_dynamics_parameter_function = {
-            "kp_claw"            :  self.set_claw_actuator_gain_position,
-            "damping_claw"       :  self.set_claw_damping,
-            "frictionloss_claw"  :  self.set_claw_frictionloss,
-            "kp_valve"           :  self.set_valve_actuator_gain_position,
-            "kv_valve"           :  self.set_valve_actuator_gain_velocity,
-            "damping_valve"      :  self.set_valve_damping,
-            "frictionloss_valve" :  self.set_valve_frictionloss,
+            "kp_claw"            :  self.__set_claw_actuator_gain_position,
+            "damping_claw"       :  self.__set_claw_damping,
+            "frictionloss_claw"  :  self.__set_claw_frictionloss,
         }
         for key, value in randparams_dict.items():
             set_dynamics_parameter_function[key](value)
 
 
-    def set_claw_actuator_gain_position(self, kp):
+    def __set_claw_actuator_gain_position(self, kp):
         self.sim.model.actuator_gainprm[:9, 0] =  kp
         self.sim.model.actuator_biasprm[:9, 1] = -kp
 
 
-    def set_claw_damping(self, value):
+    def __set_claw_damping(self, value):
         self.sim.model.dof_damping[:9] = value
 
 
-    def set_claw_frictionloss(self, value):
+    def __set_claw_frictionloss(self, value):
         self.sim.model.dof_frictionloss[:9] = value
-
-
-    def set_valve_actuator_gain_position(self, kp):
-        self.sim.model.actuator_gainprm[-2, 0] =  kp
-        self.sim.model.actuator_biasprm[-2, 1] = -kp
-
-
-    def set_valve_actuator_gain_velocity(self, kv):
-        self.sim.model.actuator_gainprm[-1, 0] =  kv
-        self.sim.model.actuator_biasprm[-1, 2] = -kv
-
-
-    def set_valve_damping(self, value):
-        self.sim.model.dof_damping[-1] = value
-
-
-    def set_valve_frictionloss(self, value):
-        self.sim.model.dof_frictionloss[-1] = value
-
-
-    def get_dynamics_parameter(self, isDict: bool = False):
-        assert type(isDict) == bool
-        dynamics_parameter = {
-                "kp_claw"            : self.sim.model.actuator_gainprm[0, 0],
-                "damping_claw"       : self.sim.model.dof_damping[0],
-                "frictionloss_claw"  : self.sim.model.dof_frictionloss[0],
-                "kp_valve"           : self.sim.model.actuator_gainprm[-2, 0],
-                "kv_valve"           : self.sim.model.actuator_gainprm[-1, 0],
-                "damping_valve"      : self.sim.model.dof_damping[-1],
-                "frictionloss_valve" : self.sim.model.dof_frictionloss[-1]
-        }
-        if isDict is False:
-            dynamics_parameter = dictOps.dict2numpyarray(dynamics_parameter)
-        return dynamics_parameter
 
 
     def reset_texture_randomization_state(self):
@@ -378,10 +338,11 @@ class BaseEnvironment(AbstractEnvironment):
         self.__create_viewer()                             ; print(" init --> MjViewer")
 
 
-    def set_environment_parameters(self):
-        self.__set_dynamics_parameter(self.dynamics)
-        self.__set_camera_position(self.camera)
-        self.__set_light_position(self.light)
+    def set_environment_parameters(self, _set_object_dynamics_parameter):
+        self._set_robot_dynamics_parameter(self.dynamics.robot)
+        _set_object_dynamics_parameter(self.dynamics.object)
+        self._set_camera_position(self.camera)
+        self._set_light_position(self.light)
 
 
     def __create_viewer(self):

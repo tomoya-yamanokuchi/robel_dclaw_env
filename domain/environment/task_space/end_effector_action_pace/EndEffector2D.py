@@ -45,18 +45,24 @@ class EndEffector2D(AbstractTaskSpace):
         self.task_space_minmax = [0.0, 1.0]
 
 
+    def denormalize(self, x_norm, x_min, x_max, m, M):
+        return ((x_norm - m) / (M - m)) * (x_max - x_min) + x_min
+
+
     def _task2end_1claw(self, task_space_position):
         z_task         = task_space_position[:, :, 0] # 順番間違えないように！
         y_task         = task_space_position[:, :, 1] # 順番間違えないように！
-        y_end_effector = normalize(x=y_task, x_min=self.task_space_minmax[0], x_max=self.task_space_minmax[1], m=self.y_minmax[0], M=self.y_minmax[1])
-        z_end_effector = normalize(x=z_task, x_min=self.task_space_minmax[0], x_max=self.task_space_minmax[1], m=self.z_minmax[0], M=self.z_minmax[1])
+        y_end_effector = self.denormalize(y_task, x_min=self.y_minmax[0], x_max=self.y_minmax[1],  m=self.task_space_minmax[0], M=self.task_space_minmax[1])
+        z_end_effector = self.denormalize(z_task, x_min=self.z_minmax[0], x_max=self.z_minmax[1],  m=self.task_space_minmax[0], M=self.task_space_minmax[1])
         x_end_effector = np.zeros(y_end_effector.shape) + self.x_base
+        # import ipdb; ipdb.set_trace()
         return np.stack([x_end_effector, y_end_effector, z_end_effector], axis=-1)
 
 
     def task2end(self, task_space_position):
         task_space_position   = data_shape_formating.D_to_NTD(task_space_position)
         end_effector_position = [self._task2end_1claw(x) for x in np.split(task_space_position, self.num_claw, axis=-1)]
+        # import ipdb; ipdb.set_trace()
         return np.concatenate(end_effector_position, axis=-1)
 
 
@@ -73,4 +79,13 @@ class EndEffector2D(AbstractTaskSpace):
         z      = end_effector_position_1claw[:, :, 2]
         y_task = normalize(x=y, x_min=self.y_minmax[0], x_max=self.y_minmax[1], m=self.task_space_minmax[0], M=self.task_space_minmax[1])
         z_task = normalize(x=z, x_min=self.z_minmax[0], x_max=self.z_minmax[1], m=self.task_space_minmax[0], M=self.task_space_minmax[1])
+        # import ipdb; ipdb.set_trace()
+        y_task = self.clip_task_spce(y_task)
+        z_task = self.clip_task_spce(z_task)
         return np.stack([z_task, y_task], axis=-1) # np.c_[z, y] # 順番間違えないように！
+
+
+    def clip_task_spce(self, v):
+        min = self.task_space_minmax[0]
+        max = self.task_space_minmax[1]
+        return np.minimum(np.maximum(v, min), max)
