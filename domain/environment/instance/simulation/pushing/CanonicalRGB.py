@@ -12,7 +12,7 @@ gray = int((255 * 0.5) + 0.5)
 floor_rgb  = np.array([255, 255, 255], dtype=np.uint8)
 robot_rgb  = np.array([ 38,  38,  38], dtype=np.uint8)
 finger_rgb = np.array([255, 127,   0], dtype=np.uint8)
-valve_rgb  = np.array([255, 255, 255], dtype=np.uint8)
+block_rgb  = np.array([255,   0,   0], dtype=np.uint8)
 
 
 @dataclass(frozen=False)
@@ -52,11 +52,11 @@ class CanonicalRGB:
             "THL32_metal_clamping"      : robot_rgb,
             "THL32_plastic_finger"      : finger_rgb,
             # ------ block ------
-            "trapezoid_block1_geom_vis1"    : valve_rgb,
-            "trapezoid_block1_geom_vis2"    : valve_rgb,
-            "trapezoid_block1_geom_vis2_1"  : valve_rgb,
-            "trapezoid_block1_geom_vis3"    : valve_rgb,
-            "trapezoid_block1_geom_vis3_1"  : valve_rgb,
+            "trapezoid_block1_geom_vis1"    : block_rgb,
+            "trapezoid_block1_geom_vis2"    : block_rgb,
+            "trapezoid_block1_geom_vis2_1"  : block_rgb,
+            "trapezoid_block1_geom_vis3"    : block_rgb,
+            "trapezoid_block1_geom_vis3_1"  : block_rgb,
         }
     ))
 

@@ -11,7 +11,7 @@ class EndEffectorPositionValueObject_2D_Plane:
     y_base = -68.5         #   vertical-axis for end-effector
     z_base = 0.0           # horizontal-axis for end-effector
 
-    margin = 1.0
+    margin = 5.0
     y_lb   = -68.5; y_ub   =  88.5 # 0.01だけマージンとってある
     z_lb   = -60.0; z_ub   =  60.0 # 0.01だけマージンとってある
 
@@ -25,15 +25,13 @@ class EndEffectorPositionValueObject_2D_Plane:
         assert len(self.value.shape) == 3
         assert self.value.shape[-1]  == 9
 
-        # x = self.value[:, :, 0::3]
-
         y = self.value[:, :, 1::3]
         assert (y > (self.y_lb - self.margin)).all()
         assert (y < (self.y_ub + self.margin)).all()
 
         z = self.value[:, :, 2::3]
-        assert (z > (self.z_lb - self.margin)).all()
-        assert (z < (self.z_ub + self.margin)).all()
+        assert (z > (self.z_lb - self.margin)).all(), print("[z_lb, z] = [{}, {}]".format(self.z_lb, z))
+        assert (z < (self.z_ub + self.margin)).all(), print("[z_ub, z] = [{}, {}]".format(self.z_lb, z))
 
 
 if __name__ == '__main__':

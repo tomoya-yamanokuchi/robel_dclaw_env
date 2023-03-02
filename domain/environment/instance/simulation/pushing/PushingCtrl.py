@@ -17,12 +17,12 @@ class PushingCtrl:
     def __post_init__(self):
         if self.mode == 'step':
             self.assert_type_shape_STEP(self.task_space_abs_position , dim=6)
-            self.assert_type_shape_STEP(self.task_space_diff_position, dim=6)
+            # self.assert_type_shape_STEP(self.task_space_diff_position, dim=6)
             self.assert_type_shape_STEP(self.end_effector_position   , dim=9)
             self.assert_type_shape_STEP(self.joint_space_position    , dim=9)
         elif self.mode == 'sequence':
             self.assert_type_shape_SEQUENCE(self.task_space_abs_position , dim=6)
-            self.assert_type_shape_SEQUENCE(self.task_space_diff_position, dim=6)
+            # self.assert_type_shape_SEQUENCE(self.task_space_diff_position, dim=6)
             self.assert_type_shape_SEQUENCE(self.end_effector_position   , dim=9)
             self.assert_type_shape_SEQUENCE(self.joint_space_position    , dim=9)
 

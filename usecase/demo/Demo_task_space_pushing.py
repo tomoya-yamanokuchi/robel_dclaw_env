@@ -1,4 +1,4 @@
-import cv2, time
+import cv2, time, copy
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
@@ -9,7 +9,6 @@ class Demo_task_space:
     def run(self, config):
         env   = EnvironmentFactory().create(env_name=config.env.env_name)
         state = StateFactory().create(env_name=config.env.env_name)
-        # ctrl  = Ctrl
 
         env = env(config.env)
         init_state = state(
@@ -26,52 +25,22 @@ class Demo_task_space:
         dim_task_space = 6
         ctrl_task_diff = np.zeros([step, dim_task_space]) # 範囲:[0, 1]
 
-        # import ipdb; ipdb.set_trace()
         ctrl_task_diff[:, ::2] += np.zeros([step, 3]) + 0.00
         for s in range(10):
             env.reset(init_state)
             print("\n*** reset ***\n")
+            task_t = env.get_state().task_space_positioin
+            task_g = copy.deepcopy(task_t)
 
-            env.set_ctrl_task_diff(np.zeros([1, dim_task_space]))
-            for i in range(20):
-                state = env.get_state()
-                env.view()
-                env.step(is_view=False)
-                # print_info.print_joint_positions(state.robot_position)
-                # print_info.print_ctrl(env.ctrl)
-
-                # print(env.ctrl[:3])
-                # print(state.robot_position[:3])
-                print(env.ctrl[:3] - state.robot_position[:3])
-            env.set_ctrl_task_diff(np.zeros([1, dim_task_space]))
-
-
-            for i in range(20):
-                state = env.get_state()
-                env.view()
-                env.step(is_view=False)
-                # print_info.print_joint_positions(state.robot_position)
-                # print_info.print_ctrl(env.ctrl)
-
-                # print(env.ctrl[:3])
-                # print(state.robot_position[:3])
-                print(env.ctrl[:3] - state.robot_position[:3])
-
-
-            import ipdb; ipdb.set_trace()
-            for i in range(step):
+            for i in range(100):
                 img   = env.render()
                 state = env.get_state()
-
-                # import ipdb; ipdb.set_trace()
-                # print("task_space_position  (claw1): {: .2f}".format(state.task_space_positioin[0]))
-                # print_info.print_joint_positions(state.robot_position)
-                # print_info.print_task_space_positions(state.task_space_positioin)
-                # print_info.print_task_space_positions(ctrl_task_diff[i])
-                # print_info.print_ctrl(env.ctrl)
-
-                env.set_ctrl_task_diff(ctrl_task_diff[i])
                 env.view()
+
+                task_g[0] += 0.02
+                task_g[1] += 0.02
+
+                env.set_ctrl_task_spce(task_g)
                 env.step(is_view=False)
 
 

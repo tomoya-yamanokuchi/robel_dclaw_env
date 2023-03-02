@@ -375,7 +375,6 @@ class BaseEnvironment(AbstractEnvironment):
         ・一回の sim.step() では，制御入力で与えた目標位置まで到達しないため，これを避けたい時に使います
         ・sim-to-realでは1ステップの状態遷移の違いがそのままダイナミクスのreality-gapとなるため，
         　これを避けるために複数回の sim.step() を内包する当該関数を作成してあります
-        ・必要ない場合には def step(self) 関数を使用して下さい
         '''
         for i in range(self.inplicit_step):
             self.sim.step()
