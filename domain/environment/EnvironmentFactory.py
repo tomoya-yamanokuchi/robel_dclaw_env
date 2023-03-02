@@ -13,7 +13,7 @@ class EnvironmentFactory:
     def create(self, env_name: str):
         assert type(env_name) == str
 
-        if   env_name == "sim_valve"           : return ValveSimulationEnvironment
+        # if   env_name == "sim_valve"           : return ValveSimulationEnvironment
         if   env_name == "sim_pushing"         : return PushingSimulationEnvironment
         # elif env_name == "real"          : return DClawRealEnvironment
         raise NotImplementedError()

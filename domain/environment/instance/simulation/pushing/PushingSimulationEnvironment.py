@@ -15,7 +15,9 @@ from domain.environment.kinematics.ForwardKinematics import ForwardKinematics
 from domain.environment.kinematics.InverseKinematics import InverseKinematics
 from domain.environment.task_space.end_effector_action_pace.EndEffector2D import EndEffector2D as TaskSpace
 from domain.environment.kinematics.KinematicsDefinition import KinematicsDefinition
-from custom_service import print_info
+from domain.environment.task_space.end_effector_action_pace.TaskSpacePositionValueObject_2D_Plane import TaskSpacePositionValueObject_2D_Plane as TaskSpaceValueObject
+from domain.environment.task_space.end_effector_action_pace.EndEffectorPositionValueObject_2D_Plane import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
+from custom_service import print_info, NTD
 
 
 class PushingSimulationEnvironment(BaseEnvironment):
@@ -25,7 +27,7 @@ class PushingSimulationEnvironment(BaseEnvironment):
         self.inverse_kinematics = InverseKinematics()
         self.task_space         = TaskSpace()
         self.canonical_rgb      = CanonicalRGB()
-        self.dim_ctrl           = 6 # == dim_task_space_ctrl
+        # self.dim_ctrl           = 6 # == dim_task_space_ctrl
 
         self.kinematics         = KinematicsDefinition()
         # self._valve_jnt_id = self.model.joint_name2id('valve_OBJRx')
@@ -77,9 +79,8 @@ class PushingSimulationEnvironment(BaseEnvironment):
     def _set_qpos(self, state):
         assert state.task_space_positioin is not None
         qpos = np.zeros(self.sim.model.nq)
-        # import ipdb; ipdb.set_trace()
-        end_effector_position = self.task_space.task2end(state.task_space_positioin)
-        joint_position        = self.inverse_kinematics.calc(end_effector_position.squeeze(0))
+        end_effector_position = self.task_space.task2end(TaskSpaceValueObject(NTD(state.task_space_positioin)))
+        joint_position        = self.inverse_kinematics.calc(end_effector_position.value.squeeze(0))
         qpos[:9]              = joint_position.squeeze()
         qpos[18:]             = state.object_position # <--- env specific!
         # import ipdb; ipdb.set_trace()
@@ -97,7 +98,7 @@ class PushingSimulationEnvironment(BaseEnvironment):
         state                 = copy.deepcopy(self.sim.get_state())
         robot_position        = state.qpos[:9]
         end_effector_position = self.forward_kinematics.calc(robot_position).squeeze()
-        task_space_positioin  = self.task_space.end2task(end_effector_position).squeeze()
+        task_space_positioin  = self.task_space.end2task(EndEffectorValueObject(NTD(end_effector_position))).value.squeeze()
         # force                 = self.get_force()
         state = State(
             robot_position        = robot_position,
@@ -110,32 +111,40 @@ class PushingSimulationEnvironment(BaseEnvironment):
         return state
 
 
-    def set_ctrl_task_diff(self, ctrl_task_diff):
-        assert ctrl_task_diff.shape == (self.dim_ctrl,), '[expected: {0}, input: {1}]'.format((3,), ctrl_task_diff.shape)
-        # get current task_space_position
-        joint_position         = self.sim.data.qpos[:9]                                     # 現在の関節角度を取得
-        end_effector_position  = self.forward_kinematics.calc(joint_position).squeeze()     # エンドエフェクタ座標を計算
-        task_space_positioin   = self.task_space.end2task(end_effector_position).squeeze()  # エンドエフェクタ座標をタスクスペースの値に変換
-        # create new absolute task_space_position
-        ctrl_task              = task_space_positioin + ctrl_task_diff                      # 現在のタスクスペースの値に差分を足して新たな目標値を計算
+    def set_ctrl_task_diff(self, ctrl_task_diff: np.ndarray):
+        # joint_position           = self.sim.data.qpos[:9]                                                        # 現在の関節角度を取得
 
-        print_info.print_task_space_positions(ctrl_task)
+        state                 = copy.deepcopy(self.sim.get_state())
+        joint_position        = state.qpos[:9]
 
-        # set new ctrl
-        # import ipdb; ipdb.set_trace()
-        ctrl_end_effector      = self.task_space.task2end(ctrl_task).squeeze(axis=0)        # 新たな目標値に対応するエンドエフェクタ座標を計算
-        ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector)            # エンドエフェクタ座標からインバースキネマティクスで関節角度を計算
-        self.sim.data.ctrl[:9] = ctrl_joint.squeeze()                                       # 制御入力としてsimulationで設定
+        end_effector_position    = self.forward_kinematics.calc(joint_position).squeeze()                        # エンドエフェクタ座標を計算
+        task_space_positioin     = self.task_space.end2task(EndEffectorValueObject(NTD(end_effector_position)))  # エンドエフェクタ座標をタスクスペースの値に変換
+        task_space_diff_position = TaskSpaceValueObject(NTD(ctrl_task_diff))                                     # 値オブジェクト化
+        ctrl_task                = task_space_positioin +  task_space_diff_position                              # 現在のタスクスペースの値に差分を足して新たな目標値を計算
 
-        # import ipdb; ipdb.set_trace()
+        ctrl_end_effector_position = self.task_space.task2end(ctrl_task).value.squeeze(axis=0) # 新たな目標値に対応するエンドエフェクタ座標を計算
+        ctrl_joint                 = self.inverse_kinematics.calc(ctrl_end_effector_position)  # エンドエフェクタ座標からインバースキネマティクスで関節角度を計算
+        self.sim.data.ctrl[:9]     = ctrl_joint.squeeze()                                    # 制御入力としてsimulationで設定
+
+        # print_info.print_joint_positions(ctrl_joint.squeeze())
 
         dclawCtrl = Ctrl(
-            task_space_abs_position  = ctrl_task.squeeze(),
-            task_space_diff_position = ctrl_task_diff.squeeze(),
-            end_effector_position    = ctrl_end_effector.squeeze(),
+            task_space_abs_position  = ctrl_task.value.squeeze(),
+            task_space_diff_position = task_space_diff_position.value.squeeze(),
+            end_effector_position    = ctrl_end_effector_position.squeeze(),
             joint_space_position     = ctrl_joint.squeeze(),
         )
         return dclawCtrl
+
+
+    # def set_ctrl_task_diff(self, ctrl_task_diff: np.ndarray):
+    #     # joint_position           = self.sim.data.qpos[:9]                                                        # 現在の関節角度を取得
+
+    #     state                  = copy.deepcopy(self.sim.get_state())
+    #     robot_position         = state.qpos[:9]
+    #     print(robot_position[:3])
+    #     self.sim.data.ctrl[:9] = robot_position.squeeze()                                    # 制御入力としてsimulationで設定
+    #     return robot_position
 
 
 

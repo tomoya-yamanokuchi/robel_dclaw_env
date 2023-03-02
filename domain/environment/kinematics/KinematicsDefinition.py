@@ -32,14 +32,16 @@ class KinematicsDefinition:
         '''
             サーボ角度の限界（物理的にこれ以上はダメ，実測値ベース）
         '''
-        self.theta0_lb = -0.51
-        self.theta0_ub = np.pi * 0.51
 
-        self.theta1_lb = -1.7
-        self.theta1_ub =  1.7
+        self.margin = 0.005
+        self.theta0_lb = -0.51        - self.margin
+        self.theta0_ub = np.pi * 0.51 + self.margin
 
-        self.theta2_lb = -2.0
-        self.theta2_ub =  2.0
+        self.theta1_lb = -1.7 - self.margin
+        self.theta1_ub =  1.7 + self.margin
+
+        self.theta2_lb = -2.0 - self.margin
+        self.theta2_ub =  2.0 + self.margin
 
 
 

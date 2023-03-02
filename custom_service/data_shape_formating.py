@@ -7,7 +7,7 @@
 '''
 
 
-def D_to_NTD(x):
+def NTD(x):
     '''
     (dim,) or (step, dim) or (sequence, step, dim) --> (sequence, step, dim)
     '''

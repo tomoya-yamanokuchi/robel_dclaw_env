@@ -27,10 +27,38 @@ class Demo_task_space:
         ctrl_task_diff = np.zeros([step, dim_task_space]) # 範囲:[0, 1]
 
         # import ipdb; ipdb.set_trace()
-        ctrl_task_diff[:, ::2] += np.zeros([step, 3]) + 0.02
+        ctrl_task_diff[:, ::2] += np.zeros([step, 3]) + 0.00
         for s in range(10):
             env.reset(init_state)
             print("\n*** reset ***\n")
+
+            env.set_ctrl_task_diff(np.zeros([1, dim_task_space]))
+            for i in range(20):
+                state = env.get_state()
+                env.view()
+                env.step(is_view=False)
+                # print_info.print_joint_positions(state.robot_position)
+                # print_info.print_ctrl(env.ctrl)
+
+                # print(env.ctrl[:3])
+                # print(state.robot_position[:3])
+                print(env.ctrl[:3] - state.robot_position[:3])
+            env.set_ctrl_task_diff(np.zeros([1, dim_task_space]))
+
+
+            for i in range(20):
+                state = env.get_state()
+                env.view()
+                env.step(is_view=False)
+                # print_info.print_joint_positions(state.robot_position)
+                # print_info.print_ctrl(env.ctrl)
+
+                # print(env.ctrl[:3])
+                # print(state.robot_position[:3])
+                print(env.ctrl[:3] - state.robot_position[:3])
+
+
+            import ipdb; ipdb.set_trace()
             for i in range(step):
                 img   = env.render()
                 state = env.get_state()
