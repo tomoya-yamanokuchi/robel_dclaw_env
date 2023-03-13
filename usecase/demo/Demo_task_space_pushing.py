@@ -34,13 +34,13 @@ class Demo_task_space:
             task_t = env.get_state().task_space_positioin
             task_g = copy.deepcopy(task_t)
 
-            for i in range(100):
+            for i in range(25):
                 img   = env.render()
                 state = env.get_state()
                 env.view()
 
                 task_g[0] += 0.00
-                task_g[1] += 0.02
+                task_g[1] += 0.1
 
                 env.set_ctrl_task_spce(task_g)
                 env.step(is_view=False)

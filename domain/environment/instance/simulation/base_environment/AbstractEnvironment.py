@@ -49,8 +49,13 @@ class AbstractEnvironment(metaclass=ABCMeta):
         - set_ctrl
         """
 
+    # @abstractmethod
+    # def set_ctrl_task_diff(self):
+    #     pass
+
+
     @abstractmethod
-    def set_ctrl_task_diff(self):
+    def set_ctrl_task_spce(self):
         pass
 
 

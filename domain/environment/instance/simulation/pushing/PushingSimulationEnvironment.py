@@ -23,25 +23,62 @@ from custom_service import print_info, NTD
 class PushingSimulationEnvironment(BaseEnvironment):
     def __init__(self, config):
         super().__init__(config)
+        self.config             = config
         self.forward_kinematics = ForwardKinematics()
         self.inverse_kinematics = InverseKinematics()
+        self.kinematics         = KinematicsDefinition()
         self.task_space         = TaskSpace()
-
-        # import ipdb; ipdb.set_trace()
-
-        object_geom_names  = [name for name in self.model.geom_names if ("object_geom" in name)]
-        self.canonical_rgb = CanonicalRGB(num_object_geom=len(object_geom_names))
         # self.dim_ctrl           = 6 # == dim_task_space_ctrl
 
-        self.kinematics         = KinematicsDefinition()
-        # self._valve_jnt_id = self.model.joint_name2id('valve_OBJRx')
-        # self._target_bid   = self.model.body_name2id('target')
-        # self._target_sid   = self.model.site_name2id('tmark')
+    def model_file_reset(self):
+        self._generate_model_file()
+        self.model         = self.load_model(self.config.model_file)
+        object_geom_names  = [name for name in self.model.geom_names if ("object_geom" in name)]
+        self.canonical_rgb = CanonicalRGB(num_object_geom=len(object_geom_names))
+        self.sim           = None
+
+
+    def _generate_model_file(self):
+        from domain.xml_generation.ConvexHull2D import ConvexHull2D
+        from domain.xml_generation.flattened_2d_meshgrid import flattened_2d_meshgrid
+        from domain.xml_generation.PlotConvexHull import PlotConvexHull
+        from domain.xml_generation.element_tree.PushingObjectXML import PushingObjectElementTree
+        from custom_service import normalize
+
+        convex        = ConvexHull2D(num_sample=7)
+        convex_origin = copy.deepcopy(convex)
+
+        # ---------- origin convex ---------
+        all_points           = flattened_2d_meshgrid(min=convex.min, max=convex.max, num_points_1axis=30)
+        inside_points_origin = convex_origin.get_inside_points(all_points)
+        plot_convex          = PlotConvexHull(convex_origin)
+        plot_convex.plot(all_points, inside_points_origin, "./convex_origin.png")
+
+        # ---------- aligned convex ---------
+        convex.hull.points[:, 0] += (inside_points_origin[:, 0].mean())*(-1)
+        convex.hull.points[:, 1] += (inside_points_origin[:, 1].mean())*(-1)
+        aligned_inside_points = convex.get_inside_points(all_points)
+        plot_convex           = PlotConvexHull(convex)
+        plot_convex.plot(all_points, aligned_inside_points, "./convex_alinged.png")
+
+        # ---------- aligned convex ---------
+        nomalized_inside_points  = normalize(aligned_inside_points, x_min=-1.0, x_max=1.0, m=-0.03, M=0.03)
+        total_object_body_mass   = 0.05
+        individual_geometry_mass = (total_object_body_mass / nomalized_inside_points.shape[0])
+
+        # ---------- generate model file ---------
+        pusing_etree = PushingObjectElementTree()
+        pusing_etree.add_joint_tree()
+        pusing_etree.add_body_tree(nomalized_inside_points, individual_geometry_mass)
+        pusing_etree.save_xml()
 
 
     def reset(self, state):
+        self.model_file_reset()
+        #  ----
         self.reset_texture_randomization_state()
         self.create_mujoco_related_instance()
+        self.create_viewer()
         self.sim.reset()
         self.set_environment_parameters(self._set_object_dynamics_parameter)
         self.set_target_visible()
@@ -115,57 +152,12 @@ class PushingSimulationEnvironment(BaseEnvironment):
         return state
 
 
-    def set_ctrl_task_diff(self, ctrl_task_diff: np.ndarray):
-        # joint_position           = self.sim.data.qpos[:9]                                                        # 現在の関節角度を取得
-        state                 = copy.deepcopy(self.sim.get_state())
-        joint_position        = state.qpos[:9]
-
-        # end_effector_position   = self.forward_kinematics.calc(joint_position)# .squeeze()                        # エンドエフェクタ座標を計算
-        # ctrl_joint              = self.inverse_kinematics.calc(end_effector_position)
-
-        # task_space_positioin     = self.task_space.end2task(EndEffectorValueObject(NTD(end_effector_position)))  # エンドエフェクタ座標をタスクスペースの値に変換
-        # task_space_diff_position = TaskSpaceValueObject(NTD(ctrl_task_diff))                                     # 値オブジェクト化
-        # ctrl_task                = task_space_positioin +  task_space_diff_position                              # 現在のタスクスペースの値に差分を足して新たな目標値を計算
-
-        # ctrl_end_effector_position = self.task_space.task2end(ctrl_task).value.squeeze(axis=0) # 新たな目標値に対応するエンドエフェクタ座標を計算
-        # ctrl_joint                 = self.inverse_kinematics.calc(ctrl_end_effector_position)  # エンドエフェクタ座標からインバースキネマティクスで関節角度を計算
-        # self.sim.data.ctrl[:9]     = ctrl_joint.squeeze()                                    # 制御入力としてsimulationで設定
-
-        self.sim.data.ctrl[:9]     = joint_position
-        # diff_joint = ctrl_joint.squeeze() - joint_position
-        # print(diff_joint[:3])
-        # print(ctrl_joint[:3])
-        print(joint_position[:3])
-        # import ipdb; ipdb.set_trace()
-
-        # dclawCtrl = Ctrl(
-        #     task_space_abs_position  = ctrl_task.value.squeeze(),
-        #     task_space_diff_position = task_space_diff_position.value.squeeze(),
-        #     end_effector_position    = ctrl_end_effector_position.squeeze(),
-        #     joint_space_position     = ctrl_joint.squeeze(),
-        # )
-        return 0 # dclawCtrl
-
-
     def set_ctrl_task_spce(self, task_space_abs_ctrl: np.ndarray):
-
-        # end_effector_position   = self.forward_kinematics.calc(joint_position)# .squeeze()                        # エンドエフェクタ座標を計算
-        # ctrl_joint              = self.inverse_kinematics.calc(end_effector_position)
-
-        # task_space_positioin     = self.task_space.end2task(EndEffectorValueObject(NTD(end_effector_position)))  # エンドエフェクタ座標をタスクスペースの値に変換
-        # task_space_diff_position = TaskSpaceValueObject(NTD(ctrl_task_diff))                                     # 値オブジェクト化
-        # ctrl_task                = task_space_positioin +  task_space_diff_position                              # 現在のタスクスペースの値に差分を足して新たな目標値を計算
-
-        task_space_position = TaskSpaceValueObject(NTD(task_space_abs_ctrl))
-        # print("task_space_position : ", task_space_position.value)
-
+        task_space_position    = TaskSpaceValueObject(NTD(task_space_abs_ctrl))
         ctrl_end_effector      = self.task_space.task2end(task_space_position)                              # 新たな目標値に対応するエンドエフェクタ座標を計算
         ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector.value.squeeze(axis=0))      # エンドエフェクタ座標からインバースキネマティクスで関節角度を計算
         self.sim.data.ctrl[:9] = ctrl_joint.squeeze()                                                       # 制御入力としてsimulationで設定
-
-        # print(ctrl_joint[:3])
-        # import ipdb; ipdb.set_trace()
-
+        # ---------------
         dclawCtrl = Ctrl(
             task_space_abs_position  = task_space_abs_ctrl.squeeze(),
             task_space_diff_position = None,
@@ -173,7 +165,6 @@ class PushingSimulationEnvironment(BaseEnvironment):
             joint_space_position     = ctrl_joint.squeeze(),
         )
         return dclawCtrl
-
 
 
     def set_jnt_range(self):

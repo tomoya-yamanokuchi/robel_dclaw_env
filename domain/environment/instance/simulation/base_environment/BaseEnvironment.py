@@ -34,7 +34,7 @@ class BaseEnvironment(AbstractEnvironment):
         self.claw_jnt_range_ub             = config.claw_jnt_range_ub
         self.is_Offscreen                  = config.is_Offscreen
         self.is_target_visible             = config.is_target_visible
-        self.model                         = self.load_model(config.model_file)
+        # self.model                         = self.load_model(config.model_file)
         self.light_index_list              = [i for i in config.light.values()]
         self.randomize_texture_mode        = config.randomize_texture_mode
         self.is_noise_randomize_per_step   = config.is_noise_randomize_per_step
@@ -335,7 +335,6 @@ class BaseEnvironment(AbstractEnvironment):
         self.camera_modder   = CameraModder(self.sim)      ; print(" init --> CameraModder")
         self.light_modder    = LightModder(self.sim)       ; print(" init --> LightModder")
         self.__createTexutureCollection()                  ; print(" init --> TexutureCollection()")
-        self.__create_viewer()                             ; print(" init --> MjViewer")
 
 
     def set_environment_parameters(self, _set_object_dynamics_parameter):
@@ -345,7 +344,7 @@ class BaseEnvironment(AbstractEnvironment):
         self._set_light_position(self.light)
 
 
-    def __create_viewer(self):
+    def create_viewer(self):
         if not self.is_Offscreen:
             self.viewer = mujoco_py.MjViewer(self.sim); time.sleep(1); return 0
         self.viewer = mujoco_py.MjRenderContextOffscreen(self.sim, 0); time.sleep(1)

@@ -22,6 +22,8 @@ class ValveSimulationEnvironment(BaseEnvironment):
         self.forward_kinematics = ForwardKinematics()
         self.inverse_kinematics = InverseKinematics()
         self.task_space         = TaskSpace()
+
+        self.model = self.load_model(config.model_file)
         self.canonical_rgb      = CanonicalRGB()
 
         self.valve_jnt_range_lb = config.object_jnt_range_lb
@@ -35,6 +37,7 @@ class ValveSimulationEnvironment(BaseEnvironment):
     def reset(self, state):
         self.reset_texture_randomization_state()
         self.create_mujoco_related_instance()
+        self.create_viewer()
         self.sim.reset()
         self.set_environment_parameters(self._set_object_dynamics_parameter)
         self.set_target_visible()
