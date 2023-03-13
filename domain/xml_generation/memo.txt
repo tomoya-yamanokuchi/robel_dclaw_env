@@ -1,0 +1,5 @@
+domain class
+
+・convex_full:  形状の生成，内外判定
+・ShitConvx  :  convex_fullで生成した凸包の重心を中心座標（0, 0）にシフトさせる
+・XML_gen    :  convex_fullの情報を受け取ってXMLに要素追加していく

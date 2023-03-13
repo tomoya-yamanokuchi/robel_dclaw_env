@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<mujocoinclude>
+  <compiler angle="radian" inertiafromgeom="auto" inertiagrouprange="3 5"/>
+  <option timestep="0.0025"/>
+  <asset>
+    <!-- texture -->
+    <texture name="object_tex" type="2d" file="./pattern/pattern_default_crop.png" rgb1="1 1 1"/>
+    <!-- material -->
+    <material name="object_mat" shininess="0.03" specular="0.75" texture="object_tex"/>
+  </asset>
+
+  <default>
+    <default class="pushing_object">
+      <joint limited="true" damping=".1" armature="0.001"/>
+      <geom contype="1" conaffinity="1" condim="4" group="2" margin="0.0005"/>
+      <site group="2"/>
+
+      <default class="pushing_object_viz">
+        <geom contype="0" conaffinity="0" material="object_mat"/>
+      </default>
+
+      <default class="pushing_object_phy">
+        <geom contype="1" conaffinity="1" group="4" type="mesh" rgba="0.0 0.0 1.0 .3" friction=".2 0.005 0.0001"/>
+        <site group="4"/>
+      </default>
+
+    </default>
+  </default>
+
+</mujocoinclude>

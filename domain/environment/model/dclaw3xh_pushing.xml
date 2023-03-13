@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<mujoco model="dclaw3xh_pushing">
+  <include file="/scenes/scene_default.xml"/>
+  <include file="/robot/assets/dependencies_3xh_position.xml"/>
+  <include file="/pushing_object/dependencies_pushing_object.xml"/>
+
+  <size njmax="8000" nconmax="4000"/>
+
+  <worldbody>
+    <camera name="canonical"            mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="random"               mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="canonical_nonfix"     mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="random_nonfix"        mode= "fixed" euler="0 0 1.5707963267948966" pos="0 0 0.192"/>
+    <camera name="canonical_overview"   mode= "fixed" euler="0 1 1.57" pos="0.3 0 0.4"/>
+    <camera name="top"                  mode= "fixed" euler="0 0 1.57" pos="0 0 3"/>
+
+
+    <body name="mount" pos="0 0 0.195" euler="0 0 0">
+      <include file="./robot/assets/chain3xh_default.xml"/>
+      <include file="./robot/assets/chain3xh_overlay.xml"/>
+    </body>
+
+    <body name="object1" pos="0 0 0">
+      <include file="/pushing_object/object_current.xml"/>
+    </body>
+
+    <!-- <body name="object2" pos="0.025 0.0 0.0001"> -->
+    <!-- <body name="object2" pos="0.0 0.0 0.0001"> -->
+    <!-- <body name="object2" pos="0.04 0.04 0.0001" quat="0.92387953 0.         0.       0.38268343"> -->
+      <!-- <include file="/trapezoid_block/assets/trapezoid_block2.xml"/> -->
+    <!-- </body> -->
+
+  </worldbody>
+</mujoco>

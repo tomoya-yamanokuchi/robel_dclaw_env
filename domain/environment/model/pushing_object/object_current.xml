@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujocoinclude name="pushing_object">
+	<joint name="object_jnt" type="free"/>
+	<body name="pushing_object" pos="0 0 .01001" euler="0 0 0">
+		<geom type="cylinder" size=".01 .01" pos="0.010493043103878812 0.008660991746757938 0" class="pushing_object_viz" name="geom_vis_0" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="0.010493043103878812 0.008660991746757938 0" class="pushing_object_phy" mass="0.05"/>
+		<geom type="cylinder" size=".01 .01" pos="0.005511346001736115 0.017280777909101867 0" class="pushing_object_viz" name="geom_vis_1" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="0.005511346001736115 0.017280777909101867 0" class="pushing_object_phy" mass="0.05"/>
+		<geom type="cylinder" size=".01 .01" pos="-0.006492881168415857 -0.004784195763579416 0" class="pushing_object_viz" name="geom_vis_2" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="-0.006492881168415857 -0.004784195763579416 0" class="pushing_object_phy" mass="0.05"/>
+		<geom type="cylinder" size=".01 .01" pos="0.01077885105058001 0.009688103328246859 0" class="pushing_object_viz" name="geom_vis_3" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="0.01077885105058001 0.009688103328246859 0" class="pushing_object_phy" mass="0.05"/>
+		<geom type="cylinder" size=".01 .01" pos="-0.008093447934601004 -0.0123738910381811 0" class="pushing_object_viz" name="geom_vis_4" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="-0.008093447934601004 -0.0123738910381811 0" class="pushing_object_phy" mass="0.05"/>
+		<geom type="cylinder" size=".01 .01" pos="0.018601165424376336 -0.0030831923719054407 0" class="pushing_object_viz" name="geom_vis_5" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="0.018601165424376336 -0.0030831923719054407 0" class="pushing_object_phy" mass="0.05"/>
+		<geom type="cylinder" size=".01 .01" pos="0.007829705506124805 0.00021523447153127116 0" class="pushing_object_viz" name="geom_vis_6" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="0.007829705506124805 0.00021523447153127116 0" class="pushing_object_phy" mass="0.05"/>
+		<geom type="cylinder" size=".01 .01" pos="0.007156637884175309 0.014014665066112424 0" class="pushing_object_viz" name="geom_vis_7" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="0.007156637884175309 0.014014665066112424 0" class="pushing_object_phy" mass="0.05"/>
+		<geom type="cylinder" size=".01 .01" pos="-0.011275021170675945 0.01655818219951886 0" class="pushing_object_viz" name="geom_vis_8" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="-0.011275021170675945 0.01655818219951886 0" class="pushing_object_phy" mass="0.05"/>
+		<geom type="cylinder" size=".01 .01" pos="0.014009614818072459 0.0020199007016588485 0" class="pushing_object_viz" name="geom_vis_9" rgba="1 0 0 1"/>
+		<geom type="cylinder" size=".01 .01" pos="0.014009614818072459 0.0020199007016588485 0" class="pushing_object_phy" mass="0.05"/>
+	</body>
+</mujocoinclude>

@@ -56,10 +56,10 @@ class SingleConvexFull:
                 edgecolor = 'cyan',
             )
         )
-        plt.scatter(   all_points[:, 0],   all_points[:, 1], marker='o',  c='red',  alpha = 0.31, label ='Random points inside hull')
-        plt.scatter(inside_points[:, 0], inside_points[:, 1], marker='o',  c='blue', alpha = 0.31, label ='Random points inside hull')
-        plt.legend()
-        # plt.savefig("fig.png", dpi = 300)
+        # plt.scatter(   all_points[:, 0],   all_points[:, 1], marker='o',  c='red',  alpha = 0.31, label ='Random points inside hull')
+        # plt.scatter(inside_points[:, 0], inside_points[:, 1], marker='o',  c='blue', alpha = 0.31, label ='Random points inside hull')
+        # plt.legend()
+        # # plt.savefig("fig.png", dpi = 300)
         plt.show()
 
 

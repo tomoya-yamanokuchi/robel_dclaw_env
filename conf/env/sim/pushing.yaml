@@ -1,7 +1,8 @@
 env_name              : "sim_pushing"
 
 # --- load data ----
-model_file            : "dclaw3xh_trapezoid_block_mating.xml"
+# model_file            : "dclaw3xh_trapezoid_block_mating.xml"
+model_file            : "dclaw3xh_pushing.xml"
 env_color             : "rgb_valve"
 inplicit_step         : 200
 
