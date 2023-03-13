@@ -19,6 +19,7 @@ class ConvexHull2D:
         return ConvexHull(random_2d_points)
 
     def _random_2d_points_generation(self):
+        np.random.seed()
         r      = np.random.rand(self.num_sample)               # range: [0, 1)
         theta  = 2*np.pi * np.random.rand(self.num_sample)     # range: [0, 2*pi)
         points = np.array([r*np.cos(theta),r*np.sin(theta)]).T # range: (-1, 1)

@@ -5,7 +5,7 @@ import numpy as np
 from pprint import pprint
 import mujoco_py
 # -------- import from same level directory --------
-from .PushingState import PushingState as State
+from .BlockMatingState import BlockMatingState as State
 from .PushingCtrl import PushingCtrl as Ctrl
 from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
@@ -20,17 +20,13 @@ from domain.environment.task_space.end_effector_action_pace.EndEffectorPositionV
 from custom_service import print_info, NTD
 
 
-class PushingSimulationEnvironment(BaseEnvironment):
+class BlockMatingSimulationEnvironment(BaseEnvironment):
     def __init__(self, config):
         super().__init__(config)
         self.forward_kinematics = ForwardKinematics()
         self.inverse_kinematics = InverseKinematics()
         self.task_space         = TaskSpace()
-
-        # import ipdb; ipdb.set_trace()
-
-        object_geom_names  = [name for name in self.model.geom_names if ("object_geom" in name)]
-        self.canonical_rgb = CanonicalRGB(num_object_geom=len(object_geom_names))
+        self.canonical_rgb      = CanonicalRGB()
         # self.dim_ctrl           = 6 # == dim_task_space_ctrl
 
         self.kinematics         = KinematicsDefinition()

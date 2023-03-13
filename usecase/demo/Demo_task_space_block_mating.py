@@ -34,20 +34,17 @@ class Demo_task_space:
             task_t = env.get_state().task_space_positioin
             task_g = copy.deepcopy(task_t)
 
+
             for i in range(100):
                 img   = env.render()
                 state = env.get_state()
                 env.view()
 
-                task_g[0] += 0.00
-                task_g[1] += 0.02
+                task_g[0] += 0.01
+                task_g[1] += 0.01
 
                 env.set_ctrl_task_spce(task_g)
                 env.step(is_view=False)
-
-                # import ipdb; ipdb.set_trace()
-                # print("body_inertia = ", env.sim.data.body_inertia[21])
-
 
             time_end = time.time()
             print("time epoch = ", time_end - time_start)

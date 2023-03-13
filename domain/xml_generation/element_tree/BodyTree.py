@@ -10,7 +10,7 @@ class BodyTree:
 
         # common parameter
         self.type = "cylinder"
-        self.size = ".01 .01"
+        self.size = ".0015 .01"
         self.rgba = "1 0 0 1"
         # self.add_geometry()
 
@@ -23,7 +23,7 @@ class BodyTree:
     def _add_visual_geometry(self, pos: str, id: int):
         geom = self.__add_common(pos)
         geom.set("class", "pushing_object_viz")
-        geom.set("name", "geom_vis_{}".format(id))
+        geom.set("name", "object_geom_vis_{}".format(id))
         geom.set("rgba", self.rgba)
 
 

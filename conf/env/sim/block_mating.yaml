@@ -1,7 +1,7 @@
-env_name              : "sim_pushing"
+env_name              : "sim_block_mating"
 
 # --- load data ----
-model_file            : "dclaw3xh_pushing.xml"
+model_file            : "dclaw3xh_trapezoid_block_mating.xml"
 env_color             : "rgb_valve"
 inplicit_step         : 200
 
@@ -9,7 +9,7 @@ inplicit_step         : 200
 width_capture         : 64
 height_capture        : 64
 camera_name_list      : ["random_nonfix", "canonical"]
-is_Offscreen          : False
+is_Offscreen          : True
 is_target_visible     : False
 
 # --- randomize setting ---
@@ -26,7 +26,7 @@ claw_jnt_range_ub : [ 1.60,  1.70,  2.00,    1.60,  1.70,  2.00,    1.60,  1.70,
 task_space_position_init: [0.5, 0.0,     0.5, 0.0,     0.5, 0.0]
 robot_position_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
 robot_velocity_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
-object_position_init    : [0.03, 0.0, 0.0, 1, 0, 0, 0]
+object_position_init    : [-0.05, 0.0, 0.0, 1, 0, 0, 0]
 object_velocity_init    : [0, 0, 0, 0, 0, 0]
 
 

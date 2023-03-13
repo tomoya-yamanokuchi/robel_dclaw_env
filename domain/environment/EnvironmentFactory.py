@@ -1,4 +1,5 @@
 from .instance.simulation.valve.ValveSimulationEnvironment import ValveSimulationEnvironment
+from .instance.simulation.block_mating.BlockMatingSimulationEnvironment import BlockMatingSimulationEnvironment
 from .instance.simulation.pushing.PushingSimulationEnvironment import PushingSimulationEnvironment
 # from .simulation.p .DClawSimulationEnvironment import DClawSimulationEnvironment
 # from .simulation.DClawSimulationEnvironmentOptoForce import DClawSimulationEnvironmentOptoForce
@@ -13,7 +14,8 @@ class EnvironmentFactory:
     def create(self, env_name: str):
         assert type(env_name) == str
 
-        # if   env_name == "sim_valve"           : return ValveSimulationEnvironment
+        if   env_name == "sim_valve"           : return ValveSimulationEnvironment
+        if   env_name == "sim_block_mating"    : return BlockMatingSimulationEnvironment
         if   env_name == "sim_pushing"         : return PushingSimulationEnvironment
         # elif env_name == "real"          : return DClawRealEnvironment
         raise NotImplementedError()

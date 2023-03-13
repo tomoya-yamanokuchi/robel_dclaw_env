@@ -3,9 +3,9 @@ import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from custom_service import join_with_mkdir
 import xml.dom.minidom as md
-from BodyTree import BodyTree
-from JointTree import JointTree
-from MujocoTree import MujocoTree
+from domain.xml_generation.element_tree.BodyTree import BodyTree
+from domain.xml_generation.element_tree.JointTree import JointTree
+from domain.xml_generation.element_tree.MujocoTree import MujocoTree
 
 
 
