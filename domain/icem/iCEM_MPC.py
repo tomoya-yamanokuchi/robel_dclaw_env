@@ -18,45 +18,44 @@ class iCEM_MPC:
             num_elite,
             planning_horizon,
             dim_action,
-            colored_noise_exponent,
             num_cem_iter,
             decay_sample,
-            alpha,
+            colored_noise_exponent,
             fraction_rate_elite,
             lower_bound,
             upper_bound,
+            alpha,
             verbose,
-            verbose_additional = False
+            verbose_additional = False,
         ):
-        # constant instance variables
-        self.forward_model          = forward_model
-        self.num_elite              = num_elite       # K
-        self.planning_horizon       = planning_horizon       # h
-        self.dim_action             = dim_action               # d
-        self.num_cem_iter           = num_cem_iter           # CEM-iterations
-        self.decay_sample           = decay_sample           # gamma
-        self.verbose                = verbose
-        self.verbose_additional     = verbose_additional
-        self.lower_bound            = lower_bound
-        self.upper_bound            = upper_bound
-        self.alpha                  = alpha
+        self.forward_model      = forward_model
+        self.num_sample         = num_sample
+        self.num_elite          = num_elite
+        self.planning_horizon   = planning_horizon
+        self.dim_action         = dim_action
+        self.num_cem_iter       = num_cem_iter
+        self.decay_sample       = decay_sample
+        self.lower_bound        = lower_bound
+        self.upper_bound        = upper_bound
+        self.alpha              = alpha
+        self.verbose            = verbose
+        self.verbose_additional = verbose_additional
+
 
         self.elite_set_queue = EliteSetQueue(
-            num_elite     = num_elite,
-            fraction_rate = fraction_rate_elite
+            num_elite     = self.num_elite,
+            fraction_rate = fraction_rate_elite,
         )
 
         self.colored_noise_sampler = ColoredNoiseSampler(
             beta             = colored_noise_exponent,
-            planning_horizon = planning_horizon,
-            dim_action       = dim_action,
+            planning_horizon = self.planning_horizon,
+            dim_action       = self.dim_action,
         )
 
         self.cost_history = CostHistory()
 
-        # dynamic instance variables (state)
-        self.num_sample             = num_sample             # Ni
-        self.iter_outer_loop        = None                   # T
+        self.iter_outer_loop = None
 
 
     def reset(self):
