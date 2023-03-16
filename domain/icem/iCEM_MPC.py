@@ -1,14 +1,11 @@
 import os
 import copy
-import pickle
-from warnings import warn
-
 import numpy as np
-from scipy.stats import truncnorm
 
 from .CostHistory import CostHistory
 from .EliteSetQueue import EliteSetQueue
 from .ColoredNoiseSampler import ColoredNoiseSampler
+from .TrajectoryVisualization import TrajectoryVisualization
 
 
 class iCEM_MPC:
@@ -27,6 +24,7 @@ class iCEM_MPC:
             alpha,
             verbose,
             verbose_additional = False,
+            is_visualize       = True,
         ):
         self.forward_model      = forward_model
         self.num_sample         = num_sample
@@ -40,7 +38,7 @@ class iCEM_MPC:
         self.alpha              = alpha
         self.verbose            = verbose
         self.verbose_additional = verbose_additional
-
+        self.is_visualize       = is_visualize
 
         self.elite_set_queue = EliteSetQueue(
             num_elite     = self.num_elite,
@@ -54,6 +52,7 @@ class iCEM_MPC:
         )
 
         self.cost_history = CostHistory()
+        self.vis          = TrajectoryVisualization(dim=dim_action, figsize=(7, 4))
 
         self.iter_outer_loop = None
 
@@ -130,7 +129,7 @@ class iCEM_MPC:
         self.std  = (1 - self.alpha) * new_std  + self.alpha * self.std
 
 
-    def optimize(self, state, cost_function):
+    def optimize(self, state, target, cost_function):
         for i in range(self.num_cem_iter):
             num_sample_i    = self._decay_population_size(i)
             samples         = self._sample(num_sample_i)
@@ -138,12 +137,14 @@ class iCEM_MPC:
             samples         = self._add_mean_action_at_last_iteration(samples, i)
             if self.verbose: print("total_sample_size = {: 4}".format(samples.shape[0]), end=' | ')
             simulated_paths = self.forward_model(state, samples)
-            cost            = cost_function(simulated_paths); assert len(cost.shape) == 1
+            # import ipdb; ipdb.set_trace()
+            cost            = cost_function(pred=simulated_paths, target=target); assert len(cost.shape) == 1
             index_elite     = self._get_index_elite(cost)
-            elite_set       = copy.deepcopy(samples[index_elite])
-            self.elite_set_queue.append(elite_set)
-            self._update_distributions(elite_set)
+            elites          = copy.deepcopy(samples[index_elite])
+            self.elite_set_queue.append(elites)
+            self._update_distributions(elites)
             self._append_cost_history(cost)
+            self._visualize_trajectory(simulated_paths, simulated_paths[index_elite], target, i)
         if self.verbose:
             print("-------------------------------------")
         return cost
@@ -159,3 +160,12 @@ class iCEM_MPC:
         self.cost_history.append_min(cost.min())
         self.cost_history.append_max(cost.max())
         self.cost_history.append_mean(cost.mean())
+
+
+    def _visualize_trajectory(self, simulated_paths, elite_path, target, iter_inner_loop):
+        if not self.is_visualize: return
+        self.vis.clear()
+        self.vis.plot_samples(simulated_paths)
+        self.vis.plot_elites(elite_path)
+        self.vis.plot_target(target)
+        self.vis.save_plot(save_path="./iCEM/traj_iCEM_iterOuter{}_iterInner{}.png".format(self.iter_outer_loop, iter_inner_loop))
