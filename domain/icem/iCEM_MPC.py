@@ -22,6 +22,7 @@ class iCEM_MPC:
             lower_bound,
             upper_bound,
             alpha,
+            init_std,
             verbose,
             verbose_additional = False,
             is_visualize       = True,
@@ -39,6 +40,7 @@ class iCEM_MPC:
         self.verbose            = verbose
         self.verbose_additional = verbose_additional
         self.is_visualize       = is_visualize
+        self.init_std           = init_std
 
         self.elite_set_queue = EliteSetQueue(
             num_elite     = self.num_elite,
@@ -58,28 +60,28 @@ class iCEM_MPC:
 
 
     def reset(self):
+        if self.iter_outer_loop is None:
+            self.iter_outer_loop = 0
+        else: self.iter_outer_loop += 1
         self.mean = self._get_init_mean()
         self.std  = self._get_init_std()
 
 
     def _get_init_mean(self):
-        # if self.iter_outer_loop != 0:
-            # return self.mean # shae をちゃんとする
-        '''
-        shitのやつ居れる
-        '''
-
+        if self.iter_outer_loop > 0:
+            # Shift mean time-wise
+            if self.verbose: print("<< shit mean iter_outer{} >> \n".format(self.iter_outer_loop))
+            shifted_mean = copy.deepcopy(self.mean[:, 1:])
+            return np.concatenate((shifted_mean, self.mean[:, -1:]), axis=1)
         init_mean = (self.lower_bound + self.upper_bound) / 2.0
         init_mean = init_mean + np.zeros([self.planning_horizon, self.dim_action])
-        # import ipdb; ipdb.set_trace()
         return init_mean[np.newaxis, :, :]
 
 
     def _get_init_std(self):
-        self.std_init = 1.0
-        init_std      = (self.upper_bound - self.lower_bound) / 2.0 * self.std_init
-        init_std      = init_std + np.ones([self.planning_horizon, self.dim_action])
-        return init_std[np.newaxis, :, :]
+        std_init = (self.upper_bound - self.lower_bound) / 2.0 * self.init_std
+        std_init = std_init + np.ones([self.planning_horizon, self.dim_action])
+        return std_init[np.newaxis, :, :]
 
 
     def _decay_population_size(self, iter_inner_loop):
@@ -87,8 +89,8 @@ class iCEM_MPC:
         decayed_sample = self.num_sample / (self.decay_sample**iter_inner_loop)
         num_sample     = max(minimum_sample, int(decayed_sample))
         if self.verbose:
-            print("[iCEM iter {}/{}] decayed_sample_size = {: 4}".format(
-                iter_inner_loop, self.num_cem_iter-1, num_sample), end=' | ')
+            print("[iCEM iter_outer={} inner={}/{}] decayed_sample_size = {: 4}".format(
+                self.iter_outer_loop, iter_inner_loop, self.num_cem_iter-1, num_sample), end=' | ')
         return num_sample
 
 
@@ -168,4 +170,8 @@ class iCEM_MPC:
         self.vis.plot_samples(simulated_paths)
         self.vis.plot_elites(elite_path)
         self.vis.plot_target(target)
-        self.vis.save_plot(save_path="./iCEM/traj_iCEM_iterOuter{}_iterInner{}.png".format(self.iter_outer_loop, iter_inner_loop))
+        self.vis.save_plot(
+            save_path = "./iCEM/traj_iCEM_iterOuter{}_iterInner{}.png".format(
+                self.iter_outer_loop, iter_inner_loop),
+            title     = "iCEM iter_outer_loop={}".format(self.iter_outer_loop),
+        )

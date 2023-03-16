@@ -27,3 +27,9 @@ class CostHistory:
 
     def get_cost_mean(self):
         return np.array(self.cost_mean)
+
+
+    def clear(self):
+        self.cost_min  = []
+        self.cost_max  = []
+        self.cost_mean = []
