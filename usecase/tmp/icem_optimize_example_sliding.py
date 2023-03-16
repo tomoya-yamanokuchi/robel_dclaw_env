@@ -1,9 +1,7 @@
-import numpy as np
-import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.icem.iCEM_MPC import iCEM_MPC
-from domain.icem.cost_function_example import norm_sum_over_timestep
-from domain.icem.forward_model_example import forward_model_with_fixed_initial_point
-from domain.icem.target_example import sliding_cos_sin_target
+from icem_mpc.iCEM_MPC import iCEM_MPC
+from icem_mpc.utility.cost_function_example import norm_sum_over_timestep
+from icem_mpc.utility.forward_model_example import forward_model_with_fixed_initial_point
+from icem_mpc.utility.target_example import sliding_cos_sin_target
 
 
 horizon        = 30
@@ -23,12 +21,12 @@ icem = iCEM_MPC(
     dim_action             = 2,
     colored_noise_exponent = 3.0,
     lower_bound            = -1.0, # -0.1,
-    upper_bound            = 1.0, # 0.1,
+    upper_bound            = 1.0,  # 0.1,
     alpha                  = 0.1,
     init_std               = 0.5,
     verbose                = True,
     verbose_additional     = False,
-    is_visualize           = True,
+    save_visualization_dir = "./fig"
 )
 
 
