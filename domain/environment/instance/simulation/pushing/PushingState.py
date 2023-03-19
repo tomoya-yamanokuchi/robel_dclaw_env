@@ -7,6 +7,8 @@ import numpy as np
 ・与えるべき状態のルールが記述されています
 '''
 
+
+
 @dataclass(frozen=True)
 class PushingState:
     '''
@@ -55,7 +57,7 @@ class PushingState:
 
 
     def get_step(self, index):
-        return DClawState(
+        return PushingState(
             robot_position        = self.robot_position[index]          if self.robot_position        is not None else None,
             robot_velocity        = self.robot_velocity[index]          if self.robot_velocity        is not None else None,
             object_position       = self.object_position[index]         if self.object_position       is not None else None,
@@ -69,7 +71,7 @@ class PushingState:
 if __name__ == '__main__':
     import numpy as np
 
-    state = DClawState(
+    state = PushingState(
         robot_position        = np.zeros(9),
         object_position       = np.zeros(1),
         robot_velocity        = np.zeros(9),

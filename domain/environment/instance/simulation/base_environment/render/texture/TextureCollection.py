@@ -1,4 +1,4 @@
-from .Texture import Texture
+from .TextureObject import TextureObject
 import numpy as np
 
 
@@ -6,8 +6,8 @@ class TextureCollection:
     def __init__(self):
         self.texture = []
 
-    def add(self, texture: Texture):
-        assert isinstance(texture, Texture)
+    def add(self, texture: TextureObject):
+        assert isinstance(texture, TextureObject)
         self.texture.append(texture)
 
     def size(self):
@@ -26,6 +26,10 @@ class TextureCollection:
     def get_info(self):
         return [texture.info for texture in self.texture]
 
+    def is_empty_info(self):
+        for texture in self.texture:
+            if texture.info == {}: return True
+        return False
 
     def assign_info_with_id(self, id: int, info: dict):
         '''
@@ -54,16 +58,18 @@ class TextureCollection:
         return list(filter(lambda texture: texture.id==id, self.texture))
 
 
+
+
 if __name__ == '__main__':
     import numpy as np
 
-    texture1 = Texture(
+    texture1 = TextureObject(
         name = "valve_x",
         id   = 3,
         info = dict(),
     )
 
-    texture2 = Texture(
+    texture2 = TextureObject(
         name = "roboto_x",
         id   = 1,
         info = dict(),

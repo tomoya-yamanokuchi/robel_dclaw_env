@@ -7,7 +7,7 @@ import numpy as np
 '''
 
 @dataclass(frozen=True)
-class Image:
+class ReturnImage:
     canonical    : np.ndarray
     random_nonfix: np.ndarray
     mode         : str = "step"

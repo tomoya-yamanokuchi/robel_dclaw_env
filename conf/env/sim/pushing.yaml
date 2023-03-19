@@ -1,21 +1,26 @@
 env_name              : "sim_pushing"
+verbose               : False
 
 # --- load data ----
 model_file            : "dclaw3xh_pushing.xml"
 env_color             : "rgb_valve"
 inplicit_step         : 200
 
-# --- render options ---
-width_capture         : 64
-height_capture        : 64
-camera_name_list      : ["random_nonfix", "canonical"]
-is_Offscreen          : True
-is_target_visible     : False
 
-# --- randomize setting ---
-randomize_texture_mode       : "per_step"
-is_noise_randomize_per_step  : False
-task_relevant_geom_group_name: "valve"
+viewer:
+    is_Offscreen     : True
+
+render:
+    camera_name_list : ["random_nonfix", "canonical"]
+    width_capture    : 64
+    height_capture   : 64
+
+
+texture:
+    randomization_mode           : "per_step"
+    is_dynamc_noise              : False
+    task_relevant_geom_group_name: "object_geom_vis"
+
 
 # --- joint range limit (radian) ---
 claw_jnt_range_lb : [-0.51, -1.70, -2.00,   -0.51, -1.70, -2.00,   -0.51, -1.70, -2.00] # please refere to KinematicsDefinition
@@ -44,5 +49,5 @@ camera:
     orientation         : 0.0
 
 light:
-    light1              : 0
-    light2              : 16
+    light1 : 0
+    light2 : 16

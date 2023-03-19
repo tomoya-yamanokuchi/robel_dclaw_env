@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=False)
-class Texture:
+class TextureObject:
     name      : str
     id        : int
     info      : dict
@@ -15,11 +15,8 @@ class Texture:
 if __name__ == '__main__':
     import numpy as np
 
-    texture = Texture(
+    texture = TextureObject(
         name       = "valve_x",
         id         = 3,
-         checker   = 3.9,
-         gradientnt= 3.9,
-         rgb       = 3.9,
-         noise     = 3.9,
+        info       = {},
     )

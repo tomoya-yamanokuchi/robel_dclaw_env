@@ -93,6 +93,11 @@ class myTextureModder(TextureModder):
         return bitmap, mask
 
 
+    def set_rgb_from_dict(self, rgb_dict: dict):
+        for name, rgb in rgb_dict.items() :
+            self.set_rgb(name, rgb)
+
+
 
 if __name__ == '__main__':
     TextureModder_ = TextureModder()

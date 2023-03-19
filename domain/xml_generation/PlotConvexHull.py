@@ -5,10 +5,12 @@ from .ConvexHull2D import ConvexHull2D
 
 
 class PlotConvexHull:
-    def __init__(self, convexfull2d :ConvexHull2D, figsize=(6,6)):
+    def __init__(self, convexfull2d :ConvexHull2D, figsize=(6,6), verbose=False):
         self.convexfull2d = convexfull2d
         self.fig, self.ax = plt.subplots(1, 1, sharex=True, sharey=True, figsize=figsize)
         self.markersize   = 100
+        self.verbose      = verbose
+
 
     def plot(self,
             all_points    : np.ndarray,
@@ -22,9 +24,7 @@ class PlotConvexHull:
         self._all_meshgrids(all_points)
         self._inside_meshgrids(inside_points)
         self._inside_meshgrids_center(inside_points)
-
         plt.legend()
-        # plt.show()
         plt.savefig(save_path, dpi = 300)
 
 
@@ -34,11 +34,12 @@ class PlotConvexHull:
             # import ipdb; ipdb.set_trace()
             self.ax.plot(hull.points[simplex, 0], hull.points[simplex, 1], '-k')
 
+
     def _hull_center(self):
         hull= self.convexfull2d.hull
         x_mean = hull.points[:, 0].mean()
         y_mean = hull.points[:, 1].mean()
-        print("inside_meshgrid mean = ({}, {})".format(x_mean, y_mean))
+        if self.verbose: print("inside_meshgrid mean = ({}, {})".format(x_mean, y_mean))
         self.ax.scatter(x_mean, y_mean, c='black', alpha = 1, marker='x', s=self.markersize, label ='Center of hull')
 
 
@@ -54,6 +55,7 @@ class PlotConvexHull:
                 edgecolor = 'cyan',
             )
         )
+
 
     def _bounding_box_center(self):
         self.ax.scatter(0, 0, c='green', alpha = 1, marker='+', s=self.markersize, label ='Center of samping area')
@@ -72,7 +74,7 @@ class PlotConvexHull:
         assert isinstance(inside_points, np.ndarray)
         x_mean = inside_points[:, 0].mean()
         y_mean = inside_points[:, 1].mean()
-        print("inside_meshgrid mean = ({}, {})".format(x_mean, y_mean))
+        if self.verbose: print("inside_meshgrid mean = ({}, {})".format(x_mean, y_mean))
         self.ax.scatter(x_mean, y_mean, c='blue', alpha = 1, marker='x', s=self.markersize, label ='Center of gravity')
 
 

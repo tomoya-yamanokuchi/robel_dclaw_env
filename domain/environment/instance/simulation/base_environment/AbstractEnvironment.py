@@ -55,7 +55,7 @@ class AbstractEnvironment(metaclass=ABCMeta):
 
 
     @abstractmethod
-    def set_ctrl_task_spce(self):
+    def set_ctrl_task_space(self):
         pass
 
 

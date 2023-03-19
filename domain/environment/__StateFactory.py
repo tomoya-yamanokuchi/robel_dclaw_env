@@ -1,6 +1,6 @@
 from .instance.simulation.valve.ValveState import ValveState
 from .instance.simulation.block_mating.BlockMatingState import BlockMatingState
-from .instance.simulation.pushing.PushingState import PushingState
+from .instance.simulation.pushing.PushingFeedState import PushingState
 
 '''
 ・環境を生成するクラスです

@@ -7,7 +7,7 @@ import numpy as np
 '''
 
 @dataclass(frozen=True)
-class PushingCtrl:
+class PushingReturnCtrl:
     task_space_abs_position : np.ndarray
     task_space_diff_position: np.ndarray
     end_effector_position   : np.ndarray
@@ -39,7 +39,7 @@ class PushingCtrl:
 if __name__ == '__main__':
     import numpy as np
 
-    state = PushingCtrl(
+    state = PushingReturnCtrl(
          task_space_abs_position = np.zeros(3),
          task_space_diff_position= np.zeros(3),
          end_effector_position   = np.zeros(9),

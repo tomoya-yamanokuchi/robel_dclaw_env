@@ -5,8 +5,9 @@ import numpy as np
 from pprint import pprint
 import mujoco_py
 # -------- import from same level directory --------
-from .PushingState import PushingState as State
-from .PushingCtrl import PushingCtrl as Ctrl
+from .PushingFeedState import PushingFeedState as FeedState
+from .PushingReturnState import PushingReturnState as ReturnState
+from .PushingReturnCtrl import PushingReturnCtrl as ReturnCtrl
 from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
 import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
@@ -20,18 +21,25 @@ from domain.environment.task_space.end_effector_action_pace.EndEffectorPositionV
 from custom_service import print_info, NTD
 
 
+from ..base_environment.render.Rendering import Rendering
+from ..base_environment.viewer.ViewerFactory import ViewerFactory
+
+
 class PushingSimulationEnvironment(BaseEnvironment):
-    def __init__(self, config):
+    def __init__(self, config, use_render=True):
         super().__init__(config)
         self.config             = config
         self.forward_kinematics = ForwardKinematics()
         self.inverse_kinematics = InverseKinematics()
         self.kinematics         = KinematicsDefinition()
         self.task_space         = TaskSpace()
+        self.use_render         = use_render
         # self.dim_ctrl           = 6 # == dim_task_space_ctrl
 
+
+
     def model_file_reset(self):
-        self._generate_model_file()
+        # self._generate_model_file()
         self.model         = self.load_model(self.config.model_file)
         object_geom_names  = [name for name in self.model.geom_names if ("object_geom" in name)]
         self.canonical_rgb = CanonicalRGB(num_object_geom=len(object_geom_names))
@@ -51,15 +59,15 @@ class PushingSimulationEnvironment(BaseEnvironment):
         # ---------- origin convex ---------
         all_points           = flattened_2d_meshgrid(min=convex.min, max=convex.max, num_points_1axis=30)
         inside_points_origin = convex_origin.get_inside_points(all_points)
-        plot_convex          = PlotConvexHull(convex_origin)
-        plot_convex.plot(all_points, inside_points_origin, "./convex_origin.png")
+        # plot_convex          = PlotConvexHull(convex_origin)
+        # plot_convex.plot(all_points, inside_points_origin, "./convex_origin.png")
 
         # ---------- aligned convex ---------
         convex.hull.points[:, 0] += (inside_points_origin[:, 0].mean())*(-1)
         convex.hull.points[:, 1] += (inside_points_origin[:, 1].mean())*(-1)
         aligned_inside_points = convex.get_inside_points(all_points)
-        plot_convex           = PlotConvexHull(convex)
-        plot_convex.plot(all_points, aligned_inside_points, "./convex_alinged.png")
+        # plot_convex           = PlotConvexHull(convex)
+        # plot_convex.plot(all_points, aligned_inside_points, "./convex_alinged.png")
 
         # ---------- aligned convex ---------
         nomalized_inside_points  = normalize(aligned_inside_points, x_min=-1.0, x_max=1.0, m=-0.03, M=0.03)
@@ -75,29 +83,41 @@ class PushingSimulationEnvironment(BaseEnvironment):
 
     def reset(self, state):
         self.model_file_reset()
-        #  ----
-        self.reset_texture_randomization_state()
-        self.create_mujoco_related_instance()
-        self.create_viewer()
+        if self.sim is not None: return 0
+        self.sim = mujoco_py.MjSim(self.model)
         self.sim.reset()
         self.set_environment_parameters(self._set_object_dynamics_parameter)
-        self.set_target_visible()
+        # self.set_target_visible()
         self.set_jnt_range()
         self.set_ctrl_range()
         self.set_state(state)
-        if self.is_Offscreen: self.render()
+        if self.use_render: self.render()
         self.sim.step()
 
 
+    def view(self):
+        if self.viewer is None:
+            self.viewer = ViewerFactory().create(self.config.viewer.is_Offscreen)(self.sim)
+        self.viewer.view(self.image)
+
+
     def render(self):
-        if self.is_Offscreen    : return self.render_env(self.canonical_rgb.rgb)
-        if not self.is_Offscreen: return None
+        if self.rendering is None:
+            self.rendering = Rendering(
+                sim            = self.sim,
+                canonical_rgb  = self.canonical_rgb.rgb,
+                config_render  = self.config.render,
+                config_texture = self.config.texture,
+                config_light   = self.config.light,
+            )
+        self.image = self.rendering.render()
+        return self.image
 
 
-    def set_state(self, state):
-        assert isinstance(state, State)
-        qpos      = self._set_qpos(state)
-        qvel      = self._set_qvel(state)
+    def set_state(self, state: FeedState):
+        assert isinstance(state, FeedState)
+        qpos = self._set_qpos(state)
+        qvel = self._set_qvel(state)
 
         # print_info.print_joint_positions(qpos)
 
@@ -106,15 +126,8 @@ class PushingSimulationEnvironment(BaseEnvironment):
         self.sim.set_state(new_state)
         self.sim.data.ctrl[:9] = qpos[:9]
         self.sim.data.ctrl[9:] = 0.0
-
         self.sim.forward()
 
-
-        # for i in range(1000000):
-        #     print_info.print_ctrl(self.ctrl)
-        #     self.sim.step()
-        #     self.view()
-        #     # import ipdb; ipdb.set_trace()
 
 
     def _set_qpos(self, state):
@@ -141,7 +154,7 @@ class PushingSimulationEnvironment(BaseEnvironment):
         end_effector_position = self.forward_kinematics.calc(robot_position).squeeze()
         task_space_positioin  = self.task_space.end2task(EndEffectorValueObject(NTD(end_effector_position))).value.squeeze()
         # force                 = self.get_force()
-        state = State(
+        state = ReturnState(
             robot_position        = robot_position,
             object_position       = state.qpos[18:],
             robot_velocity        = state.qvel[:9],
@@ -152,13 +165,13 @@ class PushingSimulationEnvironment(BaseEnvironment):
         return state
 
 
-    def set_ctrl_task_spce(self, task_space_abs_ctrl: np.ndarray):
+    def set_ctrl_task_space(self, task_space_abs_ctrl: np.ndarray):
         task_space_position    = TaskSpaceValueObject(NTD(task_space_abs_ctrl))
         ctrl_end_effector      = self.task_space.task2end(task_space_position)                              # 新たな目標値に対応するエンドエフェクタ座標を計算
         ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector.value.squeeze(axis=0))      # エンドエフェクタ座標からインバースキネマティクスで関節角度を計算
         self.sim.data.ctrl[:9] = ctrl_joint.squeeze()                                                       # 制御入力としてsimulationで設定
         # ---------------
-        dclawCtrl = Ctrl(
+        dclawCtrl = ReturnCtrl(
             task_space_abs_position  = task_space_abs_ctrl.squeeze(),
             task_space_diff_position = None,
             end_effector_position    = ctrl_end_effector.value.squeeze(),
