@@ -123,6 +123,13 @@ class ValveSimulationEnvironment(BaseEnvironment):
 
 
 
+
+    def set_ctrl_task_space(self, ctrl_task_diff):
+        pass
+
+
+
+
     def set_jnt_range(self):
         claw_jnt_range_num = len(self.claw_jnt_range_ub)
         # --- claw ---

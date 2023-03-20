@@ -5,16 +5,14 @@ import time
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
-# from domain.environment.StateFactory import StateFactory
-# from domain.environment.instance.simulation.DClawCtrl import DClawCtrl as CtrlState
-# from domain.environment.instance.simulation.simulation.base_environment.ImageObs import ImageObs
-# from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
-# from domain.environment.multiprocessing. import ChunkedEnvironmentMultiprocessing
-# from domain.environment.multiprocessing.EnvironmentConstantSetting import EnvironmentConstantSetting
 from usecase.data_collection.rollout.rollout_function import rollout_function
+from usecase.data_collection.rollout.rollout_progress_check import rollout_progress_check
+
+
 from custom_service import time_as_string
 from icem_mpc.iCEM_CumulativeSum_MultiProcessing_MPC import iCEM_CumulativeSum_MultiProcessing_MPC
 from usecase.data_collection.cost.object_position_norm import object_position_norm
+
 from omegaconf import OmegaConf
 
 
@@ -22,7 +20,6 @@ from omegaconf import OmegaConf
 
 class Demo_task_space:
     def run(self, config):
-        config.env.camera.z_distance = 0.4 # ロボットがフレームアウトする情報欠損を起こさないようにカメラを引きで設定
         env_subclass, state_subclass = EnvironmentFactory().create(env_name=config.env.env_name)
 
         init_state = state_subclass(
@@ -34,12 +31,13 @@ class Demo_task_space:
 
         config_icem = OmegaConf.load("conf/icem/config_icem.yaml")
         icem = iCEM_CumulativeSum_MultiProcessing_MPC(
-            forward_model = rollout_function,
-            cost_function = object_position_norm,
+            forward_model                = rollout_function,
+            forward_model_progress_check = rollout_progress_check,
+            cost_function                = object_position_norm,
             **config_icem
         )
 
-        for t in range(1):
+        for t in range(3):
             icem.reset()
             # target = np.random.randn(2)
             cost = icem.optimize(
@@ -49,7 +47,7 @@ class Demo_task_space:
                     "init_state"   : init_state,
                 },
                 action_bias = np.array(config.env.task_space_position_init),
-                target      = np.array([0.1, 0.0, 0.0, 1, 0, 0, 0]),
+                target      = np.array([-0.04, 0.0, 0.0, 1, 0, 0, 0]),
             )
 
 

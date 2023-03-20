@@ -31,7 +31,7 @@ claw_jnt_range_ub : [ 1.60,  1.70,  2.00,    1.60,  1.70,  2.00,    1.60,  1.70,
 task_space_position_init: [0.5, 0.0,     0.5, 0.0,     0.5, 0.0]
 robot_position_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
 robot_velocity_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
-object_position_init    : [0.03, 0.0, 0.0, 1, 0, 0, 0]
+object_position_init    : [0.04, 0.0, 0.0, 1, 0, 0, 0]
 object_velocity_init    : [0, 0, 0, 0, 0, 0]
 
 

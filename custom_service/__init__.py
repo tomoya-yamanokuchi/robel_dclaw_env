@@ -10,5 +10,7 @@ from custom_service.join_with_mkdir import join_with_mkdir
 from custom_service.time_as_string import time_as_string
 from custom_service.wait_time import wait_time
 from custom_service.dimension_assetion import dimension_assetion
+from custom_service.create_gif import create_gif
+from custom_service.make_dir import make_dir
 
 __version__ = '0.1.0'

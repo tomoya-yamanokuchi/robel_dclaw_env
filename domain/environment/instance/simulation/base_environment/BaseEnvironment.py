@@ -40,7 +40,8 @@ class BaseEnvironment(AbstractEnvironment):
         self.camera_modder     = None
 
         # -----------------
-        self.viewer = None
+        self.viewer    = None
+        self.rendering = None
 
 
     def load_model(self, model_file):

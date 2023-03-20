@@ -7,18 +7,18 @@ import numpy as np
 '''
 
 @dataclass(frozen=True)
-class ReturnImage:
+class Image:
     canonical    : np.ndarray
-    # random_nonfix: np.ndarray
+    random_nonfix: np.ndarray
     mode         : str = "step"
 
     def __post_init__(self):
         if self.mode == 'step':
             self.assert_type_shape_STEP(self.canonical , dim=3)
-            # self.assert_type_shape_STEP(self.random_nonfix, dim=3)
+            self.assert_type_shape_STEP(self.random_nonfix, dim=3)
         elif self.mode == 'sequence':
             self.assert_type_shape_SEQUENCE(self.canonical , dim=3)
-            # self.assert_type_shape_SEQUENCE(self.random_nonfix, dim=3)
+            self.assert_type_shape_SEQUENCE(self.random_nonfix, dim=3)
 
     def assert_type_shape_STEP(self, x, dim):
         # assert isinstance(x, ImageObject)
@@ -35,20 +35,3 @@ class ReturnImage:
         assert x.shape[-1] == 3
         assert x.shape[1] == x.shape[2]
 
-
-if __name__ == '__main__':
-    import numpy as np
-
-    img = Image(
-        canonical     = np.zeros([64, 64, 3]),
-        random_nonfix = np.zeros([64, 64, 3]),
-        mode          = "step"
-    )
-    print(img.canonical.shape)
-
-    img = Image(
-        canonical     = np.zeros([25, 62, 64, 3]),
-        random_nonfix = np.zeros([25, 64, 64, 3]),
-        mode          = "sequence"
-    )
-    print(img.canonical.shape)

@@ -14,8 +14,13 @@ class OffscreenViewer:
 
 
     def view(self, image: ReturnImage):
-        img_ran  = image.random_nonfix
-        img_can  = image.canonical
-        img_diff = img_ran - img_can
-        cv2.imshow(self.window_name, np.concatenate([img_ran, img_can, img_diff], axis=1))
+        cv2.imshow(self.window_name, image.canonical)
         cv2.waitKey(50)
+
+
+    # def view(self, image: ReturnImage):
+    #     img_ran  = image.random_nonfix
+    #     img_can  = image.canonical
+    #     img_diff = img_ran - img_can
+    #     cv2.imshow(self.window_name, np.concatenate([img_ran, img_can, img_diff], axis=1))
+    #     cv2.waitKey(50)

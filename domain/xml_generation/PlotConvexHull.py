@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-from .ConvexHull2D import ConvexHull2D
+from ConvexHull2D import ConvexHull2D
 
 
 class PlotConvexHull:

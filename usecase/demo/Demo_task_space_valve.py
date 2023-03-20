@@ -2,23 +2,21 @@ import cv2, time
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
-from domain.environment.__StateFactory import StateFactory
+# from domain.environment.__StateFactory import StateFactory
 from custom_service import print_info
 
 class Demo_task_space:
     def run(self, config):
-        env   = EnvironmentFactory().create(env_name=config.env.env_name)
-        state = StateFactory().create(env_name=config.env.env_name)
+        env_subclass, state_subclass = EnvironmentFactory().create(env_name=config.env.env_name)
+        # state = StateFactory().create(env_name=config.env.env_name)
         # ctrl  = Ctrl
 
-        env = env(config.env)
-        init_state = state(
-            robot_position        = np.array(config.env.robot_position_init),
+        env = env_subclass(config.env)
+        init_state = state_subclass(
+            task_space_positioin  = np.array(config.env.task_space_position_init),
             robot_velocity        = np.array(config.env.robot_velocity_init),
             object_position       = np.array(config.env.object_position_init),
             object_velocity       = np.array(config.env.object_velocity_init),
-            end_effector_position = None,
-            task_space_positioin  = np.array(config.env.task_space_position_init),
         )
         # import ipdb; ipdb.set_trace()
 

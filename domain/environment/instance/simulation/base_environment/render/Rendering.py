@@ -1,7 +1,9 @@
 from .texture.TextureFactory import TextureFactory
 from .ReturnImage import ReturnImage
 from .ImageObject import ImageObject
+from .Camera import Camera
 from .Light import Light
+
 from .utility import flip_upside_down, reverse_channel
 
 
@@ -12,6 +14,7 @@ class Rendering:
             canonical_rgb,
             config_render,
             config_texture,
+            config_camera,
             config_light,
         ):
         self.sim                = sim
@@ -20,6 +23,7 @@ class Rendering:
         self.width_capture      = config_render.width_capture
         self.height_capture     = config_render.height_capture
         self.texture            = TextureFactory().create(config_texture.randomization_mode)(sim, **config_texture)
+        self.camera             = Camera(sim, self.camera_name_list, **config_camera)
         self.light              = Light(sim, **config_light)
         self.ambient            = 0 # ライトの色味の変具合
         self.shadowsize         = 0 # canonicalとrandomizedの色情報を一貫させるため
@@ -57,7 +61,7 @@ class Rendering:
     def render(self):
         image = ReturnImage(
             canonical     = self._render_canonical(),
-            random_nonfix = self._render_randomized(),
+            # random_nonfix = self._render_randomized(),
             mode          = "step"
         )
         return image
