@@ -1,3 +1,4 @@
+from typing import List
 import xml.etree.ElementTree as ET
 
 
@@ -15,9 +16,9 @@ class BodyTree:
         # self.add_geometry()
 
 
-    def add_geometry(self, pos, id, mass):
+    def add_geometry(self, pos, id, mass, friction):
         self._add_visual_geometry(pos, id)
-        self._add_physical_geometry(pos, mass)
+        self._add_physical_geometry(pos, mass, friction)
 
 
     def _add_visual_geometry(self, pos: str, id: int):
@@ -27,10 +28,15 @@ class BodyTree:
         geom.set("rgba", self.rgba)
 
 
-    def _add_physical_geometry(self, pos: str, mass):
+    def _add_physical_geometry(self,
+            pos      : List[float],
+            mass     : float,
+            friction : List[float],
+        ):
         geom = self.__add_common(pos)
         geom.set("class", "pushing_object_phy")
         geom.set("mass", str(mass))
+        geom.set("friction", " ".join([str(fi) for fi in friction]))
 
 
     def __add_common(self, pos):

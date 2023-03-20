@@ -2,7 +2,7 @@
     "python.pythonPath"            : "/bin/python3",
     // "python.pythonPath"            : "/home/tomoya-y/.venv_pytorch/bin/python",
     "editor.fontFamily"            : "Ubuntu Mono",
-    "editor.tabSize"               : 2,
+    "editor.tabSize"               : 4,
     "window.zoomLevel"             : 2,
     "editor.fontSize"              : 18,
     "debug.console.fontSize"       : 18,

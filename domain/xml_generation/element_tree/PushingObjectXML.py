@@ -1,5 +1,6 @@
 from xml.etree import ElementTree
 import numpy as np
+from typing import List
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from custom_service import join_with_mkdir
 import xml.dom.minidom as md
@@ -20,7 +21,7 @@ class PushingObjectElementTree:
         self.root.insert(1, joint_tree.root)
 
 
-    def add_body_tree(self, xy_pos: np.ndarray , mass: float):
+    def add_body_tree(self, xy_pos: np.ndarray , mass: float, friction: List[float]):
         assert len(xy_pos.shape) == 2
         num_geom, dim = xy_pos.shape
         assert dim == 2
@@ -30,7 +31,7 @@ class PushingObjectElementTree:
             y_pos = str(xy_pos[id][1])
             z_pos = str(0)
             pos   = " ".join((x_pos, y_pos, z_pos))
-            body_tree.add_geometry(pos=pos, id=id, mass=mass)
+            body_tree.add_geometry(pos=pos, id=id, mass=mass, friction=friction)
         self.root.insert(1, body_tree.root)
 
 

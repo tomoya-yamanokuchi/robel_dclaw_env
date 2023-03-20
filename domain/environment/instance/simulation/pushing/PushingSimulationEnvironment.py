@@ -101,6 +101,7 @@ class PushingSimulationEnvironment(BaseEnvironment):
                 config_light   = self.config.light,
             )
         self.sim.step()
+        # import ipdb; ipdb.set_trace()
 
 
     def view(self):
