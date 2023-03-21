@@ -44,7 +44,7 @@ if __name__ == "__main__":
     def main(config: DictConfig):
 
         task_space_positioin = np.load(
-            "./icem_rollout_progress_dataset/1679396787.4375885/icem_rollout_iterOuter0_iterInner4/task_space_position.npy"
+            "./icem_rollout_progress_dataset/1679405604.8921707/icem_rollout_iterOuter1_iterInner1/task_space_position.npy"
         )
 
         config.env.viewer.is_Offscreen = False

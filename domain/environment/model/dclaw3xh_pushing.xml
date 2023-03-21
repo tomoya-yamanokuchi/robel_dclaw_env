@@ -28,9 +28,20 @@
       <site type="cylinder" size=".003 .03" pos="0 0 0" rgba="0 1 0 1"/>
     </body>
 
-    <body name="target_center_mark" pos="-0.04 0.0 0">
-      <site type="cylinder" size=".003 .03" pos="0 0 0" rgba="0 1 0 1"/>
+
+    <!-- target -->
+    <body name="target_left_mark" pos="-0.04 -0.05 0">
+      <site type="cylinder" size=".003 .03" pos="0 0 0" rgba="0 1 1 1"/>
     </body>
+
+    <body name="target_center_mark" pos="-0.04 0.0 0">
+      <site type="cylinder" size=".003 .03" pos="0 0 0" rgba="1 0 1 1"/>
+    </body>
+
+    <body name="target_right_mark" pos="-0.04 0.05 0">
+      <site type="cylinder" size=".003 .03" pos="0 0 0" rgba="1 1 0 1"/>
+    </body>
+
 
   </worldbody>
 </mujoco>

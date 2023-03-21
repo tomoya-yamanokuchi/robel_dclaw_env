@@ -1,5 +1,3 @@
-# forward_model              : forward_model
-
 # << general >>
 num_cem_iter               : 5
 planning_horizon           : 30
@@ -12,16 +10,16 @@ lower_bound_sampling       : -0.1
 upper_bound_sampling       :  0.1
 lower_bound_action         : -1.0
 upper_bound_action         :  1.0
-lower_bound_simulated_path : -0.05
-upper_bound_simulated_path : 0.05
+lower_bound_simulated_path : -0.06
+upper_bound_simulated_path : 0.06
 
 # << sampling >>
 num_sample                 : 300
 decay_sample               : 1.25
 
 # << elite >>
-num_elite                  : 10
-fraction_rate_elite        : 0.3
+num_elite                  : 3
+fraction_rate_elite        : 1.0
 
 # << update distribution >>
 alpha                      : 0.1

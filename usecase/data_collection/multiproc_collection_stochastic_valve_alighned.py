@@ -37,7 +37,7 @@ class Demo_task_space:
             **config_icem
         )
 
-        for t in range(3):
+        for t in range(2):
             icem.reset()
             # target = np.random.randn(2)
             cost = icem.optimize(
@@ -47,7 +47,8 @@ class Demo_task_space:
                     "init_state"   : init_state,
                 },
                 action_bias = np.array(config.env.task_space_position_init),
-                target      = np.array([-0.04, 0.0, 0.0, 1, 0, 0, 0]),
+                # target      = np.array([-0.04, 0.0, 0.0, 1, 0, 0, 0]), # center
+                target      = np.array([-0.04, -0.05, 0.0, 1, 0, 0, 0]), # left
             )
 
 
