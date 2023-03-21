@@ -7,6 +7,7 @@ from custom_service import wait_time
 from custom_service import create_gif, join_with_mkdir
 
 
+
 def rollout_progress_check(constant_setting, queue_input, queue_result):
     index_chunk, task_space_position = queue_input.get()
     num_chunk, step, dim_ctrl        = task_space_position.shape
@@ -20,10 +21,11 @@ def rollout_progress_check(constant_setting, queue_input, queue_result):
     save_fig_dir    = constant_setting["save_fig_dir"]
     iter_outer_loop = constant_setting["iter_outer_loop"]
     iter_inner_loop = constant_setting["iter_inner_loop"]
+    dataset_name    = constant_setting["dataset_name"]
 
-    env = env_subclass(config.env, use_render=True)
 
     # << ------ rollout ------- >>
+    env = env_subclass(config.env, use_render=True)
     images = []
     env.reset(init_state)
     for t in range(step):
@@ -42,6 +44,15 @@ def rollout_progress_check(constant_setting, queue_input, queue_result):
             is_end_file = True,
         ),
         duration = 200,
+    )
+
+    # << ------ save images as gif ------- >>
+    np.save(
+        file = join_with_mkdir(
+            os.path.join("./icem_rollout_progress_dataset", dataset_name,
+            'icem_rollout_iterOuter{}_iterInner{}'.format(iter_outer_loop, iter_inner_loop),
+            "task_space_position"), is_end_file=True),
+        arr  = task_space_position,
     )
 
     # << ---- queue procedure ----- >>

@@ -15,7 +15,7 @@ from domain.environment.instance.simulation.base_environment.BaseEnvironment imp
 from domain.environment.kinematics.ForwardKinematics import ForwardKinematics
 from domain.environment.kinematics.InverseKinematics import InverseKinematics
 from domain.environment.task_space.end_effector_action_pace.EndEffector2D import EndEffector2D as TaskSpace
-from domain.environment.kinematics.KinematicsDefinition import KinematicsDefinition
+
 from domain.environment.task_space.end_effector_action_pace.TaskSpacePositionValueObject_2D_Plane import TaskSpacePositionValueObject_2D_Plane as TaskSpaceValueObject
 from domain.environment.task_space.end_effector_action_pace.EndEffectorPositionValueObject_2D_Plane import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
 from custom_service import print_info, NTD
@@ -23,6 +23,11 @@ from custom_service import print_info, NTD
 
 from ..base_environment.render.Rendering import Rendering
 from ..base_environment.viewer.ViewerFactory import ViewerFactory
+from ..base_environment.dynamics_parameter.RobotDynamicsParameter import RobotDynamicsParameter
+from ..base_environment.joint_range.RobotJointRange import RobotJointRange
+from .PushingObjectDyanmicsParameter import PushingObjectDyanmicsParameter
+from .PushingObjectJointRange import PushingObjectJointRange
+from ..base_environment.ctrl_range.RobotCtrlRange import RobotCtrlRange
 
 
 class PushingSimulationEnvironment(BaseEnvironment):
@@ -31,7 +36,6 @@ class PushingSimulationEnvironment(BaseEnvironment):
         self.config             = config
         self.forward_kinematics = ForwardKinematics()
         self.inverse_kinematics = InverseKinematics()
-        self.kinematics         = KinematicsDefinition()
         self.task_space         = TaskSpace()
         self.use_render         = use_render
         # self.dim_ctrl           = 6 # == dim_task_space_ctrl
@@ -83,12 +87,12 @@ class PushingSimulationEnvironment(BaseEnvironment):
     def reset(self, state):
         self.model_file_reset()
         if self.sim is not None: return 0
-        self.sim = mujoco_py.MjSim(self.model)
-        self.sim.reset()
-        self.set_environment_parameters(self._set_object_dynamics_parameter)
-        # self.set_target_visible()
-        self.set_jnt_range()
-        self.set_ctrl_range()
+        self.sim = mujoco_py.MjSim(self.model); self.sim.reset()
+        RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)
+        PushingObjectDyanmicsParameter(self.sim).set(self.config.dynamics.object)
+        RobotJointRange(self.sim).set_range(**self.config.joint_range.robot)
+        PushingObjectJointRange(self.sim).set_range(**self.config.joint_range.object)
+        RobotCtrlRange(self.sim).set_range()
         self.set_state(state)
         if self.use_render:
             self.viewer    = ViewerFactory().create(self.config.viewer.is_Offscreen)(self.sim)
@@ -109,7 +113,7 @@ class PushingSimulationEnvironment(BaseEnvironment):
 
 
     def render(self):
-        assert self.viewer    is not None # to be initialized before rendering
+        assert self.viewer is not None # to be initialized before rendering
         assert self.rendering is not None
         self.image = self.rendering.render()
         return self.image
@@ -128,7 +132,6 @@ class PushingSimulationEnvironment(BaseEnvironment):
         self.sim.data.ctrl[:9] = qpos[:9]
         self.sim.data.ctrl[9:] = 0.0
         self.sim.forward()
-
 
 
     def _set_qpos(self, state):
@@ -179,50 +182,3 @@ class PushingSimulationEnvironment(BaseEnvironment):
             joint_space_position     = ctrl_joint.squeeze(),
         )
         return dclawCtrl
-
-
-    def set_jnt_range(self):
-        claw_jnt_range_num = len(self.claw_jnt_range_ub)
-        # --- claw ---
-        jnt_index = 0
-        if claw_jnt_range_num == 3:
-            for i in range(3):
-                for k in range(3):
-                    self.sim.model.jnt_range[jnt_index, 0] = self.claw_jnt_range_lb[k]
-                    self.sim.model.jnt_range[jnt_index, 1] = self.claw_jnt_range_ub[k]
-                    jnt_index += 1
-        elif claw_jnt_range_num == 9:
-            for jnt_index in range(9):
-                self.sim.model.jnt_range[jnt_index, 0] = self.claw_jnt_range_lb[jnt_index]
-                self.sim.model.jnt_range[jnt_index, 1] = self.claw_jnt_range_ub[jnt_index]
-        else:
-            raise NotImplementedError()
-
-        # import ipdb; ipdb.set_trace()
-        # # --- valve ---
-        # self.sim.model.jnt_range[self._valve_jnt_id, 0] = self.valve_jnt_range_lb
-        # self.sim.model.jnt_range[self._valve_jnt_id, 1] = self.valve_jnt_range_ub
-
-
-    def set_ctrl_range(self):
-        claw_index = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-        ]
-        for claw_index_unit in claw_index:
-            self.sim.model.actuator_ctrlrange[claw_index_unit[0], 0] = self.kinematics.theta0_lb
-            self.sim.model.actuator_ctrlrange[claw_index_unit[0], 1] = self.kinematics.theta0_ub
-
-            self.sim.model.actuator_ctrlrange[claw_index_unit[1], 0] = self.kinematics.theta1_lb
-            self.sim.model.actuator_ctrlrange[claw_index_unit[1], 1] = self.kinematics.theta1_ub
-
-            self.sim.model.actuator_ctrlrange[claw_index_unit[2], 0] = self.kinematics.theta2_lb
-            self.sim.model.actuator_ctrlrange[claw_index_unit[2], 1] = self.kinematics.theta2_ub
-
-    def set_target_visible(self):
-        return 0
-
-
-    def _set_object_dynamics_parameter(self, randparams_dict: dict) -> None:
-        return 0

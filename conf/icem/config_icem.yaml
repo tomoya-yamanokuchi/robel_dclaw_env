@@ -8,8 +8,8 @@ dimension_of_interst       : [0, 1]
 
 colored_noise_exponent     : 3.0
 
-lower_bound_sampling       : -0.07
-upper_bound_sampling       :  0.07
+lower_bound_sampling       : -0.1
+upper_bound_sampling       :  0.1
 lower_bound_action         : -1.0
 upper_bound_action         :  1.0
 lower_bound_simulated_path : -0.05

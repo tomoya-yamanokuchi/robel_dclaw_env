@@ -4,3 +4,4 @@ dist
 fig
 *.pyc
 *.png
+*.npy

@@ -1,11 +1,12 @@
-env_name              : "sim_pushing"
-verbose               : False
+env_name : "sim_pushing"
+verbose  : False
 
 # --- load data ----
-model_file            : "dclaw3xh_pushing.xml"
-env_color             : "rgb_valve"
-inplicit_step         : 200
+model_file : "dclaw3xh_pushing.xml"
+env_color  : "rgb_valve"
 
+inplicit_step                  : 200
+ctrl_interpolation_margin_step : 40
 
 viewer:
     is_Offscreen     : True
@@ -15,16 +16,18 @@ render:
     width_capture    : 64
     height_capture   : 64
 
-
 texture:
     randomization_mode           : "per_step"
     is_dynamc_noise              : False
     task_relevant_geom_group_name: "object_geom_vis"
 
-
-# --- joint range limit (radian) ---
-claw_jnt_range_lb : [-0.51, -1.70, -2.00,   -0.51, -1.70, -2.00,   -0.51, -1.70, -2.00] # please refere to KinematicsDefinition
-claw_jnt_range_ub : [ 1.60,  1.70,  2.00,    1.60,  1.70,  2.00,    1.60,  1.70,  2.00] # please refere to KinematicsDefinition
+joint_range:
+    robot:
+        lower_bound: [-0.51, -1.70, -2.00]
+        upper_bound: [ 1.60,  1.70,  2.00]
+    object:
+        lower_bound:
+        upper_bound:
 
 
 # --- initial state ----
