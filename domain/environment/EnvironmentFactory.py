@@ -6,7 +6,6 @@ from .instance.simulation.valve.ValveFeedState import ValveFeedState
 
 
 from .instance.simulation.pushing.PushingSimulationEnvironment import PushingSimulationEnvironment
-# from .instance.simulation.pushing.OldPushingSimulationEnvironment import PushingSimulationEnvironment
 from .instance.simulation.pushing.PushingFeedState import PushingFeedState
 
 
@@ -19,7 +18,7 @@ class EnvironmentFactory:
     def create(self, env_name: str):
         assert type(env_name) == str
 
-        # if   env_name == "sim_valve"           : return (ValveSimulationEnvironment, ValveFeedState)
+        if   env_name == "sim_valve"           : return (ValveSimulationEnvironment, ValveFeedState)
         # if   env_name == "sim_block_mating"    : return BlockMatingSimulationEnvironment
         if   env_name == "sim_pushing"         : return (PushingSimulationEnvironment, PushingFeedState)
         # elif env_name == "real"          : return DClawRealEnvironment

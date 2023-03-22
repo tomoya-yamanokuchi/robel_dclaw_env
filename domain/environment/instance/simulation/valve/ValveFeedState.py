@@ -1,23 +1,28 @@
-from dataclasses import dataclass
-from mimetypes import init
 import numpy as np
+import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
+from custom_service import dimension_assetion
 
-'''
-・Dclaw環境に状態を与える時に使用するクラスです
-・与えるべき状態のルールが記述されています
-'''
 
-@dataclass(frozen=True)
+
 class ValveFeedState:
-    '''
-    modeについて：
-        永続化するときには系列になった値オブジェクトとして保存したいが，系列とステップごととで
-        shapeに対するassetの掛け方が変化するようしたい．このassertの掛け方を判断するのがmode．
-        - mode = "step": ステップデータとしてのshpaeをassert
-        - mode = "sequence": 系列データとしてのshapeをassert
-    '''
-    task_space_positioin : np.ndarray
-    object_position      : np.ndarray
-    robot_velocity       : np.ndarray
-    object_velocity      : np.ndarray
+    def __init__(self,
+            task_space_position,
+            robot_velocity,
+            object_position,
+            object_velocity
+        ):
+        self.task_space_position = dimension_assetion(np.array(task_space_position), 3)
+        self.robot_velocity      = dimension_assetion(np.array(robot_velocity     ), 9)
+        self.object_position     = dimension_assetion(np.array(object_position    ), 1)
+        self.object_velocity     = dimension_assetion(np.array(object_velocity    ), 1)
 
+
+if __name__ == '__main__':
+    state = ValveFeedState(
+        task_space_position  = np.zeros(3),
+        robot_velocity       = np.zeros(9),
+        object_position      = np.zeros(1),
+        object_velocity      = np.zeros(1),
+    )
+
+    print(state.task_space_position)

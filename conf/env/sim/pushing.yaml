@@ -1,9 +1,8 @@
-env_name : "sim_pushing"
-verbose  : False
+env_name   : "sim_pushing"
+verbose    : False
 
-# --- load data ----
 model_file : "dclaw3xh_pushing.xml"
-env_color  : "rgb_valve"
+env_color  :
 
 inplicit_step                  : 200
 ctrl_interpolation_margin_step : 40
@@ -29,27 +28,24 @@ joint_range:
         lower_bound:
         upper_bound:
 
-
-# --- initial state ----
-task_space_position_init: [0.5, 0.0,     0.5, 0.0,     0.5, 0.0]
-robot_position_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
-robot_velocity_init     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
-object_position_init    : [0.04, 0.0, 0.0, 1, 0, 0, 0]
-object_velocity_init    : [0, 0, 0, 0, 0, 0]
-
+init_state:
+    task_space_position: [0.5, 0.0,  0.5, 0.0,  0.5, 0.0]
+    robot_velocity     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
+    object_position    : [0.04, 0.0, 0.0, 1, 0, 0, 0]
+    object_velocity    : [0, 0, 0, 0, 0, 0]
 
 dynamics:
     robot:
-        kp_claw             : 20.0
-        damping_claw        : 0.1625
-        frictionloss_claw   : 0.05
+        kp_claw           : 20.0
+        damping_claw      : 0.1625
+        frictionloss_claw : 0.05
     object:
 
 camera:
-    x_coordinate        : 0.0
-    y_coordinate        : 0.0
-    z_distance          : 0.192
-    orientation         : 0.0
+    x_coordinate : 0.0
+    y_coordinate : 0.0
+    z_distance   : 0.192
+    orientation  : 0.0
 
 light:
     light1 : 0

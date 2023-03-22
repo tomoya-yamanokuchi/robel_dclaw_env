@@ -11,16 +11,8 @@ import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from custom_service import angle_interface as ai
 
 from custom_service import normalize, NTD
-# p = pathlib.Path(__file__).resolve()
-# sys.path.append(str(p.parent))
-
-# from .TaskSpacePosition2D import TaskSpacePosition2D
 from .TaskSpacePositionValueObject_2D_Plane import TaskSpacePositionValueObject_2D_Plane as TaskSpaceValueObject
-# from .JointSpacePosition import JointSpacePosition
-# from .EndEffectorPositionClawIdx0 import EndEffectorPositionClawIdx0
 from .EndEffectorPositionValueObject_2D_Plane import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
-
-
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.kinematics.ForwardKinematics import ForwardKinematics
 from domain.environment.kinematics.InverseKinematics import InverseKinematics

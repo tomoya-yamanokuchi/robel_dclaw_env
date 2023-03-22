@@ -11,6 +11,7 @@ class BaseEnvironment(AbstractEnvironment):
         self.sim                = None
         self.viewer             = None
         self.rendering          = None
+        self.image              = None
         self.ctrl_interpolation = CtrlInterpolation(
             num_interpolation    = config.inplicit_step,
             endpoint_margin_step = config.ctrl_interpolation_margin_step,
@@ -34,7 +35,7 @@ class BaseEnvironment(AbstractEnvironment):
         '''
         interpolated_ctrl = self.ctrl_interpolation.interpolate(
             current_joint_position = self.sim.get_state().qpos[:9],
-            target_joint_position  = self.ctrl,
+            target_joint_position  = self.ctrl[:9],
         )
         for i in range(self.inplicit_step):
             self.set_ctrl(interpolated_ctrl[i])

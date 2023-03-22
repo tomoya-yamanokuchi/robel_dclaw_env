@@ -1,7 +1,7 @@
 defaults:
-  # - env: sim/valve
+  - env: sim/valve
+  # - env: sim/pushing
   # - env: sim/block_mating
-  - env: sim/pushing
   # - env: sim/old_pushing
   # - env: real/valve
 

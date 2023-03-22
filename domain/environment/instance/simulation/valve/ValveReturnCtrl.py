@@ -7,7 +7,7 @@ import numpy as np
 '''
 
 @dataclass(frozen=True)
-class ValveCtrl:
+class ValveReturnCtrl:
     task_space_abs_position : np.ndarray
     task_space_diff_position: np.ndarray
     end_effector_position   : np.ndarray
@@ -17,12 +17,12 @@ class ValveCtrl:
     def __post_init__(self):
         if self.mode == 'step':
             self.assert_type_shape_STEP(self.task_space_abs_position , dim=3)
-            self.assert_type_shape_STEP(self.task_space_diff_position, dim=3)
+            # self.assert_type_shape_STEP(self.task_space_diff_position, dim=6)
             self.assert_type_shape_STEP(self.end_effector_position   , dim=9)
             self.assert_type_shape_STEP(self.joint_space_position    , dim=9)
         elif self.mode == 'sequence':
             self.assert_type_shape_SEQUENCE(self.task_space_abs_position , dim=3)
-            self.assert_type_shape_SEQUENCE(self.task_space_diff_position, dim=3)
+            # self.assert_type_shape_SEQUENCE(self.task_space_diff_position, dim=6)
             self.assert_type_shape_SEQUENCE(self.end_effector_position   , dim=9)
             self.assert_type_shape_SEQUENCE(self.joint_space_position    , dim=9)
 
@@ -39,7 +39,7 @@ class ValveCtrl:
 if __name__ == '__main__':
     import numpy as np
 
-    state = DClawCtrl(
+    state = ValveReturnCtrl(
          task_space_abs_position = np.zeros(3),
          task_space_diff_position= np.zeros(3),
          end_effector_position   = np.zeros(9),
@@ -50,8 +50,8 @@ if __name__ == '__main__':
     print(state.end_effector_position)
 
 
-    state = DClawCtrl(
-         task_space_abs_position = np.zeros([5, 3]),
+    state = ValveReturnCtrl(
+         task_space_abs_position = np.zeros([5, 2]),
          task_space_diff_position= np.zeros([5, 3]),
          end_effector_position   = np.zeros([5, 9]),
          joint_space_position    = np.zeros([5, 9]),
