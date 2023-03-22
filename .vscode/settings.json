@@ -1,6 +1,5 @@
 {
-    "python.pythonPath"            : "/bin/python3",
-    // "python.pythonPath"            : "/home/tomoya-y/.venv_pytorch/bin/python",
+    "python.pythonPath"            : "/usr/bin/python3.8",
     "editor.fontFamily"            : "Ubuntu Mono",
     "editor.tabSize"               : 4,
     "window.zoomLevel"             : 2,
@@ -12,10 +11,7 @@
     // "python.formatting.provider": "black",
     "python.languageServer": "Pylance",
     "python.analysis.extraPaths": [
-        "./scripts",
-        "/hdd_mount/drkvae/master",
-        "/hdd_mount/ensemble",
-        "/hdd_mount/ROBEL_DClaw_hands_on/ros_dclaw/script"
+        "/home/tomoya-y/.local/lib/python3.8/site-packages",
     ],
 
     "python.testing.pytestEnabled": false,

@@ -64,23 +64,10 @@ class Manifold1D(AbstractTaskSpace):
         return cyclic_normalized_cumulative_euclidean_distance
 
 
-    # def task2end(self, task_space_position: TaskSpaceValueObject):
-    #     task_space_position = data_shape_formating.D_to_NTD(task_space_position)
-    #     sequence, step, dim = task_space_position.shape
-    #     assert dim == 3 # 指1本あたり1次元に拘束するので3本で3次元
-    #     end_effector_list  = [0] * dim
-    #     for d in range(dim):
-    #         end_effector_list[d] = self._get_end_effector_position_from_task_space_position(task_space_position[:,:,d].reshape(-1))
-    #     flatten_end_effector_position = np.concatenate(end_effector_list, axis=-1)
-    #     return EndEffectorValueObject(flatten_end_effector_position)
-
-
     # @abstractmethod
     def task2end(self, task_space_position: TaskSpaceValueObject):
         end_effector_position = [self._task2end_1claw(x) for x in np.split(task_space_position.value, self.num_claw, axis=-1)]
-
         return EndEffectorValueObject(NTD(np.concatenate(end_effector_position, axis=-1)))
-
 
 
     def _task2end_1claw(self, task_space_position):
@@ -107,7 +94,6 @@ class Manifold1D(AbstractTaskSpace):
         return end_effector_position
 
 
-
     def _convet_zero_to_plus1_or_minus1_for_calculating_difference_of_sign(self, input_array):
         # edge index preprocesssing
         input_array_inserted_minus1_at_index0 = self._insert_specific_value_instead_of_zero_dependig_on_the_index(input_array, value=1, index=0)
@@ -126,28 +112,10 @@ class Manifold1D(AbstractTaskSpace):
         return input_array
 
 
-    def end2task(self, end_effector_position: EndEffectorValueObject):
-        # import ipdb; ipdb.set_trace()
-        # end_effector_position = data_shape_formating.D_to_NTD(end_effector_position)
-        # sequence, step, dim   = end_effector_position.shape
-        # assert dim == 9 # 指1本あたり3次元なので3本で9次元
-        # end_effector_position = [self._task2end_1claw(x) for x in np.split(task_space_position.value, self.num_claw, axis=-1)]
-
-        import ipdb; ipdb.set_trace()
-        task_space_position = [self._end2task_1claw(x) for x in np.split(end_effector_position.value, self.num_claw, axis=-1)]
-
-        task_space_position = np.zeros(self.num_claw)
-        for i, _end_effector_position in enumerate(np.split(end_effector_position, self.num_claw, axis=-1)):
-            task_space_position[i] = self._get_task_space_position_from_end_effector_position(_end_effector_position[0])
-        task_space_position = data_shape_formating.D_to_NTD(task_space_position)
-        return TaskSpaceValueObject(task_space_position)
-
-
     # @abstractmethod
     def end2task(self, end_effector_position: EndEffectorValueObject):
         task_space_position = [self._end2task_1claw(x) for x in np.split(end_effector_position.value, self.num_claw, axis=-1)]
         return TaskSpaceValueObject(NTD(np.concatenate(task_space_position, axis=-1)))
-
 
 
     def _end2task_1claw(self, end_effector_position):

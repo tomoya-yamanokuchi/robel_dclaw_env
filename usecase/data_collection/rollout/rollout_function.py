@@ -7,6 +7,7 @@ from custom_service import wait_time
 
 
 
+
 def rollout_function(constant_setting, queue_input, queue_result):
     index_chunk, task_space_position = queue_input.get()
     num_chunk, step, dim_ctrl        = task_space_position.shape
