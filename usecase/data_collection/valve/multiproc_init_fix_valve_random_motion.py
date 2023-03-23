@@ -6,12 +6,18 @@ import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
-from usecase.data_collection.rollout.rollout_dataset_collection_fixed_motion import rollout_dataset_collection_fixed_motion
-from ctrl_set.six_predefined_ctrl_set import SixPredefinedCtrlSet
+from usecase.data_collection.rollout.rollout_dataset_collection_random_motion import rollout_dataset_collection_random_motion
+from usecase.data_collection.valve.cost.mse_cost import mse_cost
+from usecase.data_collection.rollout.pseudo_rollout import pseudo_rollout
+from ctrl_set.colord_noise_random_motion import ColordNoiseRandomMotion
 from custom_service import time_as_string, NTD
 
 from domain.environment.instance.simulation.valve.ValveReturnState import ValveReturnState
 from domain.environment.instance.simulation.valve.ValveReturnCtrl  import ValveReturnCtrl
+from icem_mpc.iCEM_CumulativeSum_MultiProcessing_MPC import iCEM_CumulativeSum_MultiProcessing_MPC
+from omegaconf import OmegaConf
+from domain.reference.ValveReference import ValveReference
+
 
 
 class DataCollection:
@@ -19,24 +25,26 @@ class DataCollection:
         env_subclass, state_subclass = EnvironmentFactory().create(env_name=config.env.env_name)
         init_state = state_subclass(**config.env.init_state)
 
-        step        = config.run.step
-        cumsum_ctrl = SixPredefinedCtrlSet().get(step)
-        ctrl        = NTD(init_state.task_space_position) + cumsum_ctrl
-        ctrl        = [ctrl for i in range(config.run.sequence)]
+        config_icem = OmegaConf.load("conf/icem/config_icem_valve_datacollection.yaml")
+        icem = iCEM_CumulativeSum_MultiProcessing_MPC(
+            forward_model                = rollout_dataset_collection_random_motion,
+            forward_model_progress_check = pseudo_rollout,
+            cost_function                = mse_cost,
+            **config_icem
+        )
 
-        multiproc = ForwardModelMultiprocessing(verbose=True)
-        result_list, proc_time = multiproc.run(
-            rollout_function = rollout_dataset_collection_fixed_motion,
+        reference = ValveReference(config_icem.planning_horizon)
+
+        icem.reset()
+        cost = icem.optimize(
             constant_setting = {
                 "env_subclass" : env_subclass,
                 "config"       : config,
                 "init_state"   : init_state,
                 "dataset_name" : time_as_string(),
-                "domain_index" : 1,
-                "ReturnState"  : ValveReturnState,
-                "ReturnCtrl"   : ValveReturnCtrl,
             },
-            ctrl             = ctrl,
+            action_bias = np.array(config.env.init_state.task_space_position),
+            target      = reference.get_as_radian(current_step=0)
         )
 
 

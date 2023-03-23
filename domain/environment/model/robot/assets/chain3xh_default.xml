@@ -34,7 +34,7 @@
             <geom class="phy_metal" type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003" />
             <geom class="phy_metal" type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002" />
             <geom class="phy_metal" type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
-            <geom class="phy_plastic" type="capsule" pos="-0.00008 0.00003 0.0528"  size="0.01005 0.0195"       mass=".018"/>
+            <geom class="phy_plastic" type="capsule" pos="-0.00008 0.00003 0.0529"  size="0.0101 0.0195"       mass=".018"/>
             <geom class="phy_plastic" type="box"     pos="0 0 0.03"                 size="0.0241 0.0131 0.003"  mass=".007"/>
             <joint name="FFJ12" type="hinge" axis="1 0 0" range="-1.57 1.57"/>
           </body>
@@ -71,7 +71,7 @@
             <geom class="phy_metal" type="box" pos="0.0 0 0.026" size="0.0214 0.0125 0.003" mass=".003" />
             <geom class="phy_metal" type="box" pos="0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002" />
             <geom class="phy_metal" type="box" pos="-0.02 0 0.013" size="0.0012 0.011 0.016" mass=".002"/>
-            <geom class="phy_plastic" type="capsule" pos="-0.00008 0.00003 0.0528"  size="0.01005 0.0195"       mass=".018"/>
+            <geom class="phy_plastic" type="capsule" pos="-0.00008 0.00003 0.0529"  size="0.0101 0.0195"       mass=".018"/>
             <geom class="phy_plastic" type="box"     pos="0 0 0.03"                 size="0.0241 0.0131 0.003"  mass=".007"/>
             <joint name="MFJ22" type="hinge" axis="1 0 0" range="-1.57 1.57"/>
           </body>
@@ -108,7 +108,7 @@
             <geom class="phy_metal"   type="box"     pos="0.0 0 0.026"    size="0.0214 0.0125 0.003" mass=".003"/>
             <geom class="phy_metal"   type="box"     pos="0.02 0 0.013"   size="0.0012 0.011 0.016"  mass=".002"/>
             <geom class="phy_metal"   type="box"     pos="-0.02 0 0.013"  size="0.0012 0.011 0.016"  mass=".002"/>
-            <geom class="phy_plastic" type="capsule" pos="-0.00008 0.00003 0.0528"  size="0.01005 0.0195"       mass=".018"/>
+            <geom class="phy_plastic" type="capsule" pos="-0.00008 0.00003 0.0529"  size="0.0101 0.0195"       mass=".018"/>
             <geom class="phy_plastic" type="box"     pos="0 0 0.03"                 size="0.0241 0.0131 0.003"  mass=".007"/>
             <joint name="THJ32" type="hinge" axis="1 0 0" range="-1.57 1.57"/>
           </body>

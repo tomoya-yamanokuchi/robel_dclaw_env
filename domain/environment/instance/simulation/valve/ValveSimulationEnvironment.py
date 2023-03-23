@@ -46,24 +46,32 @@ class ValveSimulationEnvironment(BaseEnvironment):
         # self._generate_model_file()
         self.model         = self.load_model(self.config.model_file)
         self.canonical_rgb = CanonicalRGB()
-        self.sim           = None
 
 
     def reset(self, state):
-        self.model_file_reset()
-        if self.sim is not None: return 0
-        self.sim = mujoco_py.MjSim(self.model); self.sim.reset()
-        RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)
-        ValveDyanmicsParameter(self.sim).set(self.config.dynamics.object)
-        RobotJointRange(self.sim).set_range(**self.config.joint_range.robot)
-        ValveJointRange(self.sim).set_range(**self.config.joint_range.object)
-        RobotCtrlRange(self.sim).set_range()
-        self.setState = SetState(self.sim, FeedState,  self.task_space, TaskSpaceValueObject)
-        self.getState = GetState(self.sim, FeedState,  self.task_space, EndEffectorValueObject, ReturnState)
-        self.setCtrl  = SetCtrl( self.sim, ReturnCtrl, self.task_space, TaskSpaceValueObject)
+        if self.sim is None:
+            self.model_file_reset()
+            self.sim      = mujoco_py.MjSim(self.model)
+            self.setState = SetState(self.sim, FeedState,  self.task_space, TaskSpaceValueObject)
+            self.getState = GetState(self.sim, FeedState,  self.task_space, EndEffectorValueObject, ReturnState)
+            self.setCtrl  = SetCtrl( self.sim, ReturnCtrl, self.task_space, TaskSpaceValueObject)
+            RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)
+            ValveDyanmicsParameter(self.sim).set(self.config.dynamics.object)
+            RobotJointRange(self.sim).set_range(**self.config.joint_range.robot)
+            ValveJointRange(self.sim).set_range(**self.config.joint_range.object)
+            RobotCtrlRange(self.sim).set_range()
+            self._initialize_viewer_and_render()
+            self._set_target_visible()
+        self.sim.reset()
         self.set_state(state)
-        if self.use_render:
-            self.viewer    = ViewerFactory().create(self.config.viewer.is_Offscreen)(self.sim)
+        self.sim.step()
+
+
+    def _initialize_viewer_and_render(self):
+        if not self.use_render: return
+        if self.viewer is None:
+            self.viewer = ViewerFactory().create(self.config.viewer.is_Offscreen)(self.sim)
+        if self.rendering is None:
             self.rendering = Rendering(
                 sim            = self.sim,
                 canonical_rgb  = self.canonical_rgb.rgb,
@@ -72,7 +80,7 @@ class ValveSimulationEnvironment(BaseEnvironment):
                 config_camera  = self.config.camera,
                 config_light   = self.config.light,
             )
-        self.sim.step()
+        self.render()
 
 
     def render(self):
@@ -98,15 +106,11 @@ class ValveSimulationEnvironment(BaseEnvironment):
         return self.setCtrl.set_ctrl(task_space_abs_ctrl)
 
 
-    # def set_target_visible(self):
-
-    #     self._target_bid        = self.model.body_name2id('target')
-    #     self._target_sid        = self.model.site_name2id('tmark')
-    #     # ------------------------
-    #     if self.is_target_visible:
-    #         if self.env_name == "blue": self.sim.model.site_rgba[self._target_sid] = [1.,  0.92156863, 0.23137255, 1]
-    #         else                      : self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 1]
-    #     else:
-    #         self.sim.model.site_rgba[self._target_sid] = [0, 0, 1, 0]
-
+    def _set_target_visible(self):
+        if not self.use_render: return
+        assert self.image is not None
+        target_sid = self.model.site_name2id('tmark')
+        if self.config.target.visible:
+            self.sim.model.site_rgba[target_sid] = [0.0,  0.92156863, 0.0, 1]; return
+        self.sim.model.site_rgba[target_sid] = [0.0, 0.0, 0.0, 0.0]
 

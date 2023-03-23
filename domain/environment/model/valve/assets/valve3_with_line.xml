@@ -12,9 +12,9 @@
       <site type="capsule" size=".008 0.03" pos="0 0.042 0.067" rgba="0 0 0 1" euler="1.57 0 1.57"/>
 
       <!-- physical -->
-      <geom name="phy_valve_6_oclock"   class="station_phy_plastic"  type="capsule"  pos=" 0.0    0.0399 0.054" size="0.0196 0.032"  euler="1.57 0 0"/>
-      <geom name="phy_valve_2_oclock"   class="station_phy_plastic"  type="capsule"  pos="-0.034 -0.019 0.054"  size="0.0196 0.032"  euler="1.57 2.0944 0"/>
-      <geom name="phy_valve_10_oclock"  class="station_phy_plastic"  type="capsule"  pos=" 0.034 -0.019 0.054"  size="0.0196 0.032"  euler="1.57 4.1887 0"/>
+      <geom name="phy_valve_6_oclock"   class="station_phy_plastic"  type="capsule"  pos=" 0.0    0.040 0.054" size="0.0197 0.032"  euler="1.57 0 0"/>
+      <geom name="phy_valve_2_oclock"   class="station_phy_plastic"  type="capsule"  pos="-0.034 -0.019 0.054"  size="0.0197 0.032"  euler="1.57 2.0944 0"/>
+      <geom name="phy_valve_10_oclock"  class="station_phy_plastic"  type="capsule"  pos=" 0.034 -0.019 0.054"  size="0.0197 0.032"  euler="1.57 4.1887 0"/>
       <geom name="phy_valve_center"     class="station_phy_plastic"  type="cylinder" pos=" 0.0 0.0 0.027"       size="0.02 0.0275"   />
 
       <!-- joint -->

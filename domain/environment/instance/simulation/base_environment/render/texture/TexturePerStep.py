@@ -1,3 +1,4 @@
+from pprint import pprint
 from .myTextureModder import myTextureModder
 from .VisibleGeometry import VisibleGeometry
 from .utility import create_texture_collection_without_info
@@ -35,12 +36,24 @@ class TexturePerStep:
                 is_noise_randomize = self.is_dynamc_noise
             )
 
+    def set_canonical_texture(self, rgb_dict: dict):
+        self.texture_modder.set_rgb_from_dict(rgb_dict)
+
+
+    def set_task_relevant_randomized_texture(self):
+        if self.texture_collection.is_empty_info():
+            self._assign_texture_info(is_all=True)
+        max_id = max(self.texture_collection.get_id())
+        for texture in self.texture_collection.get_textures_from_id(id=max_id):
+            '''
+                We don't use my_set_texture() function for task-relevant object
+                if the domain-dependent information is color
+            '''
+            self.texture_modder.set_rgb(texture.name, texture.info["rgb"])
+
+
     def set_randomized_texture(self):
         if self.texture_collection.is_empty_info():
             self._assign_texture_info(is_all=True)
         self._assign_texture_info(is_all=False)
         self._set_texture()
-
-
-    def set_canonical_texture(self, rgb_dict: dict):
-        self.texture_modder.set_rgb_from_dict(rgb_dict)

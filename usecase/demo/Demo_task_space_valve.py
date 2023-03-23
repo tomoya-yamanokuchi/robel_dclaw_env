@@ -23,9 +23,9 @@ class Demo_task_space:
             # task_g -= 0.2
 
             for t in range(step):
-                # img   = env.render()
+                img   = env.render()
                 state = env.get_state()
-                # env.view()
+                env.view()
 
                 # task_g[0] += 0.00
                 # task_g[1] += 0.1
@@ -33,7 +33,7 @@ class Demo_task_space:
                 # import ipdb; ipdb.set_trace()
 
                 env.set_ctrl_task_space(task_g)
-                env.step(is_view=True)
+                env.step(is_view=False)
 
                 # import ipdb; ipdb.set_trace()
                 # print("body_inertia = ", env.sim.data.body_inertia[21])

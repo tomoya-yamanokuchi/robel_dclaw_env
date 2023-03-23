@@ -1,9 +1,8 @@
 import time
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from icem_mpc.multiprocessing.ForkedPdb import ForkedPdb
+from forward_model_multiprocessing.ForkedPdb import ForkedPdb
 from custom_service import wait_time
-
 
 
 

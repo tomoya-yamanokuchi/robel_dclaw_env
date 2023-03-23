@@ -19,7 +19,10 @@
     // "python.testing.unittestEnabled": true,
 
     "files.exclude": {
-        "iCEM": true
+        "dist"    : true,
+        "iCEM"    : true,
+        "dataset" : true,
+        "icem_rollout_progress_dataset" : true,
     },
 
     // << trailing-spaces >>

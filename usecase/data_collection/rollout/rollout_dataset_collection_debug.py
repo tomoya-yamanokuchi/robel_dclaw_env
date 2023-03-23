@@ -7,11 +7,11 @@ from custom_service import wait_time
 from domain.environment.instance.simulation.base_environment.render.ReturnImage import ReturnImage
 
 
-def rollout_dataset_collection(constant_setting, queue_input, queue_result):
-    index_chunk, task_space_position = queue_input.get()
+def rollout_dataset_collection_debug(constant_setting, task_space_position):
+
 
     num_chunk, step, dim_ctrl        = task_space_position.shape
-    wait_time(const=5, seed=index_chunk)
+    wait_time(const=5, seed=1)
 
     env_subclass = constant_setting["env_subclass"]
     config       = constant_setting["config"]
@@ -43,13 +43,13 @@ def rollout_dataset_collection(constant_setting, queue_input, queue_result):
 
             env.step()
 
-        repository.assign("image", image_list, ReturnImage)
-        repository.assign("state", state_list, ReturnState)
-        repository.assign("ctrl",  ctrl_list , ReturnCtrl)
+        repository.assign("image", image_list)
+        repository.assign("state", state_list)
+        repository.assign("ctrl",  ctrl_list)
         repository.close()
 
 
     # << ---- queue procedure ----- >>
     # ForkedPdb().set_trace()
-    queue_result.put((index_chunk, object_state_trajectory)) # 結果とバッチインデックスをキューに入れる
-    queue_input.task_done() # キューを終了する
+    # queue_result.put((index_chunk, object_state_trajectory)) # 結果とバッチインデックスをキューに入れる
+    # queue_input.task_done() # キューを終了する

@@ -6,14 +6,16 @@ import pathlib
 import numpy as np
 from natsort import natsorted
 from .dataclass_concatenate import dataclass_concatenate
+from .CollectionAggregation import CollectionAggregation
 
+from forward_model_multiprocessing.ForkedPdb import ForkedPdb
 
 class SimulationDataRepository:
     def __init__(self, dataset_dir:str="./dataset", dataset_name:str=None, read_only:bool=False):
-        self.dataset_name     = dataset_name
-        self.read_only        = read_only
-        self.dataset_dir      = dataset_dir
-        self.dataset_save_dir = self.__create_dataset_dir()
+        self.dataset_name           = dataset_name
+        self.read_only              = read_only
+        self.dataset_dir            = dataset_dir
+        self.dataset_save_dir       = self.__create_dataset_dir()
 
 
     def __create_parent_dir(self):
@@ -55,8 +57,10 @@ class SimulationDataRepository:
         self.repository.close()
 
 
-    def assign(self, key: str, dataclass_list: list, cls: object):
+    def assign(self, key: str, dataclass_list: list):
         assert type(key) == str
         assert type(dataclass_list) == list
-        sequencial_dataclass = dataclass_concatenate(dataclass_list, cls) # リストオブジェクトを１つのオブジェクトにまとめる
-        self.repository[key] = vars(sequencial_dataclass)                 # shelveの保存するものとしてクラスのフィールド値を辞書として取得
+
+        self.collection_aggregation = CollectionAggregation(dataclass_list)
+        aggregated_data             = self.collection_aggregation.aggregate() # リストオブジェクトを１つのオブジェクトにまとめる
+        self.repository[key]        = aggregated_data                         # shelveの保存するものとしてクラスのフィールド値を辞書として取得

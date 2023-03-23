@@ -47,7 +47,6 @@ class PushingSimulationEnvironment(BaseEnvironment):
         object_geom_names  = [name for name in self.model.geom_names
                 if (self.config.texture.task_relevant_geom_group_name in name)]
         self.canonical_rgb = CanonicalRGB(num_object_geom=len(object_geom_names))
-        self.sim           = None
 
 
     def _generate_model_file(self):

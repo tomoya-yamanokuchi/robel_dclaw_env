@@ -16,10 +16,12 @@ from matplotlib import ticker, cm
 repository = Repository(
     dataset_dir  = "./dataset",
     # dataset_name = "dataset_20221022145521",
-    dataset_name="dataset_202323161720"
+    # dataset_name="dataset_202323161720"
+    # dataset_name = "dataset_202332318176"
+    dataset_name="dataset_2023323223944"
 )
-# query_state = "object_position"
-query_state = "robot_position"
+query_state = "object_position"
+# query_state = "robot_position"
 
 # ------------------------------------------------
 db_files = os.listdir(repository.dataset_save_dir)

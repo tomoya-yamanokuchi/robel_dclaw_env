@@ -44,6 +44,7 @@ class Rendering:
 
     def _render_canonical(self):
         self.texture.set_canonical_texture(self.canonical_rgb)
+        self.texture.set_task_relevant_randomized_texture()
         self.light.set_light_ambient(self.ambient)
         self.light.set_light_castshadow(shadowsize=self.shadowsize)
         self.light.set_light_on()

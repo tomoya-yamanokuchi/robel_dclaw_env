@@ -8,7 +8,10 @@ inplicit_step                  : 200
 ctrl_interpolation_margin_step : 40
 
 viewer:
-    is_Offscreen     : False
+    is_Offscreen     : True
+
+target:
+    visible: False
 
 render:
     camera_name_list : ["random_nonfix", "canonical"]

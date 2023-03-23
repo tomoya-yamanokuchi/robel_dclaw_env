@@ -12,5 +12,6 @@ from custom_service.wait_time import wait_time
 from custom_service.dimension_assetion import dimension_assetion
 from custom_service.create_gif import create_gif
 from custom_service.make_dir import make_dir
+from custom_service.concat import concat
 
 __version__ = '0.1.0'
