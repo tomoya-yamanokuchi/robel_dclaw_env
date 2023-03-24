@@ -64,6 +64,8 @@ class ValveSimulationEnvironment(BaseEnvironment):
             self._set_target_visible()
         self.sim.reset()
         self.set_state(state)
+        if self.use_render:
+            self.rendering.register_new_randomized_texture_collection()
         self.sim.step()
 
 
@@ -80,7 +82,6 @@ class ValveSimulationEnvironment(BaseEnvironment):
                 config_camera  = self.config.camera,
                 config_light   = self.config.light,
             )
-        self.render()
 
 
     def render(self):
@@ -108,7 +109,6 @@ class ValveSimulationEnvironment(BaseEnvironment):
 
     def _set_target_visible(self):
         if not self.use_render: return
-        assert self.image is not None
         target_sid = self.model.site_name2id('tmark')
         if self.config.target.visible:
             self.sim.model.site_rgba[target_sid] = [0.0,  0.92156863, 0.0, 1]; return

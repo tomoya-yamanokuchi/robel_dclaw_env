@@ -35,13 +35,21 @@ class DataCollection:
 
         reference = ValveReference(config_icem.planning_horizon)
 
+        dataset_name = "dataset-[colored_noise_exponent={}]-[sampling_range=[{},{}]]-[num_sample={}]-{}".format(
+            config_icem.colored_noise_exponent,
+            config_icem.lower_bound_sampling,
+            config_icem.upper_bound_sampling,
+            config_icem.num_sample,
+            time_as_string()
+        )
+
         icem.reset()
         cost = icem.optimize(
             constant_setting = {
                 "env_subclass" : env_subclass,
                 "config"       : config,
                 "init_state"   : init_state,
-                "dataset_name" : time_as_string(),
+                "dataset_name" : dataset_name,
             },
             action_bias = np.array(config.env.init_state.task_space_position),
             target      = reference.get_as_radian(current_step=0)

@@ -4,10 +4,10 @@ planning_horizon           : 30
 dim_action                 : 3
 dimension_of_interst       : [0, 1, 2]
 
-colored_noise_exponent     : 3.0
+colored_noise_exponent     : 2.0
 
-lower_bound_sampling       : -0.2
-upper_bound_sampling       :  0.2
+lower_bound_sampling       : -0.1
+upper_bound_sampling       :  0.1
 lower_bound_action         : -1.0
 upper_bound_action         :  1.0
 lower_bound_simulated_path : -1.0
@@ -15,7 +15,7 @@ upper_bound_simulated_path : 6.283185307179586
 dim_path                   : 1
 
 # << sampling >>
-num_sample                 : 2000
+num_sample                 : 500
 decay_sample               : 1.25
 
 # << elite >>

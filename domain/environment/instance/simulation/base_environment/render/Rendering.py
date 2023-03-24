@@ -68,7 +68,8 @@ class Rendering:
         return image
 
 
-
+    def register_new_randomized_texture_collection(self):
+        self.texture.register_new_randomized_texture_collection(include_task_relevant_object=True)
 
 
 
