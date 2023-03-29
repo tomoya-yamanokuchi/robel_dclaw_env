@@ -1,7 +1,7 @@
 import time
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from forward_model_multiprocessing.ForkedPdb import ForkedPdb
+from domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
 from custom_service import wait_time
 
 
@@ -27,7 +27,8 @@ def rollout_function(constant_setting, queue_input, queue_result):
         for t in range(step):
             # img   = env.render()
             state = env.get_state()
-            object_state_1seq.append(state.object_position)
+            object_state_1seq.append(state.state["object_position"].value)
+            # ForkedPdb().set_trace()
             env.set_ctrl_task_space(task_space_position[n, t])
             # env.view()
             env.step()

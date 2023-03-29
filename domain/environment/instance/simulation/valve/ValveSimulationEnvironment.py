@@ -5,8 +5,9 @@ import numpy as np
 from pprint import pprint
 import mujoco_py
 # -------- import from same level directory --------
-from .ValveFeedState import ValveFeedState as FeedState
-from .ValveReturnState import ValveReturnState as ReturnState
+from .ValveState import ValveState as State
+# from .ValveFeedState import ValveFeedState as FeedState
+# from .ValveReturnState import ValveReturnState as ReturnState
 from .ValveReturnCtrl import ValveReturnCtrl as ReturnCtrl
 from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
@@ -23,6 +24,7 @@ from custom_service import print_info, NTD
 from ..base_environment.SetState import SetState
 from ..base_environment.GetState import GetState
 from ..base_environment.SetCtrl  import SetCtrl
+from .ValveTarget import ValveTarget
 from ..base_environment.render.Rendering import Rendering
 from ..base_environment.viewer.ViewerFactory import ViewerFactory
 from ..base_environment.dynamics_parameter.RobotDynamicsParameter import RobotDynamicsParameter
@@ -52,16 +54,17 @@ class ValveSimulationEnvironment(BaseEnvironment):
         if self.sim is None:
             self.model_file_reset()
             self.sim      = mujoco_py.MjSim(self.model)
-            self.setState = SetState(self.sim, FeedState,  self.task_space, TaskSpaceValueObject)
-            self.getState = GetState(self.sim, FeedState,  self.task_space, EndEffectorValueObject, ReturnState)
+            self.setState = SetState(self.sim, State,  self.task_space)
+            self.getState = GetState(self.sim, State,  self.task_space, EndEffectorValueObject)
             self.setCtrl  = SetCtrl( self.sim, ReturnCtrl, self.task_space, TaskSpaceValueObject)
+            self.setTargetPosition = ValveTarget(self.sim)
+            self.setTargetPosition.set_target_visible(self.config.target.visible)
             RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)
             ValveDyanmicsParameter(self.sim).set(self.config.dynamics.object)
             RobotJointRange(self.sim).set_range(**self.config.joint_range.robot)
             ValveJointRange(self.sim).set_range(**self.config.joint_range.object)
             RobotCtrlRange(self.sim).set_range()
             self._initialize_viewer_and_render()
-            self._set_target_visible()
         self.sim.reset()
         self.set_state(state)
         if self.use_render:
@@ -107,10 +110,5 @@ class ValveSimulationEnvironment(BaseEnvironment):
         return self.setCtrl.set_ctrl(task_space_abs_ctrl)
 
 
-    def _set_target_visible(self):
-        if not self.use_render: return
-        target_sid = self.model.site_name2id('tmark')
-        if self.config.target.visible:
-            self.sim.model.site_rgba[target_sid] = [0.0,  0.92156863, 0.0, 1]; return
-        self.sim.model.site_rgba[target_sid] = [0.0, 0.0, 0.0, 0.0]
-
+    def set_target_position(self, target_position):
+        self.setTargetPosition.set_target_position(target_position)

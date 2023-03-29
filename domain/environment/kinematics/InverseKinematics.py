@@ -27,7 +27,7 @@ class InverseKinematics:
     def calc(self, position):
         '''
         input:
-            endeffector position: size (N, 9)
+            end-effector position: size (N, 9)
         return:
             joint position (1 claw)
                 shape = (data_num, 9)

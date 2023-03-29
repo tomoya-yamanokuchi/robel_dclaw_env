@@ -1,2 +1,2 @@
-numpy
-../icem_mpc
+pandas==1.5.3
+colorednoise==2.1.0

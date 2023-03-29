@@ -19,10 +19,10 @@ class ForwardKinematics:
     def calc(self, theta):
         '''
         input:
-            endeffector position: size (N, 9)
-        return:
             joint position (1 claw)
                 shape = (data_num, 9)
+        return:
+            end-effector position: size (N, 9)
         '''
 
         num_shape = len(theta.shape)

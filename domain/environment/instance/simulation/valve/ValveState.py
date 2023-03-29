@@ -1,97 +1,32 @@
-from dataclasses import dataclass
-from mimetypes import init
 import numpy as np
+from .object_state.ValvePosition import ValvePosition
+from .object_state.ValveVelocity import ValveVelocity
+import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
+from domain.environment.instance.simulation.base_environment.robot_state.RobotPosition import RobotPosition
+from domain.environment.instance.simulation.base_environment.robot_state.RobotVelocity import RobotVelocity
+from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
+from domain.environment.kinematics.EndEffectorPosition import EndEffectorPosition
+from custom_service import NTD
 
-'''
-・Dclaw環境に状態を与える時に使用するクラスです
-・与えるべき状態のルールが記述されています
-'''
 
-@dataclass(frozen=True)
+StateValueObject = {
+    "task_space_position"   : TaskSpacePositionValue_1D_Manifold,
+    "end_effector_position" : EndEffectorPosition,
+    "robot_position"        : RobotPosition,
+    "robot_velocity"        : RobotVelocity,
+    "object_position"       : ValvePosition,
+    "object_velocity"       : ValveVelocity,
+}
+
+
 class ValveState:
-    '''
-    modeについて：
-        永続化するときには系列になった値オブジェクトとして保存したいが，系列とステップごととで
-        shapeに対するassetの掛け方が変化するようしたい．このassertの掛け方を判断するのがmode．
-        - mode = "step": ステップデータとしてのshpaeをassert
-        - mode = "sequence": 系列データとしてのshapeをassert
-    '''
-    robot_position       : np.ndarray
-    object_position      : np.ndarray
-    robot_velocity       : np.ndarray
-    object_velocity      : np.ndarray
-    end_effector_position: np.ndarray
-    task_space_positioin : np.ndarray
-    mode                 : str = "step"
+    def __init__(self, **kwargs: dict):
+        self.state = {}
+        for key, val in kwargs.items():
+            state_value_object = StateValueObject[key]
+            val = np.array(val)
 
-    def __post_init__(self):
-        if   self.mode == "step"    : self.__assert_step__()
-        elif self.mode == "sequence": self.__assert_sequence__()
-        else                        : raise NotImplementedError()
+            # print("key, val, val_shape = {}, {}, {}".format(key, val, val.shape))
 
-    def __assert_step__(self):
-        self.assert_type_shape_dim_STEP(self.robot_position,  dim=9)
-        self.assert_type_shape_dim_STEP(self.robot_velocity,  dim=9)
-        self.assert_type_shape_dim_STEP(self.object_position, dim=1)
-        self.assert_type_shape_dim_STEP(self.object_velocity, dim=1)
-
-    def __assert_sequence__(self):
-        self.assert_type_shape_dim_SEQUENCE(self.robot_position,  dim=9)
-        self.assert_type_shape_dim_SEQUENCE(self.robot_velocity,  dim=9)
-        self.assert_type_shape_dim_SEQUENCE(self.object_position, dim=1)
-        self.assert_type_shape_dim_SEQUENCE(self.object_velocity, dim=1)
-
-
-    def assert_type_shape_dim_STEP(self, x, dim):
-        val_type = type(x)
-        if   val_type == np.ndarray             :   assert x.shape == (dim,)
-        elif (dim == 1) and (val_type == float) :   pass
-        else                                    :   raise NotImplementedError()
-
-    def assert_type_shape_dim_SEQUENCE(self, x, dim):
-        assert      type(x) == np.ndarray
-        assert len(x.shape) == 2  # shape = [step, dim]
-        assert  x.shape[-1] == dim
-
-
-    def get_step(self, index):
-        return DClawState(
-            robot_position        = self.robot_position[index]          if self.robot_position        is not None else None,
-            robot_velocity        = self.robot_velocity[index]          if self.robot_velocity        is not None else None,
-            object_position       = self.object_position[index]         if self.object_position       is not None else None,
-            object_velocity       = self.object_velocity[index]         if self.object_velocity       is not None else None,
-            end_effector_position = self.end_effector_position[index]   if self.end_effector_position is not None else None,
-            task_space_positioin  = self.task_space_positioin[index]    if self.task_space_positioin  is not None else None,
-            mode                  = "step"
-        )
-
-
-if __name__ == '__main__':
-    import numpy as np
-
-    state = DClawState(
-        robot_position        = np.zeros(9),
-        object_position       = np.zeros(1),
-        robot_velocity        = np.zeros(9),
-        object_velocity       = np.zeros(1),
-        # force                 = np.random.randn(9),
-        end_effector_position = np.zeros(9),
-        task_space_positioin  = np.zeros(3),
-        mode="step"
-    )
-    print(state.robot_position)
-    print(state.object_position)
-    print(state.mode)
-
-    step = 8
-    state = DClawState(
-        robot_position        = np.zeros([step, 9]),
-        object_position       = np.zeros([step, 1]),
-        robot_velocity        = np.zeros([step, 9]),
-        object_velocity       = np.zeros([step, 1]),
-        end_effector_position = np.zeros([step, 9]),
-        task_space_positioin  = np.zeros([step, 3]),
-        mode="sequence",
-    )
-    print(state.robot_position)
-    print(state.object_position)
+            if key == "task_space_position": val = NTD(val)
+            self.state[key] = state_value_object(val)
