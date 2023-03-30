@@ -4,19 +4,18 @@ import colorednoise
 
 
 class ColoredNoiseSampler:
-    def __init__(self, beta, planning_horizon, dim_action):
-        self.beta             = beta
+    def __init__(self, planning_horizon, dim_action):
         self.planning_horizon = planning_horizon
         self.dim_action       = dim_action
 
 
-    def sample(self, num_sample):
-        if self.beta > 0:
-            return self.__sample_from_colorednoise(num_sample)
+    def sample(self, num_sample, beta):
+        if beta > 0:
+            return self.__sample_from_colorednoise(num_sample, beta)
         return self.__sample_from_gaussian(num_sample)
 
 
-    def __sample_from_colorednoise(self, num_sample):
+    def __sample_from_colorednoise(self, num_sample, beta):
         '''
         [Important improvement]
             self.mean has shape h,d:
@@ -24,7 +23,7 @@ class ColoredNoiseSampler:
                 (noinspection PyUnresolvedReferences)
         '''
         samples = colorednoise.powerlaw_psd_gaussian(
-            exponent = self.beta,
+            exponent = beta,
             size     = (num_sample, self.dim_action, self.planning_horizon)
         )
         samples = samples.transpose([0, 2, 1])

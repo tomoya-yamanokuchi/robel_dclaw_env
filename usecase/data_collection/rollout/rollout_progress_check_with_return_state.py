@@ -70,5 +70,8 @@ def rollout_progress_check_with_return_state(constant_setting, queue_input, queu
 
     # ForkedPdb().set_trace()
     # << ---- queue procedure ----- >>
-    queue_result.put((index_chunk, state)) # 結果とバッチインデックスをキューに入れる
+    queue_result.put({
+        "index_chunk" : index_chunk,
+        "state"       : state,
+    }) # 結果とバッチインデックスをキューに入れる
     queue_input.task_done() # キューを終了する

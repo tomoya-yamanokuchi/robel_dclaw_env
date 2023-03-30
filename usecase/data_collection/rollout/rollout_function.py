@@ -20,22 +20,32 @@ def rollout_function(constant_setting, queue_input, queue_result):
     # env.randomize_texture_mode = "static"    # (1) テクスチャをバッチ単位で変更するためper_resetに設定
 
     # << ------ rollout ------- >>
+    robot_state_trajectory  = []
     object_state_trajectory = []
     for n in range(num_chunk):
-        object_state_1seq = []
+        robot_position_1seq = []
+        object_state_1seq   = []
         env.reset(init_state)
         for t in range(step):
-            # img   = env.render()
             state = env.get_state()
+            robot_position_1seq.append(state.state["robot_position"].value)
             object_state_1seq.append(state.state["object_position"].value)
-            # ForkedPdb().set_trace()
+            # -----
             env.set_ctrl_task_space(task_space_position[n, t])
-            # env.view()
             env.step()
+        state = env.get_state()
+        robot_position_1seq.append(state.state["robot_position"].value)
+        object_state_1seq.append(state.state["object_position"].value)
+        # -----
+        robot_state_trajectory.append(np.stack(robot_position_1seq))
         object_state_trajectory.append(np.stack(object_state_1seq))
+    robot_state_trajectory  = np.stack(robot_state_trajectory)
     object_state_trajectory = np.stack(object_state_trajectory)
 
     # << ---- queue procedure ----- >>
-    # ForkedPdb().set_trace()
-    queue_result.put((index_chunk, object_state_trajectory)) # 結果とバッチインデックスをキューに入れる
-    queue_input.task_done() # キューを終了する
+    queue_result.put({
+        "index_chunk"            : index_chunk,
+        "robot_state_trajectory" : robot_state_trajectory,
+        "object_state_trajectory": object_state_trajectory,
+    })
+    queue_input.task_done()

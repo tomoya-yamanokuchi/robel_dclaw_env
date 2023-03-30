@@ -1,12 +1,15 @@
 import os
 import time
 from .TrajectoryVisualization import TrajectoryVisualization
+from .VlaveTrajectoryVisualization import VlaveTrajectoryVisualization
+
 
 
 class iCEM_Visualizer:
     def __init__(self,
             dim_path,
             dim_action,
+            planning_horizon,
             lower_bound_simulated_path,
             upper_bound_simulated_path,
             lower_bound_sampling,
@@ -19,13 +22,14 @@ class iCEM_Visualizer:
             figsize = (7, 4)
             ):
 
-        self.vis_simulated_path = TrajectoryVisualization(
-            dim          = dim_path,
-            figsize      = figsize,
-            save_dir     = os.path.join(save_dir, "simulated_path"),
-            ylim         = (lower_bound_simulated_path, upper_bound_simulated_path),
-            color_sample = "plum",
-            color_elite  = "purple",
+        self.vis_simulated_path = VlaveTrajectoryVisualization(
+            dim              = dim_path,
+            planning_horizon = planning_horizon,
+            figsize          = figsize,
+            save_dir         = os.path.join(save_dir, "simulated_path"),
+            ylim             = (lower_bound_simulated_path, upper_bound_simulated_path),
+            color_sample     = "plum",
+            color_elite      = "purple",
         )
 
         self.vis_samples = TrajectoryVisualization(
@@ -65,12 +69,12 @@ class iCEM_Visualizer:
         return True
 
 
-    def simulated_paths(self, simulated_paths, elite_path, target, iter_inner_loop, iter_outer_loop, num_sample_i):
+    def simulated_paths(self, forward_results, index_elite, target, iter_inner_loop, iter_outer_loop, num_sample_i):
         self.vis_simulated_path.clear()
-        self.vis_simulated_path.plot_samples(simulated_paths)
-        self.vis_simulated_path.plot_elites(elite_path)
-        if self.__is_target_trajectory(simulated_paths, target):
-            self.vis_simulated_path.plot_target(target)
+        # import ipdb; ipdb.set_trace()
+        self.vis_simulated_path.plot_samples(forward_results['object_state_trajectory'], iter_outer_loop)
+        self.vis_simulated_path.plot_elites(forward_results['object_state_trajectory'][index_elite], iter_outer_loop)
+        self.vis_simulated_path.plot_target(target, iter_outer_loop)
         self.vis_simulated_path.save_plot(
             fname = self._fname("simulated_paths", iter_outer_loop, iter_inner_loop, num_sample_i),
             title = self._title("simulated_paths", iter_outer_loop, iter_inner_loop, num_sample_i),
