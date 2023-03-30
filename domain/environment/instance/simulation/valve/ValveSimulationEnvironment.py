@@ -69,6 +69,7 @@ class ValveSimulationEnvironment(BaseEnvironment):
         self.set_state(state)
         if self.use_render:
             self.rendering.register_new_randomized_texture_collection()
+        # print(self.sim.get_state().time)
         self.sim.step()
 
 

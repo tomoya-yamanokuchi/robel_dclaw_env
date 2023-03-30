@@ -27,5 +27,8 @@ class GetState:
             object_velocity       = state.qvel[18:],
             end_effector_position = end_effector_position,
             task_space_position   = task_space_position,
+            time                  = state.time,
+            act                   = state.act,
+            udd_state             = state.udd_state,
         )
         return state

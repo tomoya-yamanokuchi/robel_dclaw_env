@@ -23,7 +23,7 @@ class Demo_task_space:
             for t in range(step):
                 # img   = env.render()
                 # state = env.get_state()
-
+                print(t, task_space_positioin[t])
                 env.set_ctrl_task_space(task_space_positioin[t])
                 # env.view()
                 env.step(is_view=True)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
         task_space_positioin = np.load(
             "./best_elite_action/" + \
-            "best_elite_action-[num_cem_iter=1]-[planning_horizon=10]-[num_sample=50]-2023330184158.npy"
+            "best_elite_action-[num_cem_iter=7]-[planning_horizon=10]-[num_sample=700]-2023330215449.npy"
         )
 
         config.env.viewer.is_Offscreen = False

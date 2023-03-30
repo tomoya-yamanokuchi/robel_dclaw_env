@@ -17,13 +17,16 @@ class SetState:
     def set_state(self, state: object):
         assert isinstance(state, self.State)
         state     = state.state
-        qpos      = self._set_qpos(state)
-        qvel      = self._set_qvel(state)
-        old_state = self.sim.get_state()
-        new_state = MjSimState(old_state.time, qpos, qvel, old_state.act, old_state.udd_state)
+        new_state = MjSimState(
+            time      = state["time"].value,
+            qpos      = self._set_qpos(state),
+            qvel      = self._set_qvel(state),
+            act       = state["act"].value,
+            udd_state = state["udd_state"].value,
+        )
         self.sim.set_state(new_state)
-        self.sim.data.ctrl[:9] = qpos[:9]
-        self.sim.data.ctrl[9:] = 0.0
+        # self.sim.data.ctrl[:9] = qpos[:9]
+        # self.sim.data.ctrl[9:] = 0.0
         self.sim.forward()
 
 

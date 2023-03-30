@@ -8,7 +8,7 @@ import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from usecase.data_collection.valve.cost.tracking_cost import tracking_cost
 from usecase.data_collection.rollout.rollout_function import rollout_function
-from usecase.data_collection.rollout.rollout_progress_check_with_return_state import rollout_progress_check_with_return_state
+from usecase.data_collection.rollout.rollout_progress_check_with_return_state_without_render import rollout_progress_check_with_return_state_without_render
 from custom_service import time_as_string, NTD, join_with_mkdir
 from domain.icem_mpc.iCEM_TaskSpace_CumulativeSum_with_MinorUpdates import iCEM_TaskSpace_CumulativeSum_with_MinorUpdates
 from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
@@ -24,16 +24,17 @@ class DataCollection:
         config_icem = OmegaConf.load("conf/icem/config_icem_valve_mpc.yaml")
         icem = iCEM_TaskSpace_CumulativeSum_with_MinorUpdates(
             forward_model                = rollout_function,
-            forward_model_progress_check = rollout_progress_check_with_return_state,
+            forward_model_progress_check = rollout_progress_check_with_return_state_without_render,
             cost_function                = tracking_cost,
             TaskSpace                    = TaskSpacePositionValue_1D_Manifold,
             **config_icem
         )
 
         best_elite_action_list = []
-        reference = ValveReference(config_icem.planning_horizon)
-        task_step = 30
-        for i in range(3):
+        reference   = ValveReference(config_icem.planning_horizon)
+        action_bias = np.array(config.env.init_state.task_space_position)
+        task_step   = 30
+        for i in range(task_step):
             icem.reset()
             cost, state, best_elite_action = icem.optimize(
                 constant_setting = {
@@ -42,14 +43,14 @@ class DataCollection:
                     "init_state"   : init_state,
                     "dataset_name" : time_as_string(),
                 },
-                action_bias = np.array(config.env.init_state.task_space_position),
+                action_bias = action_bias,
                 target      = reference.get_as_radian(current_step=i)
             )
-            init_state = state
+            init_state  = state
+            action_bias = state.state['task_space_position'].value.squeeze()
             best_elite_action_list.append(best_elite_action)
         best_elite_action_sequence = np.stack(best_elite_action_list)
 
-        # import ipdb; ipdb.set_trace()
         np.save(
             file = join_with_mkdir("./", "best_elite_action",
                 "best_elite_action-[num_cem_iter={}]-[planning_horizon={}]-[num_sample={}]-{}".format(

@@ -18,7 +18,8 @@ class Demo_task_space:
         for s in range(10):
             time_start = time.time()
             env.reset(init_state); print("\n*** reset ***\n")
-            task_t = env.get_state().task_space_positioin
+            state  = env.get_state()
+            task_t = state.state['task_space_position'].value.squeeze()
             task_g = copy.deepcopy(task_t)
             # task_g -= 0.2
 

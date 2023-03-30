@@ -37,6 +37,11 @@ init_state:
     robot_velocity     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
     object_position    : [0.0]
     object_velocity    : [0.0]
+    # ---
+    time               : 0.0 # MjSImState
+    act                :     # MjSImState
+    udd_state          : {}  # MjSImState
+
 
 dynamics:
     robot:

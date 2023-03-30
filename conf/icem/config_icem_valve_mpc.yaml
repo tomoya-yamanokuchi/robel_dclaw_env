@@ -1,5 +1,5 @@
 # << general >>
-num_cem_iter               : 6
+num_cem_iter               : 1
 planning_horizon           : 10
 dim_action                 : 3
 dimension_of_interst       : [0, 1, 2]
@@ -15,7 +15,7 @@ upper_bound_simulated_path : 6.283185307179586
 dim_path                   : 1
 
 # << sampling >>
-num_sample                 : 500
+num_sample                 : 100
 decay_sample               : 1.25
 
 # << elite >>

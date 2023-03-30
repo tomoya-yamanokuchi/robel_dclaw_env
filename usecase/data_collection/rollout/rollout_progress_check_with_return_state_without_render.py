@@ -8,7 +8,7 @@ from custom_service import create_gif, join_with_mkdir
 from custom_service import save_mpc_planning_images
 
 
-def rollout_progress_check_with_return_state(constant_setting, queue_input, queue_result):
+def rollout_progress_check_with_return_state_without_render(constant_setting, queue_input, queue_result):
     index_chunk, task_space_position = queue_input.get()
     num_chunk, step, dim_ctrl        = task_space_position.shape
     assert num_chunk == 1
@@ -26,47 +26,38 @@ def rollout_progress_check_with_return_state(constant_setting, queue_input, queu
 
 
     # << ------ rollout ------- >>
-    config.env.target.visible = True
-    env = env_subclass(config.env, use_render=True)
-    images = []
+    # config.env.target.visible = True
+    env = env_subclass(config.env, use_render=False)
+    # images = []
     env.reset(init_state)
     for t in range(step):
-        env.set_target_position(target[t])
-        img = env.render(); images.append(img.canonical)
+        # env.set_target_position(target[t])
+        # img = env.render(); images.append(img.canonical)
         if t == 1:
             state = env.get_state()
         env.set_ctrl_task_space(task_space_position[0, t])
-        # env.view()
         env.step()
 
-    # << ------ save images as gif ------- >>
-    create_gif(
-        images   = images,
-        fname    = join_with_mkdir(
-            save_fig_dir, "progress_gif",
-            "elite_progress_iterOuter{}_iterInner{}.gif".format(iter_outer_loop, iter_inner_loop),
-            is_end_file = True,
-        ),
-        duration = 200,
-    )
+    # # << ------ save images as gif ------- >>
+    # create_gif(
+    #     images   = images,
+    #     fname    = join_with_mkdir(
+    #         save_fig_dir, "progress_gif",
+    #         "elite_progress_iterOuter{}_iterInner{}.gif".format(iter_outer_loop, iter_inner_loop),
+    #         is_end_file = True,
+    #     ),
+    #     duration = 200,
+    # )
 
-    # << ------ save images as png ------- >>
-    save_dir = join_with_mkdir(save_fig_dir, "progress_png",
-        "iterOuter{}_iterInner{}".format(iter_outer_loop, iter_inner_loop), is_end_file=False)
-    save_mpc_planning_images(
-        images    = images,
-        save_dir  = save_dir,
-        fname     = "elite_progress_iterOuter{}_iterInner{}".format(iter_outer_loop, iter_inner_loop),
-    )
+    # # << ------ save images as png ------- >>
+    # save_dir = join_with_mkdir(save_fig_dir, "progress_png",
+    #     "iterOuter{}_iterInner{}".format(iter_outer_loop, iter_inner_loop), is_end_file=False)
+    # save_mpc_planning_images(
+    #     images    = images,
+    #     save_dir  = save_dir,
+    #     fname     = "elite_progress_iterOuter{}_iterInner{}".format(iter_outer_loop, iter_inner_loop),
+    # )
 
-    # << ------ save images as gif ------- >>
-    np.save(
-        file = join_with_mkdir(
-            os.path.join("./icem_rollout_progress_dataset", dataset_name,
-            'icem_rollout_iterOuter{}_iterInner{}'.format(iter_outer_loop, iter_inner_loop),
-            "task_space_position"), is_end_file=True),
-        arr  = task_space_position,
-    )
 
     # ForkedPdb().set_trace()
     # << ---- queue procedure ----- >>
