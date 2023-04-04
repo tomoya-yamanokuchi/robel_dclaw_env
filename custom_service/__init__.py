@@ -14,6 +14,7 @@ from custom_service.create_gif import create_gif
 from custom_service.make_dir import make_dir
 from custom_service.concat import concat
 from custom_service.save_mpc_planning_images import save_mpc_planning_images
+from custom_service.load_best_elite_sequence import load_best_elite_sequence
 
 
 __version__ = '0.1.0'

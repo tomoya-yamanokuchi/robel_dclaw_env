@@ -8,7 +8,7 @@ from custom_service import create_gif, join_with_mkdir
 from custom_service import save_mpc_planning_images
 
 
-def rollout_progress_check_with_return_state_without_render(constant_setting, queue_input, queue_result):
+def rollout_progress_check_with_return_state_without_render_mppi(constant_setting, queue_input, queue_result):
     index_chunk, task_space_position = queue_input.get()
     num_chunk, step, dim_ctrl        = task_space_position.shape
     assert num_chunk == 1
@@ -19,8 +19,8 @@ def rollout_progress_check_with_return_state_without_render(constant_setting, qu
     init_state      = constant_setting["init_state"]
     # ---- additional for progress check ----
     save_fig_dir    = constant_setting["save_fig_dir"]
-    iter_outer_loop = constant_setting["iter_outer_loop"]
-    iter_inner_loop = constant_setting["iter_inner_loop"]
+    # iter_outer_loop = constant_setting["iter_outer_loop"]
+    # iter_inner_loop = constant_setting["iter_inner_loop"]
     dataset_name    = constant_setting["dataset_name"]
     target          = constant_setting["target"].squeeze(0)
 

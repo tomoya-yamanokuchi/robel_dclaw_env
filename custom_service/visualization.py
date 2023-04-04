@@ -79,3 +79,14 @@ def scatter_3d_animation(x, num_history=100, interval=100):
     ani = ArtistAnimation(fig, frames, interval=interval)
     plt.show()
 
+
+
+
+def simple_1d_lineplot(y, save_path, figsize=(5,5), x=None):
+    fig, ax = plt.subplots(1,1, figsize=figsize)
+    if x is None: ax.plot(y)
+    else:         ax.plot(x, y)
+    fig.savefig(save_path)
+
+
+

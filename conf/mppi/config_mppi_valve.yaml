@@ -1,10 +1,12 @@
 # << general >>
-num_cem_iter               : 7
+# num_cem_iter               : 7
+beta        : 0.1
+kappa       : 0.9
+noise_sigma : 0.5
+
 planning_horizon           : 10
 dim_action                 : 3
 dimension_of_interst       : [0, 1, 2]
-
-colored_noise_exponent     : [0.0, 1.0, 2.5, 3.5]
 
 lower_bound_sampling       :  -0.2
 upper_bound_sampling       :   0.2
@@ -15,7 +17,7 @@ upper_bound_simulated_path : 6.283185307179586
 dim_path                   : 1
 
 # << sampling >>
-num_sample                 : 700
+num_sample                 : 6
 decay_sample               : 1.25
 
 # << elite >>

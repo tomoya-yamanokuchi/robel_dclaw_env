@@ -15,7 +15,8 @@ from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import For
 from custom_service import concat
 
 
-class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
+
+class iCEM_TaskSpace_Differential:
     def __init__(self,
             forward_model                : Any,
             forward_model_progress_check : Any,
@@ -216,15 +217,12 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
             num_samples       = samples.shape[0]
             self.total_sample_size_in_optimze += num_samples
             if self.verbose: print("total_sample_size={: 4}".format(num_samples), end=' | ')
-            cumsum_actions    = np.cumsum(samples, axis=1)
-            actions           = self.TaskSpace(action_doi.construct(cumsum_actions)).value
-            forward_results   = self._forward(constant_setting, actions)
+            forward_results   = self._forward(constant_setting, samples)
             cost              = self.cost_function(forward_results=forward_results, target=target)
             assert cost.shape == (num_samples,), print("{} != {}".format(cost.shape, (num_samples,)))
             index_elite       = self._get_index_elite(cost)
             best_elite_sample = samples[index_elite[:1]]
-            best_elite_action = actions[index_elite[:1]]
-            forward_results_progress = self._forward_progress_check(constant_setting, best_elite_action, i, target)
+            forward_results_progress = self._forward_progress_check(constant_setting, best_elite_sample, i, target)
             elites            = copy.deepcopy(samples[index_elite])
             self.elite_set_queue.append(elites)
             self._update_distributions(elites)
@@ -233,16 +231,16 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
             if self.save_visualization_dir is None: continue
             self.cost_visualizer.hist(cost, i, self.iter_outer_loop, num_sample_i)
             self.trajectory_visualizer.simulated_paths(forward_results, index_elite, target, i, self.iter_outer_loop, num_sample_i)
-            self.trajectory_visualizer.cumsum_actions(cumsum_actions, cumsum_actions[index_elite], i, self.iter_outer_loop, num_sample_i)
+            # self.trajectory_visualizer.cumsum_actions(cumsum_actions, cumsum_actions[index_elite], i, self.iter_outer_loop, num_sample_i)
             self.trajectory_visualizer.samples(samples, samples[index_elite], i, self.iter_outer_loop, num_sample_i)
-            self.trajectory_visualizer.actions(actions, actions[index_elite], i, self.iter_outer_loop, num_sample_i)
+            # self.trajectory_visualizer.actions(actions, actions[index_elite], i, self.iter_outer_loop, num_sample_i)
             # ---- time count ----
             self.update_total_process_time(time_start)
         if self.verbose: self._print_optimize_info()
         return {
             "cost"              : cost,
             "state"             : forward_results_progress["state"],
-            "best_elite_action" : best_elite_action[0, 0],
+            "best_elite_action" : forward_results_progress["task_space_ctrl"],
             "best_elite_sample" : best_elite_sample[0, 0],
         }
 

@@ -5,7 +5,7 @@ import time
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
-from usecase.data_collection.rollout.rollout_function import rollout_function
+from usecase.data_collection.rollout.rollout_function_with_differential_ctrl import rollout_function
 from usecase.data_collection.rollout.rollout_progress_check import rollout_progress_check
 
 

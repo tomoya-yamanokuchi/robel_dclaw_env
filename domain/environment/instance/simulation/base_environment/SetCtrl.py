@@ -6,16 +6,16 @@ from custom_service import NTD
 
 
 class SetCtrl:
-    def __init__(self, sim, ReturnCtrl, task_space, TaskSpaceValueObject):
+    def __init__(self, sim, ReturnCtrl, task_space):
         self.sim                  = sim
         self.ReturnCtrl           = ReturnCtrl
         self.task_space           = task_space
-        self.TaskSpaceValueObject = TaskSpaceValueObject
+        # self.TaskSpaceValueObject = TaskSpaceValueObject
         self.inverse_kinematics   = InverseKinematics()
 
 
-    def set_ctrl(self, task_space_abs_ctrl):
-        task_space_position    = self.TaskSpaceValueObject(NTD(task_space_abs_ctrl))
+    def set_ctrl(self, task_space_position: object):
+        # task_space_position    = self.TaskSpaceValueObject(NTD(task_space_abs_ctrl))
 
         # import ipdb; ipdb.set_trace()
         # print(" primitive task_space_abs_ctrl = ", task_space_abs_ctrl)
@@ -26,7 +26,7 @@ class SetCtrl:
         self.sim.data.ctrl[:9] = ctrl_joint.squeeze()                                                  # 制御入力としてsimulationで設定
         # ---------------
         return self.ReturnCtrl(
-            task_space_abs_position  = task_space_abs_ctrl.squeeze(),
+            task_space_abs_position  = task_space_position.value.squeeze(),
             task_space_diff_position = None,
             end_effector_position    = ctrl_end_effector.value.squeeze(),
             joint_space_position     = ctrl_joint.squeeze(),

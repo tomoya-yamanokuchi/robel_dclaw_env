@@ -6,7 +6,7 @@ from custom_service import concat, NTD
 class ValveReference:
     def __init__(self, planning_horizon):
         self.planning_horizon = planning_horizon
-        self.task_horizon     = 25
+        self.task_horizon     = 20
         self.d_theta          = (2*np.pi) / self.task_horizon
 
 

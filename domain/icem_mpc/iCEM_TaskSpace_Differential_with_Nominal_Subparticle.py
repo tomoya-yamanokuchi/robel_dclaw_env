@@ -15,13 +15,16 @@ from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import For
 from custom_service import concat
 
 
-class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
+
+class iCEM_TaskSpace_Differential_with_Nominal:
     def __init__(self,
             forward_model                : Any,
             forward_model_progress_check : Any,
             cost_function                : Any,
             dimension_of_interst         : List[int],
             num_sample                   : int,
+            num_subparticle              : int,
+            std_subparticle              : float,
             num_elite                    : int,
             planning_horizon             : int,
             dim_action                   : int,
@@ -30,6 +33,8 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
             decay_sample                 : float,
             colored_noise_exponent       : float,
             fraction_rate_elite          : float,
+            lower_bound_nominal_with_noise : float,
+            upper_bound_nominal_with_noise : float,
             lower_bound_sampling         : float,
             upper_bound_sampling         : float,
             lower_bound_cusum_action     : float,
@@ -57,6 +62,8 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
         self.dim_action                   = dim_action
         self.num_cem_iter                 = num_cem_iter
         self.decay_sample                 = decay_sample
+        self.lower_bound_nominal_with_noise = lower_bound_nominal_with_noise
+        self.upper_bound_nominal_with_noise = upper_bound_nominal_with_noise
         self.lower_bound_sampling         = lower_bound_sampling
         self.upper_bound_sampling         = upper_bound_sampling
         self.TaskSpace                    = TaskSpace
@@ -68,6 +75,9 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
         self.init_std                     = init_std
         self.debug                        = debug
         self.colored_noise_exponent       = colored_noise_exponent
+        self.num_subparticle              = num_subparticle
+        self.std_subparticle              = std_subparticle
+
 
         self.elite_set_queue = EliteSetQueue(
             num_elite     = self.num_elite,
@@ -88,8 +98,8 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
             planning_horizon           = planning_horizon,
             lower_bound_simulated_path = lower_bound_simulated_path,
             upper_bound_simulated_path = upper_bound_simulated_path,
-            lower_bound_sampling       = lower_bound_sampling,
-            upper_bound_sampling       = upper_bound_sampling,
+            lower_bound_sampling       = lower_bound_nominal_with_noise,
+            upper_bound_sampling       = upper_bound_nominal_with_noise,
             lower_bound_cusum_action   = lower_bound_cusum_action,
             upper_bound_cusum_action   = upper_bound_cusum_action,
             lower_bound_action         = self.TaskSpace._min,
@@ -160,6 +170,9 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
     def __clip_samples(self, x):
         return np.clip(a=x, a_min=self.lower_bound_sampling, a_max=self.upper_bound_sampling)
 
+    def _clip_nominal_with_noise(self, x):
+        return np.clip(a=x, a_min=self.lower_bound_nominal_with_noise, a_max=self.upper_bound_nominal_with_noise)
+
 
     def _add_fraction_of_elite_set(self, samples, iter_inner_loop):
         if self.elite_set_queue.is_empty():
@@ -204,7 +217,7 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
         return index_elite
 
 
-    def optimize(self, constant_setting, action_bias, target):
+    def optimize(self, constant_setting, action_bias, target, nominal):
         action_doi = ActionDoI(action_bias, self.dimension_of_interst)
         for i in range(self.num_cem_iter):
             time_start        = time.time()
@@ -213,18 +226,20 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
             samples           = self._add_minmaxmean_action_sample(samples)
             samples           = self._add_fraction_of_elite_set(samples, i)
             samples           = self._add_mean_action_at_last_iteration(samples, i)
-            num_samples       = samples.shape[0]
+            # ----------------------------------
+            perturbated_samples = self._extend_as_subparticle(samples)
+            perturbated_nominal = self._clip_nominal_with_noise(perturbated_samples + nominal)
+            # ----------------------------------
+            num_samples       = perturbated_nominal.shape[0]
             self.total_sample_size_in_optimze += num_samples
             if self.verbose: print("total_sample_size={: 4}".format(num_samples), end=' | ')
-            cumsum_actions    = np.cumsum(samples, axis=1)
-            actions           = self.TaskSpace(action_doi.construct(cumsum_actions)).value
-            forward_results   = self._forward(constant_setting, actions)
-            cost              = self.cost_function(forward_results=forward_results, target=target)
-            assert cost.shape == (num_samples,), print("{} != {}".format(cost.shape, (num_samples,)))
+            forward_results   = self._forward(constant_setting, perturbated_nominal)
+            cost              = self.get_cost(forward_results, target, num_samples)
+            # ----------------------------------
             index_elite       = self._get_index_elite(cost)
+            import ipdb; ipdb.set_trace()
             best_elite_sample = samples[index_elite[:1]]
-            best_elite_action = actions[index_elite[:1]]
-            forward_results_progress = self._forward_progress_check(constant_setting, best_elite_action, i, target)
+            forward_results_progress = self._forward_progress_check(constant_setting, best_elite_sample, i, target)
             elites            = copy.deepcopy(samples[index_elite])
             self.elite_set_queue.append(elites)
             self._update_distributions(elites)
@@ -233,18 +248,38 @@ class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
             if self.save_visualization_dir is None: continue
             self.cost_visualizer.hist(cost, i, self.iter_outer_loop, num_sample_i)
             self.trajectory_visualizer.simulated_paths(forward_results, index_elite, target, i, self.iter_outer_loop, num_sample_i)
-            self.trajectory_visualizer.cumsum_actions(cumsum_actions, cumsum_actions[index_elite], i, self.iter_outer_loop, num_sample_i)
+            # self.trajectory_visualizer.cumsum_actions(cumsum_actions, cumsum_actions[index_elite], i, self.iter_outer_loop, num_sample_i)
             self.trajectory_visualizer.samples(samples, samples[index_elite], i, self.iter_outer_loop, num_sample_i)
-            self.trajectory_visualizer.actions(actions, actions[index_elite], i, self.iter_outer_loop, num_sample_i)
+            # self.trajectory_visualizer.actions(actions, actions[index_elite], i, self.iter_outer_loop, num_sample_i)
             # ---- time count ----
             self.update_total_process_time(time_start)
         if self.verbose: self._print_optimize_info()
         return {
             "cost"              : cost,
             "state"             : forward_results_progress["state"],
-            "best_elite_action" : best_elite_action[0, 0],
+            "best_elite_action" : forward_results_progress["task_space_ctrl"],
             "best_elite_sample" : best_elite_sample[0, 0],
         }
+
+
+    def _extend_as_subparticle(self, samples):
+        subparticle_group = []
+        noise             = np.random.randn(self.num_subparticle, self.planning_horizon, self.dim_action) * self.std_subparticle
+        num_samples       = samples.shape[0]
+        for i in range(num_samples):
+            perturbated_samples = samples[i][np.newaxis, :, :] + noise
+            subparticle_group.append(perturbated_samples)
+        perturbated_samples = np.concatenate(subparticle_group, axis=0)
+        return perturbated_samples
+
+
+    def get_cost(self, forward_results, target, num_samples):
+        cost_naive        = self.cost_function(forward_results=forward_results, target=target)
+        cost_subparticles = np.array_split(cost_naive, indices_or_sections=num_samples, axis=0)
+        cost_subparticles = np.stack(cost_subparticles, axis=0)
+        cost              = np.sum(cost_subparticles, axis=-1)
+        assert cost.shape == (num_samples,), print("{} != {}".format(cost.shape, (num_samples,)))
+        return cost
 
 
     def _forward(self, constant_setting, actions):

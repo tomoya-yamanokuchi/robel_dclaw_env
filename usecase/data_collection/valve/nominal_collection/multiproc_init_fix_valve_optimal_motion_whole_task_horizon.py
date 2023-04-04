@@ -7,7 +7,7 @@ import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
 from usecase.data_collection.valve.cost.mse_cost import mse_cost
-from usecase.data_collection.rollout.rollout_function import rollout_function
+from usecase.data_collection.rollout.rollout_function_with_differential_ctrl import rollout_function
 from usecase.data_collection.rollout.rollout_progress_check import rollout_progress_check
 from ctrl_set.colord_noise_random_motion import ColordNoiseRandomMotion
 from custom_service import time_as_string, NTD

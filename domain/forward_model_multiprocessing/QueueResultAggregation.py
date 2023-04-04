@@ -34,6 +34,7 @@ class QueueResultAggregation:
             "index_chunk"             : self.__sort_index_chunk,
             "robot_state_trajectory"  : self.__sort_robot_state_trajectory,
             "object_state_trajectory" : self.__sort_object_state_trajectory,
+            "task_space_ctrl"         : self.__sort_task_space_ctrl,
             "state"                   : self.__sort_state,
         }
         index_chunk_sorted = np.argsort(aggregation_results['index_chunk'])
@@ -66,6 +67,12 @@ class QueueResultAggregation:
 
 
     def __sort_state(self, aggregation_results, index_chunk_sorted):
+        # import ipdb; ipdb.set_trace()
+        assert len(aggregation_results) == 1
+        return aggregation_results[0]
+
+
+    def __sort_task_space_ctrl(self, aggregation_results, index_chunk_sorted):
         # import ipdb; ipdb.set_trace()
         assert len(aggregation_results) == 1
         return aggregation_results[0]
