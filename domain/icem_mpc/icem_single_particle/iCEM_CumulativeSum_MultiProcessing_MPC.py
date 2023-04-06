@@ -7,24 +7,20 @@ from typing import Any, List, Tuple
 from .CostHistory import CostHistory
 from .EliteSetQueue import EliteSetQueue
 from .CostVisualizer import CostVisualizer
-from .iCEM_Visualizer import iCEM_Visualizer
+from ._debug_iCEM_Visualizer import iCEM_Visualizer
 from .ColoredNoiseSampler import ColoredNoiseSampler
 from .ActionDimensionOfInterest import ActionDimensionOfInterest as ActionDoI
-import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
-from custom_service import concat
+from forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
 
 
 
-class iCEM_TaskSpace_Differential_with_Nominal:
+class iCEM_CumulativeSum_MultiProcessing_MPC:
     def __init__(self,
             forward_model                : Any,
             forward_model_progress_check : Any,
             cost_function                : Any,
             dimension_of_interst         : List[int],
             num_sample                   : int,
-            num_subparticle              : int,
-            std_subparticle              : float,
             num_elite                    : int,
             planning_horizon             : int,
             dim_action                   : int,
@@ -33,13 +29,10 @@ class iCEM_TaskSpace_Differential_with_Nominal:
             decay_sample                 : float,
             colored_noise_exponent       : float,
             fraction_rate_elite          : float,
-            lower_bound_nominal_with_noise : float,
-            upper_bound_nominal_with_noise : float,
             lower_bound_sampling         : float,
             upper_bound_sampling         : float,
-            lower_bound_cusum_action     : float,
-            upper_bound_cusum_action     : float,
-            TaskSpace                    : Any,
+            lower_bound_action           : float,
+            upper_bound_action           : float,
             lower_bound_simulated_path   : float,
             upper_bound_simulated_path   : float,
             alpha                        : float,
@@ -62,11 +55,10 @@ class iCEM_TaskSpace_Differential_with_Nominal:
         self.dim_action                   = dim_action
         self.num_cem_iter                 = num_cem_iter
         self.decay_sample                 = decay_sample
-        self.lower_bound_nominal_with_noise = lower_bound_nominal_with_noise
-        self.upper_bound_nominal_with_noise = upper_bound_nominal_with_noise
         self.lower_bound_sampling         = lower_bound_sampling
         self.upper_bound_sampling         = upper_bound_sampling
-        self.TaskSpace                    = TaskSpace
+        self.lower_bound_action           = lower_bound_action
+        self.upper_bound_action           = upper_bound_action
         self.alpha                        = alpha
         self.verbose                      = verbose
         self.verbose_additional           = verbose_additional
@@ -74,10 +66,6 @@ class iCEM_TaskSpace_Differential_with_Nominal:
         self.save_visualization_dir       = save_visualization_dir
         self.init_std                     = init_std
         self.debug                        = debug
-        self.colored_noise_exponent       = colored_noise_exponent
-        self.num_subparticle              = num_subparticle
-        self.std_subparticle              = std_subparticle
-
 
         self.elite_set_queue = EliteSetQueue(
             num_elite     = self.num_elite,
@@ -85,6 +73,7 @@ class iCEM_TaskSpace_Differential_with_Nominal:
         )
 
         self.colored_noise_sampler = ColoredNoiseSampler(
+            beta             = colored_noise_exponent,
             planning_horizon = self.planning_horizon,
             dim_action       = self.dim_action,
         )
@@ -95,15 +84,12 @@ class iCEM_TaskSpace_Differential_with_Nominal:
         self.trajectory_visualizer = iCEM_Visualizer(
             dim_path                   = dim_path,
             dim_action                 = dim_action,
-            planning_horizon           = planning_horizon,
             lower_bound_simulated_path = lower_bound_simulated_path,
             upper_bound_simulated_path = upper_bound_simulated_path,
-            lower_bound_sampling       = lower_bound_nominal_with_noise,
-            upper_bound_sampling       = upper_bound_nominal_with_noise,
-            lower_bound_cusum_action   = lower_bound_cusum_action,
-            upper_bound_cusum_action   = upper_bound_cusum_action,
-            lower_bound_action         = self.TaskSpace._min,
-            upper_bound_action         = self.TaskSpace._max,
+            lower_bound_sampling       = lower_bound_sampling,
+            upper_bound_sampling       = upper_bound_sampling,
+            lower_bound_action         = lower_bound_action,
+            upper_bound_action         = upper_bound_action,
             save_dir                   = os.path.join(save_visualization_dir, self.time_now),
             figsize                    = figsize_path,
         )
@@ -158,20 +144,16 @@ class iCEM_TaskSpace_Differential_with_Nominal:
 
 
     def _sample(self, num_sample):
-        colored_noise = None
-        indexes       = np.array_split(range(num_sample), len(self.colored_noise_exponent))
-        for i, beta in enumerate(self.colored_noise_exponent):
-            num_sample_i  = indexes[i].shape[0]
-            noise_beta    = self.colored_noise_sampler.sample(num_sample_i, beta=beta)
-            colored_noise = concat(colored_noise, noise_beta, axis=0)
+        colored_noise = self.colored_noise_sampler.sample(num_sample)
         return self.__clip_samples((colored_noise * self.std) + self.mean)
 
 
     def __clip_samples(self, x):
         return np.clip(a=x, a_min=self.lower_bound_sampling, a_max=self.upper_bound_sampling)
 
-    def _clip_nominal_with_noise(self, x):
-        return np.clip(a=x, a_min=self.lower_bound_nominal_with_noise, a_max=self.upper_bound_nominal_with_noise)
+
+    def _clip_actions(self, x):
+        return np.clip(a=x, a_min=self.lower_bound_action, a_max=self.upper_bound_action)
 
 
     def _add_fraction_of_elite_set(self, samples, iter_inner_loop):
@@ -185,15 +167,6 @@ class iCEM_TaskSpace_Differential_with_Nominal:
         last_action         = self._sample(self.elite_set_queue.num_reuse)[:, -1:]
         elite_samples       = np.concatenate((shited_elite_sample, last_action), axis=1)
         return np.concatenate([samples, elite_samples], axis=0)
-
-
-    def _add_minmaxmean_action_sample(self, samples):
-        num_sample, step, dim = samples.shape
-        sampling_mean         = (self.upper_bound_sampling + self.lower_bound_sampling) * 0.5
-        mean_action_sample    = np.zeros([1, step, dim]) + sampling_mean
-        minimum_action_sample = np.zeros([1, step, dim]) + self.lower_bound_sampling
-        maximum_action_sample = np.zeros([1, step, dim]) + self.upper_bound_sampling
-        return np.concatenate([samples, mean_action_sample, minimum_action_sample, maximum_action_sample], axis=0)
 
 
     def _add_mean_action_at_last_iteration(self, samples, iter_inner_loop):
@@ -217,69 +190,40 @@ class iCEM_TaskSpace_Differential_with_Nominal:
         return index_elite
 
 
-    def optimize(self, constant_setting, action_bias, target, nominal):
+    def optimize(self, constant_setting, action_bias, target):
         action_doi = ActionDoI(action_bias, self.dimension_of_interst)
         for i in range(self.num_cem_iter):
-            time_start        = time.time()
-            num_sample_i      = self._decay_population_size(i)
-            samples           = self._sample(num_sample_i)
-            samples           = self._add_minmaxmean_action_sample(samples)
-            samples           = self._add_fraction_of_elite_set(samples, i)
-            samples           = self._add_mean_action_at_last_iteration(samples, i)
-            # ----------------------------------
-            perturbated_samples = self._extend_as_subparticle(samples)
-            perturbated_nominal = self._clip_nominal_with_noise(perturbated_samples + nominal)
-            # ----------------------------------
-            num_samples       = perturbated_nominal.shape[0]
+            time_start      = time.time()
+            num_sample_i    = self._decay_population_size(i)
+            samples         = self._sample(num_sample_i)
+            samples         = self._add_fraction_of_elite_set(samples, i)
+            samples         = self._add_mean_action_at_last_iteration(samples, i)
+            num_samples     = samples.shape[0]
             self.total_sample_size_in_optimze += num_samples
             if self.verbose: print("total_sample_size={: 4}".format(num_samples), end=' | ')
-            forward_results   = self._forward(constant_setting, perturbated_nominal)
-            cost              = self.get_cost(forward_results, target, num_samples)
-            # ----------------------------------
-            index_elite       = self._get_index_elite(cost)
-            import ipdb; ipdb.set_trace()
-            best_elite_sample = samples[index_elite[:1]]
-            forward_results_progress = self._forward_progress_check(constant_setting, best_elite_sample, i, target)
-            elites            = copy.deepcopy(samples[index_elite])
+            cumsum_actions  = np.cumsum(samples, axis=1)
+            actions         = self._clip_actions(action_doi.construct(cumsum_actions))
+            simulated_paths = self._forward(constant_setting, actions)
+            cost            = self.cost_function(pred=simulated_paths, target=target)
+            assert cost.shape == (num_samples,), print("{} != {}".format(cost.shape, (num_samples,)))
+            index_elite     = self._get_index_elite(cost)
+            _, next_state   = self._forward_progress_check(constant_setting, actions[index_elite[:1]], i)
+            elites          = copy.deepcopy(samples[index_elite])
             self.elite_set_queue.append(elites)
             self._update_distributions(elites)
             self.cost_history.append(cost)
             # ---- visualize ----
             if self.save_visualization_dir is None: continue
             self.cost_visualizer.hist(cost, i, self.iter_outer_loop, num_sample_i)
-            self.trajectory_visualizer.simulated_paths(forward_results, index_elite, target, i, self.iter_outer_loop, num_sample_i)
-            # self.trajectory_visualizer.cumsum_actions(cumsum_actions, cumsum_actions[index_elite], i, self.iter_outer_loop, num_sample_i)
+            self.trajectory_visualizer.simulated_paths(simulated_paths, simulated_paths[index_elite], target, i, self.iter_outer_loop, num_sample_i)
+            self.trajectory_visualizer.cumsum_actions(cumsum_actions, cumsum_actions[index_elite], i, self.iter_outer_loop, num_sample_i)
             self.trajectory_visualizer.samples(samples, samples[index_elite], i, self.iter_outer_loop, num_sample_i)
-            # self.trajectory_visualizer.actions(actions, actions[index_elite], i, self.iter_outer_loop, num_sample_i)
+            self.trajectory_visualizer.actions(actions, actions[index_elite], i, self.iter_outer_loop, num_sample_i)
             # ---- time count ----
             self.update_total_process_time(time_start)
         if self.verbose: self._print_optimize_info()
-        return {
-            "cost"              : cost,
-            "state"             : forward_results_progress["state"],
-            "best_elite_action" : forward_results_progress["task_space_ctrl"],
-            "best_elite_sample" : best_elite_sample[0, 0],
-        }
+        return cost, next_state
 
-
-    def _extend_as_subparticle(self, samples):
-        subparticle_group = []
-        noise             = np.random.randn(self.num_subparticle, self.planning_horizon, self.dim_action) * self.std_subparticle
-        num_samples       = samples.shape[0]
-        for i in range(num_samples):
-            perturbated_samples = samples[i][np.newaxis, :, :] + noise
-            subparticle_group.append(perturbated_samples)
-        perturbated_samples = np.concatenate(subparticle_group, axis=0)
-        return perturbated_samples
-
-
-    def get_cost(self, forward_results, target, num_samples):
-        cost_naive        = self.cost_function(forward_results=forward_results, target=target)
-        cost_subparticles = np.array_split(cost_naive, indices_or_sections=num_samples, axis=0)
-        cost_subparticles = np.stack(cost_subparticles, axis=0)
-        cost              = np.sum(cost_subparticles, axis=-1)
-        assert cost.shape == (num_samples,), print("{} != {}".format(cost.shape, (num_samples,)))
-        return cost
 
 
     def _forward(self, constant_setting, actions):
@@ -295,7 +239,7 @@ class iCEM_TaskSpace_Differential_with_Nominal:
 
 
 
-    def _forward_progress_check(self, constant_setting, best_elite_action, iter_inner_loop, target):
+    def _forward_progress_check(self, constant_setting, best_elite_action, iter_inner_loop):
         assert best_elite_action.shape[0] == 1
         multiproc = ForwardModelMultiprocessing(verbose=False, result_aggregation=False)
         results, proc_time = multiproc.run(
@@ -307,7 +251,6 @@ class iCEM_TaskSpace_Differential_with_Nominal:
                     "iter_inner_loop" : iter_inner_loop,
                     "save_fig_dir"    : os.path.join(self.save_visualization_dir, self.time_now),
                     "dataset_name"    : self.time_now,
-                    "target"          : target,
                 },
             },
             ctrl = best_elite_action,

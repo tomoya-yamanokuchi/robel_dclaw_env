@@ -7,7 +7,7 @@ from typing import Any, List, Tuple
 from .CostHistory import CostHistory
 from .EliteSetQueue import EliteSetQueue
 from .CostVisualizer import CostVisualizer
-from .iCEM_Visualizer import iCEM_Visualizer
+from ._debug_iCEM_Visualizer import iCEM_Visualizer
 from .ColoredNoiseSampler import ColoredNoiseSampler
 from .ActionDimensionOfInterest import ActionDimensionOfInterest as ActionDoI
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
@@ -15,7 +15,7 @@ from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import For
 from custom_service import concat
 
 
-class iCEM_TaskSpace_CumulativeSum_with_Nominal:
+class iCEM_TaskSpace_CumulativeSum_with_MinorUpdates:
     def __init__(self,
             forward_model                : Any,
             forward_model_progress_check : Any,
@@ -30,8 +30,6 @@ class iCEM_TaskSpace_CumulativeSum_with_Nominal:
             decay_sample                 : float,
             colored_noise_exponent       : float,
             fraction_rate_elite          : float,
-            lower_bound_nominal_with_noise : float,
-            upper_bound_nominal_with_noise : float,
             lower_bound_sampling         : float,
             upper_bound_sampling         : float,
             lower_bound_cusum_action     : float,
@@ -49,29 +47,27 @@ class iCEM_TaskSpace_CumulativeSum_with_Nominal:
             figsize_path                 : Tuple = (7, 4),
             figsize_cost                 : Tuple = (5, 5),
         ):
-        self.forward_model                  = forward_model
-        self.forward_model_progress_check   = forward_model_progress_check
-        self.cost_function                  = cost_function
-        self.dimension_of_interst           = dimension_of_interst
-        self.num_sample                     = num_sample
-        self.num_elite                      = num_elite
-        self.planning_horizon               = planning_horizon
-        self.dim_action                     = dim_action
-        self.num_cem_iter                   = num_cem_iter
-        self.decay_sample                   = decay_sample
-        self.lower_bound_nominal_with_noise = lower_bound_nominal_with_noise
-        self.upper_bound_nominal_with_noise = upper_bound_nominal_with_noise
-        self.lower_bound_sampling           = lower_bound_sampling
-        self.upper_bound_sampling           = upper_bound_sampling
-        self.TaskSpace                      = TaskSpace
-        self.alpha                          = alpha
-        self.verbose                        = verbose
-        self.verbose_additional             = verbose_additional
-        self.is_verbose_newline             = is_verbose_newline
-        self.save_visualization_dir         = save_visualization_dir
-        self.init_std                       = init_std
-        self.debug                          = debug
-        self.colored_noise_exponent         = colored_noise_exponent
+        self.forward_model                = forward_model
+        self.forward_model_progress_check = forward_model_progress_check
+        self.cost_function                = cost_function
+        self.dimension_of_interst         = dimension_of_interst
+        self.num_sample                   = num_sample
+        self.num_elite                    = num_elite
+        self.planning_horizon             = planning_horizon
+        self.dim_action                   = dim_action
+        self.num_cem_iter                 = num_cem_iter
+        self.decay_sample                 = decay_sample
+        self.lower_bound_sampling         = lower_bound_sampling
+        self.upper_bound_sampling         = upper_bound_sampling
+        self.TaskSpace                    = TaskSpace
+        self.alpha                        = alpha
+        self.verbose                      = verbose
+        self.verbose_additional           = verbose_additional
+        self.is_verbose_newline           = is_verbose_newline
+        self.save_visualization_dir       = save_visualization_dir
+        self.init_std                     = init_std
+        self.debug                        = debug
+        self.colored_noise_exponent       = colored_noise_exponent
 
         self.elite_set_queue = EliteSetQueue(
             num_elite     = self.num_elite,
@@ -92,8 +88,8 @@ class iCEM_TaskSpace_CumulativeSum_with_Nominal:
             planning_horizon           = planning_horizon,
             lower_bound_simulated_path = lower_bound_simulated_path,
             upper_bound_simulated_path = upper_bound_simulated_path,
-            lower_bound_sampling       = lower_bound_nominal_with_noise,
-            upper_bound_sampling       = upper_bound_nominal_with_noise,
+            lower_bound_sampling       = lower_bound_sampling,
+            upper_bound_sampling       = upper_bound_sampling,
             lower_bound_cusum_action   = lower_bound_cusum_action,
             upper_bound_cusum_action   = upper_bound_cusum_action,
             lower_bound_action         = self.TaskSpace._min,
@@ -165,10 +161,6 @@ class iCEM_TaskSpace_CumulativeSum_with_Nominal:
         return np.clip(a=x, a_min=self.lower_bound_sampling, a_max=self.upper_bound_sampling)
 
 
-    def _clip_nominal_with_noise(self, x):
-        return np.clip(a=x, a_min=self.lower_bound_nominal_with_noise, a_max=self.upper_bound_nominal_with_noise)
-
-
     def _add_fraction_of_elite_set(self, samples, iter_inner_loop):
         if self.elite_set_queue.is_empty():
             return samples
@@ -212,26 +204,20 @@ class iCEM_TaskSpace_CumulativeSum_with_Nominal:
         return index_elite
 
 
-    def optimize(self, constant_setting, action_bias, target, nominal):
+    def optimize(self, constant_setting, action_bias, target):
         action_doi = ActionDoI(action_bias, self.dimension_of_interst)
         for i in range(self.num_cem_iter):
             time_start        = time.time()
             num_sample_i      = self._decay_population_size(i)
             samples           = self._sample(num_sample_i)
-            # samples           = self._add_minmaxmean_action_sample(samples)
-            # samples           = self._add_fraction_of_elite_set(samples, i)
-            # samples           = self._add_mean_action_at_last_iteration(samples, i)
-            # ----------------------------------
-            import ipdb; ipdb.set_trace()
-            samples           = self._clip_nominal_with_noise(samples + nominal)
-            import ipdb; ipdb.set_trace()
-            # ----------------------------------
+            samples           = self._add_minmaxmean_action_sample(samples)
+            samples           = self._add_fraction_of_elite_set(samples, i)
+            samples           = self._add_mean_action_at_last_iteration(samples, i)
             num_samples       = samples.shape[0]
             self.total_sample_size_in_optimze += num_samples
             if self.verbose: print("total_sample_size={: 4}".format(num_samples), end=' | ')
             cumsum_actions    = np.cumsum(samples, axis=1)
             actions           = self.TaskSpace(action_doi.construct(cumsum_actions)).value
-            import ipdb; ipdb.set_trace()
             forward_results   = self._forward(constant_setting, actions)
             cost              = self.cost_function(forward_results=forward_results, target=target)
             assert cost.shape == (num_samples,), print("{} != {}".format(cost.shape, (num_samples,)))

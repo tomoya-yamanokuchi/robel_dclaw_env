@@ -4,6 +4,7 @@ defaults:
   # - env: sim/block_mating
   # - env: sim/old_pushing
   # - env: real/valve
+  - icem: subparticle_valve_sim_mpc
 
 run:
   step    : 25

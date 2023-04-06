@@ -6,15 +6,16 @@ from typing import Any, List
 from typing import Any, List, Tuple
 from .CostHistory import CostHistory
 from .EliteSetQueue import EliteSetQueue
-from .CostVisualizer import CostVisualizer
-from .iCEM_Visualizer import iCEM_Visualizer
+from .visualization.VisualizationCollection import VisualizationCollection
 from .ColoredNoiseSampler import ColoredNoiseSampler
 from .ActionDimensionOfInterest import ActionDimensionOfInterest as ActionDoI
-from forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
+import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
+from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
+from custom_service import concat
 
 
 
-class iCEM_CumulativeSum_MultiProcessing_MPC:
+class iCEM_TaskSpace_Differential:
     def __init__(self,
             forward_model                : Any,
             forward_model_progress_check : Any,
@@ -31,8 +32,7 @@ class iCEM_CumulativeSum_MultiProcessing_MPC:
             fraction_rate_elite          : float,
             lower_bound_sampling         : float,
             upper_bound_sampling         : float,
-            lower_bound_action           : float,
-            upper_bound_action           : float,
+            TaskSpace                    : Any,
             lower_bound_simulated_path   : float,
             upper_bound_simulated_path   : float,
             alpha                        : float,
@@ -57,8 +57,7 @@ class iCEM_CumulativeSum_MultiProcessing_MPC:
         self.decay_sample                 = decay_sample
         self.lower_bound_sampling         = lower_bound_sampling
         self.upper_bound_sampling         = upper_bound_sampling
-        self.lower_bound_action           = lower_bound_action
-        self.upper_bound_action           = upper_bound_action
+        self.TaskSpace                    = TaskSpace
         self.alpha                        = alpha
         self.verbose                      = verbose
         self.verbose_additional           = verbose_additional
@@ -66,6 +65,7 @@ class iCEM_CumulativeSum_MultiProcessing_MPC:
         self.save_visualization_dir       = save_visualization_dir
         self.init_std                     = init_std
         self.debug                        = debug
+        self.colored_noise_exponent       = colored_noise_exponent
 
         self.elite_set_queue = EliteSetQueue(
             num_elite     = self.num_elite,
@@ -73,31 +73,17 @@ class iCEM_CumulativeSum_MultiProcessing_MPC:
         )
 
         self.colored_noise_sampler = ColoredNoiseSampler(
-            beta             = colored_noise_exponent,
             planning_horizon = self.planning_horizon,
             dim_action       = self.dim_action,
         )
 
+        self.time_now       = str(time.time())
+        save_dir            = os.path.join(save_visualization_dir, self.time_now)
+        self.vis_collection = VisualizationCollection()
+        self.vis_collection.append("cost", save_dir, figsize_cost)
+        self.vis_collection.append("simulated_paths", dim_path, planning_horizon, save_dir, lower_bound_simulated_path, upper_bound_simulated_path, figsize_path)
+        self.vis_collection.append("sample", dim_action, figsize_path, save_dir, lower_bound_sampling, upper_bound_sampling)
 
-        self.time_now = str(time.time())
-
-        self.trajectory_visualizer = iCEM_Visualizer(
-            dim_path                   = dim_path,
-            dim_action                 = dim_action,
-            lower_bound_simulated_path = lower_bound_simulated_path,
-            upper_bound_simulated_path = upper_bound_simulated_path,
-            lower_bound_sampling       = lower_bound_sampling,
-            upper_bound_sampling       = upper_bound_sampling,
-            lower_bound_action         = lower_bound_action,
-            upper_bound_action         = upper_bound_action,
-            save_dir                   = os.path.join(save_visualization_dir, self.time_now),
-            figsize                    = figsize_path,
-        )
-
-        self.cost_visualizer = CostVisualizer(
-            save_dir = os.path.join(save_visualization_dir, self.time_now),
-            figsize  = figsize_cost,
-        )
 
         self.cost_history = CostHistory()
 
@@ -144,16 +130,17 @@ class iCEM_CumulativeSum_MultiProcessing_MPC:
 
 
     def _sample(self, num_sample):
-        colored_noise = self.colored_noise_sampler.sample(num_sample)
+        colored_noise = None
+        indexes       = np.array_split(range(num_sample), len(self.colored_noise_exponent))
+        for i, beta in enumerate(self.colored_noise_exponent):
+            num_sample_i  = indexes[i].shape[0]
+            noise_beta    = self.colored_noise_sampler.sample(num_sample_i, beta=beta)
+            colored_noise = concat(colored_noise, noise_beta, axis=0)
         return self.__clip_samples((colored_noise * self.std) + self.mean)
 
 
     def __clip_samples(self, x):
         return np.clip(a=x, a_min=self.lower_bound_sampling, a_max=self.upper_bound_sampling)
-
-
-    def _clip_actions(self, x):
-        return np.clip(a=x, a_min=self.lower_bound_action, a_max=self.upper_bound_action)
 
 
     def _add_fraction_of_elite_set(self, samples, iter_inner_loop):
@@ -167,6 +154,15 @@ class iCEM_CumulativeSum_MultiProcessing_MPC:
         last_action         = self._sample(self.elite_set_queue.num_reuse)[:, -1:]
         elite_samples       = np.concatenate((shited_elite_sample, last_action), axis=1)
         return np.concatenate([samples, elite_samples], axis=0)
+
+
+    def _add_minmaxmean_action_sample(self, samples):
+        num_sample, step, dim = samples.shape
+        sampling_mean         = (self.upper_bound_sampling + self.lower_bound_sampling) * 0.5
+        mean_action_sample    = np.zeros([1, step, dim]) + sampling_mean
+        minimum_action_sample = np.zeros([1, step, dim]) + self.lower_bound_sampling
+        maximum_action_sample = np.zeros([1, step, dim]) + self.upper_bound_sampling
+        return np.concatenate([samples, mean_action_sample, minimum_action_sample, maximum_action_sample], axis=0)
 
 
     def _add_mean_action_at_last_iteration(self, samples, iter_inner_loop):
@@ -193,37 +189,39 @@ class iCEM_CumulativeSum_MultiProcessing_MPC:
     def optimize(self, constant_setting, action_bias, target):
         action_doi = ActionDoI(action_bias, self.dimension_of_interst)
         for i in range(self.num_cem_iter):
-            time_start      = time.time()
-            num_sample_i    = self._decay_population_size(i)
-            samples         = self._sample(num_sample_i)
-            samples         = self._add_fraction_of_elite_set(samples, i)
-            samples         = self._add_mean_action_at_last_iteration(samples, i)
-            num_samples     = samples.shape[0]
+            time_start        = time.time()
+            num_sample_i      = self._decay_population_size(i)
+            samples           = self._sample(num_sample_i)
+            samples           = self._add_minmaxmean_action_sample(samples)
+            samples           = self._add_fraction_of_elite_set(samples, i)
+            samples           = self._add_mean_action_at_last_iteration(samples, i)
+            num_samples       = samples.shape[0]
             self.total_sample_size_in_optimze += num_samples
             if self.verbose: print("total_sample_size={: 4}".format(num_samples), end=' | ')
-            cumsum_actions  = np.cumsum(samples, axis=1)
-            actions         = self._clip_actions(action_doi.construct(cumsum_actions))
-            simulated_paths = self._forward(constant_setting, actions)
-            cost            = self.cost_function(pred=simulated_paths, target=target)
+            forward_results   = self._forward(constant_setting, samples)
+            cost              = self.cost_function(forward_results=forward_results, target=target)
             assert cost.shape == (num_samples,), print("{} != {}".format(cost.shape, (num_samples,)))
-            index_elite     = self._get_index_elite(cost)
-            _, next_state   = self._forward_progress_check(constant_setting, actions[index_elite[:1]], i)
-            elites          = copy.deepcopy(samples[index_elite])
+            index_elite       = self._get_index_elite(cost)
+            best_elite_sample = samples[index_elite[:1]]
+            forward_results_progress = self._forward_progress_check(constant_setting, best_elite_sample, i, target)
+            elites            = copy.deepcopy(samples[index_elite])
             self.elite_set_queue.append(elites)
             self._update_distributions(elites)
             self.cost_history.append(cost)
             # ---- visualize ----
             if self.save_visualization_dir is None: continue
-            self.cost_visualizer.hist(cost, i, self.iter_outer_loop, num_sample_i)
-            self.trajectory_visualizer.simulated_paths(simulated_paths, simulated_paths[index_elite], target, i, self.iter_outer_loop, num_sample_i)
-            self.trajectory_visualizer.cumsum_actions(cumsum_actions, cumsum_actions[index_elite], i, self.iter_outer_loop, num_sample_i)
-            self.trajectory_visualizer.samples(samples, samples[index_elite], i, self.iter_outer_loop, num_sample_i)
-            self.trajectory_visualizer.actions(actions, actions[index_elite], i, self.iter_outer_loop, num_sample_i)
+            self.vis_collection.plot("cost"  ,              cost, i, self.iter_outer_loop, num_sample_i)
+            self.vis_collection.plot("simulated_paths",     forward_results, index_elite, target, i, self.iter_outer_loop, num_sample_i)
+            self.vis_collection.plot("sample",              samples, samples[index_elite], i, self.iter_outer_loop, num_sample_i)
             # ---- time count ----
             self.update_total_process_time(time_start)
         if self.verbose: self._print_optimize_info()
-        return cost, next_state
-
+        return {
+            "cost"              : cost,
+            "state"             : forward_results_progress["state"],
+            "best_elite_action" : forward_results_progress["task_space_ctrl"],
+            "best_elite_sample" : best_elite_sample[0, 0],
+        }
 
 
     def _forward(self, constant_setting, actions):
@@ -239,7 +237,7 @@ class iCEM_CumulativeSum_MultiProcessing_MPC:
 
 
 
-    def _forward_progress_check(self, constant_setting, best_elite_action, iter_inner_loop):
+    def _forward_progress_check(self, constant_setting, best_elite_action, iter_inner_loop, target):
         assert best_elite_action.shape[0] == 1
         multiproc = ForwardModelMultiprocessing(verbose=False, result_aggregation=False)
         results, proc_time = multiproc.run(
@@ -251,6 +249,7 @@ class iCEM_CumulativeSum_MultiProcessing_MPC:
                     "iter_inner_loop" : iter_inner_loop,
                     "save_fig_dir"    : os.path.join(self.save_visualization_dir, self.time_now),
                     "dataset_name"    : self.time_now,
+                    "target"          : target,
                 },
             },
             ctrl = best_elite_action,

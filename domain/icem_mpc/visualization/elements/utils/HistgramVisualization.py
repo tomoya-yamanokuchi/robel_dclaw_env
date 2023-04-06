@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 
-class CostVisualization:
+class HistgramVisualization:
     def __init__(self, save_dir, figsize=(5,5)):
         self.fig          = None
         self.ax           = None
@@ -43,13 +43,13 @@ class CostVisualization:
         self.ax.set_xlabel("cost value")
 
 
-    def save_plot(self, fname, title=""):
+    def format(self, title=""):
         self._set_label()
         self.ax.set_title(title)
-        self.fig.savefig(
-            fname = os.path.join(self.save_dir, fname),
-            dpi   = 300
-        )
+
+
+    def get_fig(self):
+        return self.fig
 
 
     def clear(self):

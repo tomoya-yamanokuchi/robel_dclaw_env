@@ -5,7 +5,7 @@ from typing import Any
 from .CostHistory import CostHistory
 from .EliteSetQueue import EliteSetQueue
 from .ColoredNoiseSampler import ColoredNoiseSampler
-from .iCEM_Visualizer import iCEM_Visualizer
+from ._debug_iCEM_Visualizer import iCEM_Visualizer
 
 
 class iCEM_CumulativeSum_MPC:

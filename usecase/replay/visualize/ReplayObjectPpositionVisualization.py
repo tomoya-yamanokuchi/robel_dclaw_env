@@ -12,10 +12,16 @@ class ReplayObjectPpositionVisualization:
         self.dim_action   = dim_action
 
 
-    def plot(self, y):
+    def plot_path(self, x, y):
         for d in range(self.dim_action):
             ax = self._get_ax(d)
-            ax.plot(y[:, d])
+            ax.plot(x, self._get_y(y, d))
+
+
+    def plot_target(self, x, y):
+        for d in range(self.dim_action):
+            ax = self._get_ax(d)
+            ax.plot(x, self._get_y(y, d))
 
 
     def save(self, save_path):
@@ -25,3 +31,7 @@ class ReplayObjectPpositionVisualization:
     def _get_ax(self, dim):
         if self.dim_action == 1: return self.ax
         return self.ax[dim]
+
+    def _get_y(self, y, dim):
+        if self.dim_action == 1: return y
+        return y[dim]

@@ -1,5 +1,5 @@
 # << general >>
-num_cem_iter               : 7
+num_cem_iter               : 1
 planning_horizon           : 10
 dim_action                 : 3
 dimension_of_interst       : [0, 1, 2]
@@ -8,26 +8,25 @@ colored_noise_exponent     : [0.0, 1.0, 2.5, 3.5]
 
 lower_bound_sampling       :  -0.2
 upper_bound_sampling       :   0.2
-lower_bound_cusum_action   : # None
-upper_bound_cusum_action   : # None
-lower_bound_simulated_path : -1.0
-upper_bound_simulated_path : 6.283185307179586
+lower_bound_simulated_path :
+upper_bound_simulated_path :
 dim_path                   : 1
 
 # << sampling >>
-num_sample                 : 700
+num_sample                 : 5 #700
 decay_sample               : 1.25
 
 # << elite >>
-num_elite                  : 3
+num_elite                  : 1
 fraction_rate_elite        : 1.0
 
 # << update distribution >>
-alpha                      : 0.3 # save rate of previous mean
+alpha                      : 0.5 # save rate of previous mean
 init_std                   : 0.75
 
 # << other >>
-figsize_path               : [5, 5]
+figsize_path               : [4, 4]
+figsize_cost               : [4, 4]
 debug                      : False
 verbose                    : True
 verbose_additional         : False

@@ -1,27 +1,24 @@
 # << general >>
 num_cem_iter               : 7
-planning_horizon           : 25
+planning_horizon           : 10
 dim_action                 : 3
 dimension_of_interst       : [0, 1, 2]
 
 colored_noise_exponent     : [0.0, 1.0, 2.5, 3.5]
 
-lower_bound_nominal_with_noise :  -0.2
-upper_bound_nominal_with_noise :   0.2
-
-lower_bound_sampling       :  -0.05
-upper_bound_sampling       :   0.05
-lower_bound_simulated_path :
-upper_bound_simulated_path :
+lower_bound_sampling       :  -0.2
+upper_bound_sampling       :   0.2
+lower_bound_simulated_path : -1.0
+upper_bound_simulated_path :  8.0
 dim_path                   : 1
 
 # << sampling >>
-num_sample                 : 200
+num_sample                 : 500
 decay_sample               : 1.25
 
-# << sampling >>
+# << subparticle >>
 num_subparticle            : 10
-std_subparticle            : 0.015
+std_subparticle            : 0.025
 
 # << elite >>
 num_elite                  : 1
@@ -29,10 +26,11 @@ fraction_rate_elite        : 1.0
 
 # << update distribution >>
 alpha                      : 0.5 # save rate of previous mean
-init_std                   : 0.25
+init_std                   : 0.75
 
 # << other >>
-figsize_path               : [5, 5]
+figsize_path               : [4, 4]
+figsize_cost               : [4, 4]
 debug                      : False
 verbose                    : True
 verbose_additional         : False

@@ -49,6 +49,9 @@ class QueueResultAggregation:
 
 
     def __sort_robot_state_trajectory(self, aggregation_results, index_chunk_sorted):
+        '''
+        numpy の shape 関連の warningの出処
+        '''
         x = np.take(aggregation_results, index_chunk_sorted, axis=0)
         # import ipdb; ipdb.set_trace()
         # assert len(x.shape) == 4

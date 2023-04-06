@@ -10,10 +10,10 @@ from usecase.data_collection.valve.cost.tracking_cost import tracking_cost
 from usecase.data_collection.rollout.rollout_function_with_differential_ctrl import rollout_function_with_differential_ctrl
 from usecase.data_collection.rollout.rollout_progress_check_differential_without_render import rollout_progress_check_differential_without_render
 from custom_service import time_as_string, NTD, join_with_mkdir
-from domain.icem_mpc.iCEM_TaskSpace_Differential_with_Nominal_Subparticle import iCEM_TaskSpace_Differential_with_Nominal
+from domain.icem_mpc.icem_single_particle.iCEM_TaskSpace_Differential_with_Nominal_Subparticle import iCEM_TaskSpace_Differential_with_Nominal
 from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
 from domain.reference.ValveReference import ValveReference
-
+from domain.icem_mpc.icem_repository.iCEM_Repository import iCEM_Repository
 
 
 class DataCollection:
@@ -30,10 +30,9 @@ class DataCollection:
             **config_icem
         )
 
-        best_elite_action_list = []
         reference   = ValveReference(config_icem.planning_horizon)
         action_bias = np.array(config.env.init_state.task_space_position)
-        # total_step  = 1
+
         for i in range(1):
             icem.reset()
             resutl_dict = icem.optimize(
@@ -48,18 +47,13 @@ class DataCollection:
                 target      = reference.get_as_radian(current_step=i),
                 nominal     = nominal_sample[np.newaxis,:,:],
             )
-            init_state  = resutl_dict["state"]
-            action_bias = resutl_dict["state"].state['task_space_position'].value.squeeze()
-            best_elite_action_list.append(best_elite_action)
-        best_elite_action_sequence = np.stack(best_elite_action_list)
 
-        np.save(
-            file = join_with_mkdir("./", "best_elite_action",
-                "best_elite_action-[num_cem_iter={}]-[planning_horizon={}]-[num_sample={}]-{}".format(
-                    config_icem.num_cem_iter, config_icem.planning_horizon, config_icem.num_sample, time_as_string()
-                )
-            ),
-            arr  = best_elite_action_sequence,
+
+        icem_repository = iCEM_Repository(config_icem, nominal=True)
+        icem_repository.save(
+            best_elite_action_sequence = resutl_dict["best_elite_action"],
+            best_elite_sample_sequence = resutl_dict["best_elite_sequence"],
+            best_object_state_sequence = None,
         )
 
 
@@ -76,7 +70,7 @@ if __name__ == "__main__":
 
         result_best_elite_sequence = load_best_elite_sequence(
             load_path = "./best_elite_sequence/" + \
-            "best_elite_sequence-[num_cem_iter=7]-[planning_horizon=10]-[num_sample=700]-2023441945.pkl"
+            "best_elite_sequence-[num_cem_iter=7]-[planning_horizon=10]-[num_sample=700]-Neko-202344233640.pkl"
         )
 
         demo = DataCollection()

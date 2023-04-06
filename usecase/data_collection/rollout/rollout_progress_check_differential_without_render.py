@@ -28,14 +28,17 @@ def rollout_progress_check_differential_without_render(constant_setting, queue_i
 
     # << ------ rollout ------- >>
     # config.env.target.visible = True
+    robot_position_1seq = []
+    object_state_1seq   = []
     env = env_subclass(config.env, use_render=False)
-    # images = []
     env.reset(init_state)
     for t in range(step):
         # env.set_target_position(target[t])
         # img = env.render(); images.append(img.canonical)
         # -----
         state = env.get_state()
+        robot_position_1seq.append(state.state["robot_position"].value)
+        object_state_1seq.append(state.state["object_position"].value)
         if t == 1: next_state = copy.deepcopy(state)
         task_space_position = state.state["task_space_position"]
         task_space_ctrl     = task_space_position + TaskSpace(NTD(task_space_differential_position[0, t]))
@@ -44,32 +47,20 @@ def rollout_progress_check_differential_without_render(constant_setting, queue_i
         if t == 0: task_space_ctrl_t = task_space_ctrl.value.squeeze()
         # -----
         env.step()
-
-    # # << ------ save images as gif ------- >>
-    # create_gif(
-    #     images   = images,
-    #     fname    = join_with_mkdir(
-    #         save_fig_dir, "progress_gif",
-    #         "elite_progress_iterOuter{}_iterInner{}.gif".format(iter_outer_loop, iter_inner_loop),
-    #         is_end_file = True,
-    #     ),
-    #     duration = 200,
-    # )
-
-    # # << ------ save images as png ------- >>
-    # save_dir = join_with_mkdir(save_fig_dir, "progress_png",
-    #     "iterOuter{}_iterInner{}".format(iter_outer_loop, iter_inner_loop), is_end_file=False)
-    # save_mpc_planning_images(
-    #     images    = images,
-    #     save_dir  = save_dir,
-    #     fname     = "elite_progress_iterOuter{}_iterInner{}".format(iter_outer_loop, iter_inner_loop),
-    # )
+    state = env.get_state()
+    robot_position_1seq.append(state.state["robot_position"].value)
+    object_state_1seq.append(state.state["object_position"].value)
+    # -----
+    robot_position_1seq = np.stack(robot_position_1seq)[np.newaxis, :, :]
+    object_state_1seq   = np.stack(object_state_1seq)[np.newaxis, :, :]
 
     # ForkedPdb().set_trace()
     # << ---- queue procedure ----- >>
     queue_result.put({
-        "index_chunk"     : index_chunk,
-        "state"           : next_state,
-        "task_space_ctrl" : task_space_ctrl_t,
+        "index_chunk"            : index_chunk,
+        "state"                  : next_state,
+        "task_space_ctrl"        : task_space_ctrl_t,
+        "robot_state_trajectory" : robot_position_1seq,
+        "object_state_trajectory": object_state_1seq,
     }) # 結果とバッチインデックスをキューに入れる
     queue_input.task_done() # キューを終了する

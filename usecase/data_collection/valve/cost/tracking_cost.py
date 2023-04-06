@@ -17,6 +17,7 @@ def tracking_cost(forward_results, target):
 
     robot_energy_cost =   5 * np.abs(np.diff(robot_state_trajectory, axis=1)).sum(axis=-1)
     abs_tracking_cost = 100 * np.abs(target - object_state_trajectory[:, 1:]).squeeze(-1)
+    diff_valve        =  20 * (np.diff(object_state_trajectory.squeeze(), axis=-1) < 0.0)
 
     # threshold_reward1 = (abs_diff < 0.25) * 10
     # threshold_reward2 = (abs_diff < 0.1)  * 50
@@ -24,7 +25,8 @@ def tracking_cost(forward_results, target):
     # threshold_reward4 = (abs_diff < 0.01) * 80
 
     cost = (abs_tracking_cost * time_decay).sum(-1) \
-        +  (robot_energy_cost * time_decay).sum(-1)
+        +  (robot_energy_cost * time_decay).sum(-1) \
+        +  (diff_valve * time_decay).sum(-1)
         # - threshold_reward1 \
         # - threshold_reward2 \
         # - threshold_reward3 \
