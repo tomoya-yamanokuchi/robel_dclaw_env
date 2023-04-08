@@ -13,7 +13,7 @@ class SubparticleValveVisualization:
             dim              = config.dim_path,
             planning_horizon = config.planning_horizon,
             figsize          = config.figsize_path,
-            save_dir         = os.path.join(repository.save_dir, "subparticle_simulated_path"),
+            save_dir         = os.path.join(repository.save_dir, "subparticle_simulated_paths"),
             ylim             = (config.lower_bound_simulated_path, config.upper_bound_simulated_path),
             color_sample     = "plum",
             color_elite      = "purple",
@@ -35,7 +35,7 @@ class SubparticleValveVisualization:
 
         self.vis.plot_target(target, iter_outer_loop)
         self.vis.format(title = title("subparticle_simulated_paths", iter_outer_loop, iter_inner_loop, num_samples))
-        self.repository.save_fig(
+        self.repository.save_figure(
             fig   = self.vis.get_fig(),
-            fname = fname("subparticle_simulated_paths", iter_outer_loop, iter_inner_loop, num_samples),
+            fname = os.path.join("subparticle_simulated_paths", fname("subparticle_simulated_paths", iter_outer_loop, iter_inner_loop, num_samples)),
         )

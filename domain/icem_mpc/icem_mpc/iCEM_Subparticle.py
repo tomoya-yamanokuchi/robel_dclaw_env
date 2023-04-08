@@ -2,20 +2,16 @@ import os
 import copy
 import time
 import numpy as np
-from typing import Any, List
-from typing import Any, List, Tuple
-from ..CostHistory import CostHistory
-from ..EliteSetQueue import EliteSetQueue
-from ..visualization.VisualizationCollection import VisualizationCollection
-from ..ColoredNoiseSampler import ColoredNoiseSampler
-from ..ActionDimensionOfInterest import ActionDimensionOfInterest as ActionDoI
+from typing import Any
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
-from custom_service import concat
-
-
-from .PopulationSampingDistribution import PopulationSampingDistribution
-from .PopulationSizeScheduler import PopulationSizeScheduler
+from .population.PopulationSampingDistribution import PopulationSampingDistribution
+from .population.PopulationSizeScheduler import PopulationSizeScheduler
+from .population.PopulationSampler import PopulationSampler
+from .population.EliteSetQueue import EliteSetQueue
+from .SampleAugmenter import SampleAugmenter
+from .visualization.VisualizationCollection import VisualizationCollection
+from .CostHistory import CostHistory
 
 
 
@@ -32,26 +28,19 @@ class iCEM_Subparticle:
         self.cost_function                = cost_function
         self.config                       = config
 
-        self.elite_set_queue = EliteSetQueue(
-            num_elite     = config.num_elite,
-            fraction_rate = config.fraction_rate_elite,
-        )
-
-        self.colored_noise_sampler = ColoredNoiseSampler(
-            planning_horizon = self.config.planning_horizon,
-            dim_action       = self.config.dim_action,
-        )
-
-        self.population_sampling_dist  = PopulationSampingDistribution(config)
-        self.population_size_scheduler = PopulationSizeScheduler(config)
+        self.population_sampling_dist     = PopulationSampingDistribution(config)
+        self.population_size_scheduler    = PopulationSizeScheduler(config)
+        self.population_sampler           = PopulationSampler(config)
+        self.sample_augmentor             = SampleAugmenter(config, self._sample)
+        self.elite_set_queue              = EliteSetQueue(config)
 
         self.time_now       = str(time.time())
         self.vis_collection = VisualizationCollection()
         self.vis_collection.append("cost",                        repository)
         self.vis_collection.append("subparticle_simulated_paths", repository)
         self.vis_collection.append("sample",                      repository)
-        self.vis_collection.append("unit_subparticle_sample",     repository)
         self.vis_collection.append("total_subparticle_sample",    repository)
+        # self.vis_collection.append("unit_subparticle_sample",     repository)
 
         self.cost_history    = CostHistory()
         self.iter_outer_loop = None
@@ -72,60 +61,13 @@ class iCEM_Subparticle:
                 self.iter_outer_loop, iter_inner_loop, self.config.num_cem_iter-1, num_sample), end=' | ')
 
 
-
     def _sample(self, num_sample):
-        colored_noise = None
-        indexes       = np.array_split(range(num_sample), len(self.config.colored_noise_exponent))
-        for i, beta in enumerate(self.config.colored_noise_exponent):
-            num_sample_i  = indexes[i].shape[0]
-            noise_beta    = self.colored_noise_sampler.sample(num_sample_i, beta=beta)
-            colored_noise = concat(colored_noise, noise_beta, axis=0)
-        # ------
-        mean = self.population_sampling_dist.mean
-        std  = self.population_sampling_dist.std
-        return self.__clip_samples((colored_noise * std) + mean)
-
-
-    def __clip_samples(self, x):
-        return np.clip(a=x, a_min=self.config.lower_bound_sampling, a_max=self.config.upper_bound_sampling)
-
-
-    def _add_fraction_of_elite_set(self, samples, iter_inner_loop):
-        if self.elite_set_queue.is_empty():
-            return samples
-        if iter_inner_loop < self.config.num_cem_iter - 1:
-            return np.concatenate([samples, self.elite_set_queue.get_elites()], axis=0)
-        if self.config.verbose_additional:
-            print(" --> add_fraction_of_elite_set (iter {})".format(iter_inner_loop), end=' | ')
-        shited_elite_sample = self.elite_set_queue.get_shifted_elites()
-        last_action         = self._sample(self.elite_set_queue.num_reuse)[:, -1:]
-        elite_samples       = np.concatenate((shited_elite_sample, last_action), axis=1)
-        return np.concatenate([samples, elite_samples], axis=0)
-
-
-    def _add_minmaxmean_action_sample(self, samples):
-        num_sample, step, dim = samples.shape
-        sampling_mean         = (self.config.upper_bound_sampling + self.config.lower_bound_sampling) * 0.5
-        mean_action_sample    = np.zeros([1, step, dim]) + sampling_mean
-        minimum_action_sample = np.zeros([1, step, dim]) + self.config.lower_bound_sampling
-        maximum_action_sample = np.zeros([1, step, dim]) + self.config.upper_bound_sampling
-        return np.concatenate([samples, mean_action_sample, minimum_action_sample, maximum_action_sample], axis=0)
-
-
-    def _add_mean_action_at_last_iteration(self, samples, iter_inner_loop):
-        if self.config.num_cem_iter == 1                  : return samples
-        if iter_inner_loop != self.config.num_cem_iter - 1: return samples
-        if self.config.verbose_additional:
-            print(" --> add_mean_action_at_last_iteration (iter {})".format(iter_inner_loop), end=' | ')
-        return np.concatenate([samples, copy.deepcopy(self.population_sampling_dist.mean)], axis=0)
-
-
-
-    def _get_index_elite(self, cost):
-        index_elite = np.argsort(np.array(cost))[:self.config.num_elite]
-        if self.config.verbose: print("min cost={:.3f} (submean={:.3f})".format(
-            cost[index_elite][0], (cost[index_elite][0] / self.config.num_subparticle)), end=' | ')
-        return index_elite
+        return self.population_sampler.sample(
+            mean                   = self.population_sampling_dist.mean,
+            std                    = self.population_sampling_dist.std,
+            num_sample             = num_sample,
+            colored_noise_exponent = self.config.colored_noise_exponent,
+        )
 
 
     def optimize(self, constant_setting, target):
@@ -133,9 +75,9 @@ class iCEM_Subparticle:
             time_start               = time.time()
             num_sample_i             = self.population_size_scheduler.decay(i); self.print_info(i, num_sample_i)
             samples                  = self._sample(num_sample_i)
-            samples                  = self._add_minmaxmean_action_sample(samples)
-            samples                  = self._add_fraction_of_elite_set(samples, i)
-            samples                  = self._add_mean_action_at_last_iteration(samples, i)
+            samples                  = self.sample_augmentor.add_minmaxmean_action_sample(samples)
+            samples                  = self.sample_augmentor.add_fraction_of_elite_set(samples, self.elite_set_queue, i)
+            samples                  = self.sample_augmentor.add_mean_action_at_last_iteration(samples, self.population_sampling_dist.mean, i)
             num_samples              = samples.shape[0]
             self.total_sample_size_in_optimze += num_samples
             if self.config.verbose: print("total_sample_size={: 4}".format(num_samples), end=' | ')
@@ -177,10 +119,17 @@ class iCEM_Subparticle:
         num_samples = samples.shape[0]
         subparticle_group_list = []
         for i in range(num_samples):
-            perturbated_samples = self.__clip_samples(samples[i][np.newaxis, :, :] + noise)
+            perturbated_samples = self.population_sampler.clip(samples[i][np.newaxis, :, :] + noise)
             subparticle_group_list.append(perturbated_samples)
             # self.vis_collection.plot("unit_subparticle_sample", perturbated_samples, i, iter_inner_loop, self.iter_outer_loop, self.config.num_subparticle)
         return subparticle_group_list
+
+
+    def _get_index_elite(self, cost):
+        index_elite = np.argsort(np.array(cost))[:self.config.num_elite]
+        if self.config.verbose: print("min cost={:.3f} (submean={:.3f})".format(
+            cost[index_elite][0], (cost[index_elite][0] / self.config.num_subparticle)), end=' | ')
+        return index_elite
 
 
     def get_cost(self, forward_results, target, num_samples):
@@ -203,7 +152,6 @@ class iCEM_Subparticle:
         )
         if self.config.verbose_additional: print("time={:.3f}".format(proc_time), end=' | ')
         return results
-
 
 
     def _forward_progress_check(self, constant_setting, best_elite_action, iter_inner_loop, target):

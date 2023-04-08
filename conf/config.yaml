@@ -4,7 +4,9 @@ defaults:
   # - env: sim/block_mating
   # - env: sim/old_pushing
   # - env: real/valve
+
   - icem: subparticle_valve_sim_mpc
+  # - icem: singleparticle_valve_sim
 
 run:
   step    : 25
@@ -14,3 +16,5 @@ run:
 
   # sequence: 400 # train (please consider [/ motion set num])
   # sequence: 50 # valid (please consider [/ motion set num])
+
+save_dir:

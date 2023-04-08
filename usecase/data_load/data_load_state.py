@@ -15,32 +15,22 @@ from matplotlib import ticker, cm
 
 repository = Repository(
     dataset_dir  = "./dataset",
-    # dataset_name = "dataset_20221022145521",
-    # dataset_name="dataset_202323161720"
-    # dataset_name = "dataset_202332318176"
-    dataset_name="dataset_2023323223944"
+    dataset_name = "random_action_all_claw_NumSample600_NumColoredNoiseExponent6_20234944611"
 )
 query_state = "object_position"
-# query_state = "robot_position"
 
 # ------------------------------------------------
-db_files = os.listdir(repository.dataset_save_dir)
-db_files = natsorted(db_files)
-pprint.pprint(db_files)
 
-robot_position = []
-for db in db_files:
-    # import ipdb; ipdb.set_trace()
-    db_name, suffix = db.split(".")
-    repository.open(filename=db_name)
-    state = repository.repository["state"]
-    # import ipdb; ipdb.set_trace()
-    robot_position.append(state[query_state])
+state_list = []
+for f in repository.get_filenames():
+    repository.open(filename=f)
+    state = repository.get_state(key=query_state)
+    state_list.append(state)
     repository.close()
 
+state_all = np.stack(state_list, axis=0)
 
-robot_position = np.stack(robot_position, axis=0)
+# import ipdb; ipdb.set_trace()
 
-
-plt.plot(robot_position[:, :, 0].transpose())
+plt.plot(state_all[:, :, 0].transpose())
 plt.show()

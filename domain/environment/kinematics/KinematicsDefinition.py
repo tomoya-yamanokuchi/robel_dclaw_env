@@ -48,7 +48,8 @@ class KinematicsDefinition:
     def check_feasibility(self, theta):
         if len(theta.shape) == 1:
             theta = theta.reshape(1, -1)
-            assert theta.shape[-1] == 3
+        assert len(theta.shape) == 2
+        assert theta.shape[-1] == 3
 
         theta0 = theta[:, 0]
         assert False not in (theta0 > self.theta0_lb), "\n\n <<<< [theta0_lb] input includes [{}] while lower_limit is [{}] >>>> \n\n".format(theta0.min(), self.theta0_lb)

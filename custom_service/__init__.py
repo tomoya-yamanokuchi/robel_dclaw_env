@@ -15,6 +15,6 @@ from custom_service.make_dir import make_dir
 from custom_service.concat import concat
 from custom_service.save_mpc_planning_images import save_mpc_planning_images
 from custom_service.load_best_elite_sequence import load_best_elite_sequence
-
+from custom_service.create_feedable_ctrl_from_less_dim_ctrl import create_feedable_ctrl_from_less_dim_ctrl
 
 __version__ = '0.1.0'

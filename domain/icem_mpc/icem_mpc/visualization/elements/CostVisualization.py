@@ -17,7 +17,7 @@ class CostVisualization:
         self.vis.clear()
         self.vis.plot_hist(cost)
         self.vis.format(title = title("cost", iter_outer_loop, iter_inner_loop, num_sample_i))
-        self.repository.save_fig(
+        self.repository.save_figure(
             fig   = self.vis.get_fig(),
-            fname = fname("cost", iter_outer_loop, iter_inner_loop, num_sample_i),
+            fname = os.path.join("cost", fname("cost", iter_outer_loop, iter_inner_loop, num_sample_i)),
         )

@@ -6,7 +6,7 @@ import numpy as np
 ・与えるべき状態のルールが記述されています
 '''
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class ValveReturnCtrl:
     task_space_abs_position : np.ndarray
     task_space_diff_position: np.ndarray

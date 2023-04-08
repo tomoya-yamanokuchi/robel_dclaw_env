@@ -6,7 +6,7 @@ from usecase.data_collection.valve.cost.tracking_cost import tracking_cost
 from usecase.data_collection.rollout.rollout_function_with_differential_ctrl import rollout_function_with_differential_ctrl
 from usecase.data_collection.rollout.rollout_progress_check_differential_without_render import rollout_progress_check_differential_without_render
 from custom_service import time_as_string, NTD, join_with_mkdir
-from domain.icem_mpc.icem_subparticle.iCEM_Subparticle import iCEM_Subparticle
+from domain.icem_mpc.icem_mpc.iCEM_Subparticle import iCEM_Subparticle
 from domain.icem_mpc.icem_repository.iCEM_Repository import iCEM_Repository
 from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
 from domain.reference.ValveReference import ValveReference
@@ -18,8 +18,9 @@ class DataCollection:
         env_subclass, state_subclass = EnvironmentFactory().create(env_name=config.env.env_name)
         init_state = state_subclass(**config.env.init_state)
 
-        icem_repository = iCEM_Repository(config)
-        icem_repository.save_config(config)
+        icem_repository = iCEM_Repository()
+        icem_repository.set_config_and_repository(config)
+        icem_repository.save_config()
 
         icem = iCEM_Subparticle(
             forward_model                = rollout_function_with_differential_ctrl,
@@ -32,8 +33,8 @@ class DataCollection:
         best_elite_action_list = []
         best_elite_sample_list = []
         best_object_state_list = []
-        reference   = ValveReference(config.icem.planning_horizon)
-        total_step  = 25
+        reference  = ValveReference(config.icem.planning_horizon)
+        total_step = 25
         for i in range(total_step):
             icem.reset()
             resutl_dict = icem.optimize(
@@ -55,7 +56,7 @@ class DataCollection:
         best_elite_sample_sequence = np.stack(best_elite_sample_list)
         best_object_state_sequence = np.stack(best_object_state_list)
 
-        icem_repository.save(
+        icem_repository.save_best_elite_sequence(
             best_elite_action_sequence = best_elite_action_sequence,
             best_elite_sample_sequence = best_elite_sample_sequence,
             best_object_state_sequence = best_object_state_sequence,

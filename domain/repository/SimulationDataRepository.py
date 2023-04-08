@@ -1,21 +1,24 @@
 import os
-import psutil
 import datetime
 import shelve
 import pathlib
 import numpy as np
+import glob
+from pprint import pprint
 from natsort import natsorted
-from .dataclass_concatenate import dataclass_concatenate
-from .CollectionAggregation import CollectionAggregation
-
-from forward_model_multiprocessing.ForkedPdb import ForkedPdb
 
 class SimulationDataRepository:
-    def __init__(self, dataset_dir:str="./dataset", dataset_name:str=None, read_only:bool=False):
-        self.dataset_name           = dataset_name
-        self.read_only              = read_only
-        self.dataset_dir            = dataset_dir
-        self.dataset_save_dir       = self.__create_dataset_dir()
+    def __init__(self,
+            dataset_dir :str  = "./dataset",
+            dataset_name:str  = None,
+            read_only   :bool = False,
+            verbose     :bool = False,
+        ):
+        self.dataset_name     = dataset_name
+        self.read_only        = read_only
+        self.dataset_dir      = dataset_dir
+        self.verbose          = verbose
+        self.dataset_save_dir = self.__create_dataset_dir()
 
 
     def __create_parent_dir(self):
@@ -33,7 +36,7 @@ class SimulationDataRepository:
         return dataset_save_dir
 
 
-    def open(self, filename="menu_data"):
+    def open(self, filename:str = "menu_data"):
         '''
         Value :   Meaning
         -----------------
@@ -43,24 +46,56 @@ class SimulationDataRepository:
         'n'   : Always create a new, empty database, open for reading and writing
         '''
         flag            = 'r' if self.read_only else 'c'
+        if ".db" in filename: filename = filename.split(".")[0]
         full_path       = self.dataset_save_dir + '/' + filename
-        time_now        = datetime.datetime.now()
-        self.repository = shelve.open(full_path, flag=flag)
-        # print("[{}] shelve.open (flag={}) --> {}".format(time_now, flag, full_path))
-
-        # -------------メモリ使用量を取得 ----------------
-        # mem = psutil.virtual_memory()
-        # np.save(self.dataset_save_dir + '/' + filename + "_mem", np.array(mem.percent))
+        self.repository = shelve.open(full_path, flag=flag) # read only
+        if self.verbose: print("shelve.open (flag={}) --> {}".format(flag, full_path))
 
 
     def close(self):
         self.repository.close()
 
 
+    def get_filenames(self):
+        pathlib_object = pathlib.Path(self.dataset_save_dir)
+        path_list      = glob.glob(os.path.join(str(pathlib_object), "*"))
+        path_list      = natsorted(path_list)
+        # import ipdb; ipdb.set_trace()
+        filenames      = [path.split("/")[-1] for path in path_list]
+        return filenames
+
+
     def assign(self, key: str, dataclass_list: list):
         assert type(key) == str
         assert type(dataclass_list) == list
+        self.repository[key] = dataclass_list
 
-        self.collection_aggregation = CollectionAggregation(dataclass_list)
-        aggregated_data             = self.collection_aggregation.aggregate() # リストオブジェクトを１つのオブジェクトにまとめる
-        self.repository[key]        = aggregated_data                         # shelveの保存するものとしてクラスのフィールド値を辞書として取得
+
+    def get_image(self, key: str):
+        value_list = []
+        for t in range(len(self.repository["image"])):
+            x = self.repository["image"][t].image[key]
+            value_list.append(x.channel_last)
+        value = np.stack(value_list)
+        return value
+
+
+    def get_state(self, key: str):
+        state_list = self.repository["state"]
+        value_list = []
+        for t in range(len(state_list)):
+            x = state_list[t].state[key]
+            value_list.append(x.value)
+        value = np.stack(value_list)
+        return value
+
+
+    def get_ctrl(self, key: str):
+        state_list = self.repository["ctrl"]
+        value_list = []
+        for t in range(len(state_list)):
+            # import ipdb; ipdb.set_trace()
+            x = state_list[t].ctrl[key]
+            value_list.append(x.value.squeeze())
+        value = np.stack(value_list)
+        return value

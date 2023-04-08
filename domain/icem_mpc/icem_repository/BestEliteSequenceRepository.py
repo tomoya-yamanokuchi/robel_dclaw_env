@@ -1,11 +1,10 @@
+import os
 import pickle
-from custom_service import join_with_mkdir, time_as_string
 
 
 class BestEliteSequenceRepository:
-    def __init__(self, save_dir: str, config_icem):
-        self.save_dir    = save_dir
-        self.config_icem = config_icem
+    def __init__(self, save_dir: str):
+        self.save_dir = save_dir
 
 
     def save(self,
@@ -13,7 +12,7 @@ class BestEliteSequenceRepository:
             best_elite_sample_sequence,
             best_object_state_sequence,
         ):
-        save_path = self._get_save_path()
+        save_path = os.path.join(self.save_dir, "best_elite_sequence.pkl")
         with open(save_path, "wb") as tf:
             pickle.dump(
                 file = tf,
@@ -25,13 +24,13 @@ class BestEliteSequenceRepository:
             )
 
 
-    def _get_save_path(self):
-        return join_with_mkdir(self.save_dir, "best_elite_sequence",
-            "best_elite_sequence-[num_cem_iter={}]-[planning_horizon={}]-[num_sample={}]-[nominal={}]-{}.pkl".format(
-                self.config_icem.num_cem_iter,
-                self.config_icem.planning_horizon,
-                self.config_icem.num_sample,
-                self.nominal,
-                time_as_string(),
-            )
-        )
+    def load(self):
+        load_path = os.path.join(self.save_dir, "best_elite_sequence.pkl")
+        with open(load_path, "rb") as tf:
+            best_elite_sequence = pickle.load(tf)
+        return {
+            "task_space_abs_position"          : best_elite_sequence["best_elite_action_sequence"],
+            "task_space_differential_position" : best_elite_sequence["best_elite_sample_sequence"],
+            "best_object_state_sequence"       : best_elite_sequence["best_object_state_sequence"],
+        }
+

@@ -1,5 +1,5 @@
 from .texture.TextureFactory import TextureFactory
-from .ReturnImage import ReturnImage
+from .RenderImage import RenderImage
 from .ImageObject import ImageObject
 from .Camera import Camera
 from .Light import Light
@@ -48,7 +48,7 @@ class Rendering:
         self.light.set_light_ambient(self.ambient)
         self.light.set_light_castshadow(shadowsize=self.shadowsize)
         self.light.set_light_on()
-        return self.__render_image("canonical").channel_last
+        return self.__render_image("canonical")
 
 
     def _render_randomized(self):
@@ -56,14 +56,13 @@ class Rendering:
         self.light.set_light_ambient(self.ambient)
         self.light.set_light_castshadow(shadowsize=self.shadowsize)
         self.light.set_light_on()
-        return self.__render_image("random_nonfix").channel_last
+        return self.__render_image("random_nonfix")
 
 
     def render(self):
-        image = ReturnImage(
+        image = RenderImage(
             canonical     = self._render_canonical(),
             # random_nonfix = self._render_randomized(),
-            mode          = "step"
         )
         return image
 

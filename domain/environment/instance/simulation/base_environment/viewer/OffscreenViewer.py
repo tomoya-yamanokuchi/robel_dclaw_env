@@ -3,7 +3,7 @@ import time
 import mujoco_py
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from ..render.ReturnImage import ReturnImage
+from ..render.RenderImage import RenderImage
 
 
 class OffscreenViewer:
@@ -13,8 +13,8 @@ class OffscreenViewer:
         cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
 
 
-    def view(self, image: ReturnImage):
-        cv2.imshow(self.window_name, image.canonical)
+    def view(self, image: RenderImage):
+        cv2.imshow(self.window_name, image.image["canonical"].channel_last)
         cv2.waitKey(50)
 
 

@@ -47,19 +47,28 @@ class Demo_task_space:
 
 if __name__ == "__main__":
     import hydra
-    from omegaconf import DictConfig
+    from omegaconf import OmegaConf, DictConfig
     from custom_service import load_best_elite_sequence
     from visualize.ReplayActionVisualization import ReplayActionVisualization
     from visualize.ReplayObjectPpositionVisualization import ReplayObjectPpositionVisualization
+    from domain.icem_mpc.icem_repository.iCEM_Repository import iCEM_Repository
 
 
-    @hydra.main(version_base=None, config_path="../../conf", config_name="config.yaml")
-    def main(config: DictConfig):
+    # @hydra.main(version_base=None, config_path="../../conf", config_name="config.yaml")
+    # def main(config: DictConfig):
+    def main():
 
-        result_best_elite_sequence = load_best_elite_sequence(
-            load_path = "./best_elite_sequence/" + \
-            "best_elite_sequence-[num_cem_iter=7]-[planning_horizon=10]-[num_sample=500]-[nominal=False]-20234611253.pkl",
+        # result_best_elite_sequence = load_best_elite_sequence(
+        #     load_path = "./best_elite_sequence/" + \
+        #     "best_elite_sequence-[num_cem_iter=7]-[planning_horizon=10]-[num_sample=500]-[nominal=False]-20234611253.pkl",
+        # )
+
+
+        icem_repository = iCEM_Repository()
+        config          = icem_repository.load_config_and_repository(
+            "[num_sample=5]-[num_subparticle=10]-[num_cem_iter=1]-[colored_noise_exponent=[0.0, 1.0, 2.5, 3.5]]-1680827113.24761"
         )
+        result_best_elite_sequence = icem_repository.load_best_elite_sequence()
 
         config.env.viewer.is_Offscreen = False
 

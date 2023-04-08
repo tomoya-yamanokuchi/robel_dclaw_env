@@ -21,6 +21,7 @@ class TrajectoryVisualization:
         self.color_elite  = color_elite
         self.color_target = color_target
         self.save_dir     = save_dir
+        self._make_save_dir(save_dir)
 
 
     def _make_save_dir(self, save_dir):

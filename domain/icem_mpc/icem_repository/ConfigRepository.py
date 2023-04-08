@@ -1,5 +1,5 @@
 import os
-from omegaconf import OmegaConf
+from omegaconf import OmegaConf, DictConfig
 
 
 class ConfigRepository:
@@ -7,7 +7,8 @@ class ConfigRepository:
         self.save_dir = save_dir
 
 
-    def save(self, config):
+    def save(self, config: DictConfig):
+        config.save_dir = self.save_dir
         OmegaConf.save(
             config = config,
             f      = os.path.join(self.save_dir, "config.yaml")

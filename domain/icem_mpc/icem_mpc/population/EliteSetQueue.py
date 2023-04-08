@@ -2,11 +2,11 @@ from collections import deque
 
 
 class EliteSetQueue:
-    def __init__(self, num_elite, fraction_rate):
-        self.num_elite     = num_elite
-        self.fraction_rate = fraction_rate
-        self.num_reuse     = int(self.num_elite * self.fraction_rate)
-        self.elites        = deque([])
+    def __init__(self, config):
+        self.num_elite           = config.num_elite
+        self.fraction_rate_elite = config.fraction_rate_elite
+        self.num_reuse           = int(self.num_elite * self.fraction_rate_elite)
+        self.elites              = deque([])
 
     def append(self, elites):
         assert elites.shape[0] == self.num_elite

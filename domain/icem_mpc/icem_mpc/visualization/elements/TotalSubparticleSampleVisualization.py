@@ -15,7 +15,7 @@ class TotalSubparticleSampleVisualization:
         self.vis        = TrajectoryVisualization(
             dim          = config.dim_action,
             figsize      = config.figsize_path,
-            save_dir     = os.path.join(repository.save_dir),
+            save_dir     = os.path.join(repository.save_dir, "total_sub_samples"),
             ylim         = (config.lower_bound_sampling, config.upper_bound_sampling),
             color_sample = color_set(color_name)["color_sample"],
             color_elite  = color_set(color_name)["color_elite"],
@@ -35,7 +35,7 @@ class TotalSubparticleSampleVisualization:
             self.vis.plot_elites_colored(elite_subparticle_group, color="b")
 
         self.vis.format(title = title("total_sub_samples", iter_outer_loop, iter_inner_loop, num_sample_i))
-        self.repository.save_fig(
+        self.repository.save_figure(
             fig   = self.vis.get_fig(),
-            fname = fname("total_sub_samples", iter_outer_loop, iter_inner_loop, num_sample_i),
+            fname = os.path.join("total_sub_samples", fname("total_sub_samples", iter_outer_loop, iter_inner_loop, num_sample_i)),
         )

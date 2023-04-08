@@ -3,7 +3,6 @@ import time
 import mujoco_py
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from ..render.ReturnImage import ReturnImage
 
 
 class OnscreenViewer:

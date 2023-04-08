@@ -14,7 +14,7 @@ class UnitSubparticleSampleVisualization:
         self.vis        = TrajectoryVisualization(
             dim          = config.dim_action,
             figsize      = config.figsize_path,
-            save_dir     = os.path.join(repository.save_dir),
+            save_dir     = os.path.join(repository.save_dir, "unit_subparticle_sample"),
             ylim         = (config.lower_bound_sampling, config.upper_bound_sampling),
             color_sample = color_set(color_name)["color_sample"],
             color_elite  = color_set(color_name)["color_elite"],
@@ -25,7 +25,7 @@ class UnitSubparticleSampleVisualization:
         self.vis.clear()
         self.vis.plot_samples(samples)
         self.vis.format(title = "_".join([str(index_original_sample), str(iter_outer_loop), str(iter_inner_loop), str(num_sample_i)]))
-        self.repository.save_fig(
+        self.repository.save_figure(
             fig   = self.vis.get_fig(),
-            fname = "_".join([str(index_original_sample), str(iter_outer_loop), str(iter_inner_loop), str(num_sample_i), ".png"]),
+            fname = os.path.join("unit_subparticle_sample",  "_".join([str(index_original_sample), str(iter_outer_loop), str(iter_inner_loop), str(num_sample_i), ".png"])),
         )

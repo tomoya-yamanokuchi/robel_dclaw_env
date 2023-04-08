@@ -1,5 +1,5 @@
 # << general >>
-num_cem_iter               : 7
+num_cem_iter               : 1
 planning_horizon           : 10
 dim_action                 : 3
 dimension_of_interst       : [0, 1, 2]
@@ -13,7 +13,7 @@ upper_bound_simulated_path :  8.0
 dim_path                   : 1
 
 # << sampling >>
-num_sample                 : 500
+num_sample                 : 5
 decay_sample               : 1.25
 
 # << subparticle >>

@@ -56,7 +56,7 @@ class ValveSimulationEnvironment(BaseEnvironment):
             self.sim      = mujoco_py.MjSim(self.model)
             self.setState = SetState(self.sim, State,  self.task_space)
             self.getState = GetState(self.sim, State,  self.task_space, EndEffectorValueObject)
-            self.setCtrl  = SetCtrl( self.sim, ReturnCtrl, self.task_space)
+            self.setCtrl  = SetCtrl( self.sim, self.task_space)
             self.setTargetPosition = ValveTarget(self.sim)
             self.setTargetPosition.set_target_visible(self.config.target.visible)
             RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)

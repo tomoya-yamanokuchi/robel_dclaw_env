@@ -24,6 +24,7 @@ class ImageObject:
         return self.value.transpose(2, 0, 1)
 
 
+
 if __name__ == '__main__':
     import numpy as np
     import cv2
