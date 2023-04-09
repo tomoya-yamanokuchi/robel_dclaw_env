@@ -101,7 +101,7 @@ class iCEM_Subparticle:
             self.vis_collection.plot("cost"  ,                      cost, i, self.iter_outer_loop, num_samples)
             self.vis_collection.plot("subparticle_simulated_paths", forward_results, index_elite, target, i, self.iter_outer_loop, num_samples)
             self.vis_collection.plot("sample",                      samples, samples[index_elite], i, self.iter_outer_loop, num_samples)
-            self.vis_collection.plot("total_subparticle_sample",    subparticle_group_list, index_elite, i, self.iter_outer_loop, perturbated_samples.shape[0])
+            # self.vis_collection.plot("total_subparticle_sample",    subparticle_group_list, index_elite, i, self.iter_outer_loop, perturbated_samples.shape[0])
             # ---- time count ----
             # import ipdb; ipdb.set_trace()
             self.update_total_process_time(time_start)

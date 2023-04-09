@@ -1,10 +1,10 @@
 # << general >>
-num_cem_iter               : 1
+num_cem_iter               : 7
 planning_horizon           : 10
 dim_action                 : 3
 dimension_of_interst       : [0, 1, 2]
 
-colored_noise_exponent     : [0.0, 1.0, 2.5, 3.5]
+colored_noise_exponent     : [0.5, 1.0, 2.0, 3.0, 4.0]
 
 lower_bound_sampling       :  -0.2
 upper_bound_sampling       :   0.2
@@ -13,7 +13,7 @@ upper_bound_simulated_path :  8.0
 dim_path                   : 1
 
 # << sampling >>
-num_sample                 : 5
+num_sample                 : 500
 decay_sample               : 1.25
 
 # << subparticle >>

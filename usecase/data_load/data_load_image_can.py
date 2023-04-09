@@ -13,7 +13,7 @@ cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 
 repository = Repository(
     dataset_dir  = "./dataset",
-    dataset_name = "random_action_claw1_NumSample300_NumColoredNoiseExponent3_20234944316",
+    dataset_name = "nominal_with_noise5_NumSample100_NumColoredNoiseExponent3_202349101340",
 )
 
 
@@ -29,7 +29,7 @@ for f in repository.get_filenames():
         cv2.waitKey(100)
 
         # print(t)
-        if t==0:
-            import ipdb; ipdb.set_trace()
+        # if t==0:
+        #     import ipdb; ipdb.set_trace()
 
     repository.close()

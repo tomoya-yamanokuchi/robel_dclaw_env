@@ -5,7 +5,7 @@ from domain.environment.EnvironmentFactory import EnvironmentFactory
 import pickle
 from visualize.ReplayVisualization import ReplayVisualization
 from domain.reference.ValveReference import ValveReference
-from domain.icem_mpc.visualization.elements.utils.TrajectoryVisualization import TrajectoryVisualization
+from domain.icem_mpc.icem_mpc.visualization.elements.utils.TrajectoryVisualization import TrajectoryVisualization
 from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpace
 from custom_service import NTD
 
@@ -58,15 +58,10 @@ if __name__ == "__main__":
     # def main(config: DictConfig):
     def main():
 
-        # result_best_elite_sequence = load_best_elite_sequence(
-        #     load_path = "./best_elite_sequence/" + \
-        #     "best_elite_sequence-[num_cem_iter=7]-[planning_horizon=10]-[num_sample=500]-[nominal=False]-20234611253.pkl",
-        # )
-
-
         icem_repository = iCEM_Repository()
         config          = icem_repository.load_config_and_repository(
-            "[num_sample=5]-[num_subparticle=10]-[num_cem_iter=1]-[colored_noise_exponent=[0.0, 1.0, 2.5, 3.5]]-1680827113.24761"
+            # "[num_sample=500]-[num_subparticle=10]-[num_cem_iter=7]-[colored_noise_exponent=[0.5, 1.0, 2.0, 3.0, 4.0]]-1680989914.145154",
+            "nominal_with_noise1_NumSample30_NumColoredNoiseExponent1_20234910855"
         )
         result_best_elite_sequence = icem_repository.load_best_elite_sequence()
 
@@ -85,7 +80,7 @@ if __name__ == "__main__":
         )
         vis_object.plot_target(np.linspace(1, step, step), reference.get_as_radian(current_step=0).squeeze())
         vis_object.plot_path(  np.linspace(0, step+1, step+1), replay_object_state_sequence)
-        vis_object.save("./replay_object_position.png")
+        vis_object.save(os.path.join(config.save_dir, "replay_object_position.png"))
 
 
     main()

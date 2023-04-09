@@ -23,14 +23,12 @@ class SampleAugmenter:
 
     def add_fraction_of_elite_set(self, samples, elite_set_queue: EliteSetQueue, iter_inner_loop):
         if elite_set_queue.is_empty() : return samples
-        if iter_inner_loop == 0:
-            if self.verbose_additional: print(" --> add_fraction_of_elite_set (iter {})".format(iter_inner_loop), end=' | ')
-            shited_elite_sample = elite_set_queue.get_shifted_elites()
-            last_action         = self.sampler(elite_set_queue.num_reuse)[:, -1:]
-            elite_samples       = np.concatenate((shited_elite_sample, last_action), axis=1)
-            return np.concatenate([samples, elite_samples], axis=0)
-        if iter_inner_loop < self.num_cem_iter - 1:
-            return np.concatenate([samples, elite_set_queue.get_elites()], axis=0)
+        if self.verbose_additional    : print(" --> add_fraction_of_elite_set (iter {})".format(iter_inner_loop), end=' | ')
+        if iter_inner_loop > 0        : return np.concatenate([samples, elite_set_queue.get_elites()], axis=0)
+        shited_elite_sample = elite_set_queue.get_shifted_elites()
+        last_action         = self.sampler(elite_set_queue.num_reuse)[:, -1:]
+        elite_samples       = np.concatenate((shited_elite_sample, last_action), axis=1)
+        return np.concatenate([samples, elite_samples], axis=0)
 
 
     def add_mean_action_at_last_iteration(self, samples, mean, iter_inner_loop):
