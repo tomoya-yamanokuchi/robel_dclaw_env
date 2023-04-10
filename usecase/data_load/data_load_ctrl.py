@@ -15,9 +15,9 @@ from matplotlib import ticker, cm
 
 repository = Repository(
     dataset_dir  = "./dataset",
-    dataset_name = "random_action_claw3_NumSample30_NumColoredNoiseExponent1_20234109209"
+    dataset_name = "random_action_claw2_NumSample30_NumColoredNoiseExponent1_202341091956"
 )
-query_state = "object_position"
+query_state = "task_space_diff_position"
 
 # ------------------------------------------------
 
@@ -25,7 +25,7 @@ state_list = []
 for f in repository.get_filenames():
     repository.open(filename=f)
     # import ipdb; ipdb.set_trace()
-    state = repository.repository["state"][query_state]
+    state = repository.repository["ctrl"][query_state]
     state_list.append(state)
     repository.close()
 
@@ -34,5 +34,5 @@ print("state shape = ", state_all.shape)
 
 # import ipdb; ipdb.set_trace()
 
-plt.plot(state_all[:, :].transpose())
+plt.plot(state_all[:, :, 1].transpose())
 plt.show()

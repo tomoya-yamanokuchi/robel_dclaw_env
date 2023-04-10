@@ -6,6 +6,9 @@ import numpy as np
 import glob
 from pprint import pprint
 from natsort import natsorted
+from domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
+from .CollectionAggregation import CollectionAggregation
+
 
 class SimulationDataRepository:
     def __init__(self,
@@ -65,37 +68,8 @@ class SimulationDataRepository:
         return filenames
 
 
-    def assign(self, key: str, dataclass_list: list):
-        assert type(key) == str
-        assert type(dataclass_list) == list
-        self.repository[key] = dataclass_list
-
-
-    def get_image(self, key: str):
-        value_list = []
-        for t in range(len(self.repository["image"])):
-            x = self.repository["image"][t].image[key]
-            value_list.append(x.channel_last)
-        value = np.stack(value_list)
-        return value
-
-
-    def get_state(self, key: str):
-        state_list = self.repository["state"]
-        value_list = []
-        for t in range(len(state_list)):
-            x = state_list[t].state[key]
-            value_list.append(x.value)
-        value = np.stack(value_list)
-        return value
-
-
-    def get_ctrl(self, key: str):
-        state_list = self.repository["ctrl"]
-        value_list = []
-        for t in range(len(state_list)):
-            # import ipdb; ipdb.set_trace()
-            x = state_list[t].ctrl[key]
-            value_list.append(x.value.squeeze())
-        value = np.stack(value_list)
-        return value
+    def assign(self, dataclass_list, name):
+        agg  = CollectionAggregation()
+        data = agg.aggregate(dataclass_list)
+        self.repository[name] = data
+        # ForkedPdb().set_trace()

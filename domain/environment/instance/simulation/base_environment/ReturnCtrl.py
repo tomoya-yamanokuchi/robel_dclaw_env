@@ -3,6 +3,6 @@
 
 class ReturnCtrl:
     def __init__(self, **kwargs: dict):
-        self.ctrl = {}
+        self.collection = {}
         for key, val in kwargs.items():
-            self.ctrl[key] = val
+            self.collection[key] = val

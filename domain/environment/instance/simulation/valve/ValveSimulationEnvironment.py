@@ -8,7 +8,6 @@ import mujoco_py
 from .ValveState import ValveState as State
 # from .ValveFeedState import ValveFeedState as FeedState
 # from .ValveReturnState import ValveReturnState as ReturnState
-from .ValveReturnCtrl import ValveReturnCtrl as ReturnCtrl
 from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
 import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))

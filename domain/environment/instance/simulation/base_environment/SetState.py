@@ -16,7 +16,7 @@ class SetState:
 
     def set_state(self, state: object):
         assert isinstance(state, self.State)
-        state     = state.state
+        state     = state.collection
         new_state = MjSimState(
             time      = state["time"].value,
             qpos      = self._set_qpos(state),

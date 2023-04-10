@@ -27,7 +27,7 @@ StateValueObject = {
 
 class ValveState:
     def __init__(self, **kwargs: dict):
-        self.state = {}
+        self.collection = {}
         for key, val in kwargs.items():
             # print("key, val, val_shape = {}, {}".format(key, val))
             state_value_object = StateValueObject[key]
@@ -38,4 +38,4 @@ class ValveState:
                 val = dict()
 
             if key == "task_space_position": val = NTD(val)
-            self.state[key] = state_value_object(val)
+            self.collection[key] = state_value_object(val)

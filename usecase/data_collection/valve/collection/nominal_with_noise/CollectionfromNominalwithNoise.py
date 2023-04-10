@@ -4,16 +4,16 @@ from usecase.data_collection.rollout.rollout_dataset_collection_with_differentia
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
 from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
+from domain.environment.task_space.manifold_1d.TaskSpaceDifferentialPositionValue_1D_Manifold import TaskSpaceDifferentialPositionValue_1D_Manifold
 from domain.icem_mpc.icem_mpc.population.PopulationSampler import PopulationSampler
 from domain.icem_mpc.icem_mpc.population.PopulationSampingDistribution import PopulationSampingDistribution
 from domain.icem_mpc.icem_mpc.population.PopulationSampler import PopulationSampler
-from custom_service import time_as_string, create_feedable_ctrl_from_less_dim_ctrl
+from custom_service import time_as_string, save_path
 from domain.icem_mpc.icem_repository.iCEM_Repository import iCEM_Repository
 from domain.icem_mpc.icem_mpc.visualization.VisualizationCollection import VisualizationCollection
-from save_ctrl_sample_figure import save_path
 
 
-class CollectionfromNominalAction:
+class CollectionfromNominalwithNoise:
     def __init__(self, config):
         self.config = config
 
@@ -57,7 +57,8 @@ class CollectionfromNominalAction:
                 "env_subclass" : env_subclass,
                 "config"       : self.config,
                 "init_state"   : init_state,
-                "TaskSpace"    : TaskSpacePositionValue_1D_Manifold,
+                "TaskSpaceAbs" : TaskSpacePositionValue_1D_Manifold,
+                "TaskSpaceDiff": TaskSpaceDifferentialPositionValue_1D_Manifold,
                 "dataset_name" : dataset_name + "_" + time_as_string(),
             },
             ctrl = ctrl,
@@ -65,31 +66,3 @@ class CollectionfromNominalAction:
 
 
 
-if __name__ == "__main__":
-    import hydra
-    from omegaconf import DictConfig
-
-    @hydra.main(version_base=None, config_path="../../../../conf", config_name="config.yaml")
-    def main(config: DictConfig):
-        demo = CollectionfromNominalAction(config)
-        nominal_ctrl = demo.load_nominal_ctrl(
-            "[num_sample=500]-[num_subparticle=10]-[num_cem_iter=7]-[colored_noise_exponent=[0.5, 1.0, 2.0, 3.0, 4.0]]-1680989914.145154"
-        )
-
-        # << --- random action for each claw --- >>
-        num_sample = 100; colored_noise_exponent = [1.0, 2.0, 3.0]; planning_horizon = nominal_ctrl.shape[0]
-        nominal_with_noise1 = demo.add_random_noise_to_nominal(nominal_ctrl, num_sample, colored_noise_exponent, planning_horizon, init_std = 0.50, sampling_bound_width = 0.025)
-        nominal_with_noise2 = demo.add_random_noise_to_nominal(nominal_ctrl, num_sample, colored_noise_exponent, planning_horizon, init_std = 0.55, sampling_bound_width = 0.050)
-        nominal_with_noise3 = demo.add_random_noise_to_nominal(nominal_ctrl, num_sample, colored_noise_exponent, planning_horizon, init_std = 0.60, sampling_bound_width = 0.075)
-        nominal_with_noise4 = demo.add_random_noise_to_nominal(nominal_ctrl, num_sample, colored_noise_exponent, planning_horizon, init_std = 0.65, sampling_bound_width = 0.100)
-        nominal_with_noise5 = demo.add_random_noise_to_nominal(nominal_ctrl, num_sample, colored_noise_exponent, planning_horizon, init_std = 0.75, sampling_bound_width = 0.200)
-
-
-        # import ipdb; ipdb.set_trace()
-        demo.run_forward_model(nominal_with_noise1, dataset_name="nominal_with_noise1_NumSample{}_NumColoredNoiseExponent{}".format(num_sample, len(colored_noise_exponent)))
-        demo.run_forward_model(nominal_with_noise2, dataset_name="nominal_with_noise2_NumSample{}_NumColoredNoiseExponent{}".format(num_sample, len(colored_noise_exponent)))
-        demo.run_forward_model(nominal_with_noise3, dataset_name="nominal_with_noise3_NumSample{}_NumColoredNoiseExponent{}".format(num_sample, len(colored_noise_exponent)))
-        demo.run_forward_model(nominal_with_noise4, dataset_name="nominal_with_noise4_NumSample{}_NumColoredNoiseExponent{}".format(num_sample, len(colored_noise_exponent)))
-        demo.run_forward_model(nominal_with_noise5, dataset_name="nominal_with_noise5_NumSample{}_NumColoredNoiseExponent{}".format(num_sample, len(colored_noise_exponent)))
-
-    main()
