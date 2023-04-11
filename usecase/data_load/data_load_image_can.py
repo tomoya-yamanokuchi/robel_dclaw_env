@@ -13,13 +13,13 @@ cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 
 repository = Repository(
     dataset_dir  = "./dataset",
-    dataset_name = "nominal_with_noise5_NumSample100_NumColoredNoiseExponent3_202349101340",
+    dataset_name = "fixed_motion_N1800_202341193244_202341193244",
 )
 
 
 for f in repository.get_filenames():
     repository.open(filename=f)
-    img_can = repository.get_image(key="canonical")
+    img_can = repository.repository["image"]["canonical"]
     step, width, height, channel = img_can.shape
 
     for t in range(step):

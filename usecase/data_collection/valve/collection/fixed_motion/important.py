@@ -1,29 +1,3 @@
-import os
-import copy
-import pprint
-import time
-import numpy as np
-import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.EnvironmentFactory import EnvironmentFactory
-from domain.environment.__StateFactory import StateFactory
-# from domain.environment.instance.simulation.DClawCtrl import DClawCtrl as CtrlState
-# from domain.environment.instance.simulation.simulation.base_environment.ImageObs import ImageObs
-from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
-
-from domain.environment.multiprocessing.EnvironmentMultiprocessing_develop import EnvironmentMultiprocessing
-# from domain.environment.multiprocessing.EnvironmentMultiprocessing import EnvironmentMultiprocessing
-
-from domain.environment.multiprocessing.EnvironmentConstantSetting import EnvironmentConstantSetting
-
-
-
-
-
-
-
-
-class Demo_task_space:
-    def run(self, config):
         config.env.camera.z_distance = 0.4 # ロボットがフレームアウトする情報欠損を起こさないようにカメラを引きで設定
         env_subclass = EnvironmentFactory().create(env_name=config.env.env_name)
         task_space_position_init = np.array(
@@ -78,41 +52,3 @@ class Demo_task_space:
                 "init_state"     : init_state,
             }
             chunked_input.append(chunked_input_unit_dict)
-        # import ipdb; ipdb.set_trace()
-        # ----------------------------------------------------------------------------------
-        import datetime
-        dt_now       = datetime.datetime.now()
-        dataset_name = "dataset_{}{}{}{}{}{}".format(
-            dt_now.year, dt_now.month, dt_now.day, dt_now.hour, dt_now.minute, dt_now.second
-        )
-        print(dataset_name)
-
-        multiproc        = EnvironmentMultiprocessing()
-        constant_setting = EnvironmentConstantSetting(
-            env_subclass = env_subclass,
-            config       = config,
-            # init_state   = init_state,
-            dataset_name = dataset_name,
-        )
-
-        result_list, proc_time = multiproc.run_from_chunked_ctrl(
-            function         = rollout,
-            constant_setting = constant_setting,
-            chunked_input    = chunked_input,
-        )
-        print("-------------------------------")
-        print("   procces time : {: .3f} [sec]".format(proc_time))
-        print("    result_list : {}".format(result_list))
-        print("-------------------------------")
-
-
-if __name__ == "__main__":
-    import hydra
-    from omegaconf import DictConfig
-
-    @hydra.main(version_base=None, config_path="../../conf", config_name="config.yaml")
-    def main(config: DictConfig):
-        demo = Demo_task_space()
-        demo.run(config)
-
-    main()

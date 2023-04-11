@@ -15,7 +15,7 @@ from matplotlib import ticker, cm
 
 repository = Repository(
     dataset_dir  = "./dataset",
-    dataset_name = "random_action_claw3_NumSample30_NumColoredNoiseExponent1_20234109209"
+    dataset_name = "fixed_motion_N1800_202341193244_202341193244"
 )
 query_state = "object_position"
 

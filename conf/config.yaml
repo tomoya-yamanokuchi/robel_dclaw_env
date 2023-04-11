@@ -12,9 +12,9 @@ run:
   step    : 25
 
   # sequence: 275 # train (please consider [/ motion set num])
-  sequence: 2000  # valid (please consider [/ motion set num])
-
+  # sequence: 2  # valid (please consider [/ motion set num])
+  # sequence : 300
   # sequence: 400 # train (please consider [/ motion set num])
-  # sequence: 50 # valid (please consider [/ motion set num])
+  sequence: 50 # valid (please consider [/ motion set num])
 
 save_dir:

@@ -2,8 +2,8 @@ import cv2, time, copy
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.EnvironmentFactory import EnvironmentFactory
-from custom_service import print_info
-
+from custom_service import print_info, NTD
+from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
 
 
 class Demo_task_space:
@@ -19,12 +19,12 @@ class Demo_task_space:
             time_start = time.time()
             env.reset(init_state); print("\n*** reset ***\n")
             state  = env.get_state()
-            task_t = state.state['task_space_position'].value.squeeze()
+            task_t = state.collection['task_space_position'].value.squeeze()
             task_g = copy.deepcopy(task_t)
             # task_g -= 0.2
-
+            env.render()
             for t in range(step):
-                img   = env.render()
+                # img   = env.render()
                 state = env.get_state()
                 env.view()
 
@@ -33,8 +33,8 @@ class Demo_task_space:
                 task_g -= 0.05
                 # import ipdb; ipdb.set_trace()
 
-                env.set_ctrl_task_space(task_g)
-                env.step(is_view=False)
+                env.set_ctrl_task_space(TaskSpacePositionValue_1D_Manifold(NTD(task_g)))
+                env.step(is_view=True)
 
                 # import ipdb; ipdb.set_trace()
                 # print("body_inertia = ", env.sim.data.body_inertia[21])

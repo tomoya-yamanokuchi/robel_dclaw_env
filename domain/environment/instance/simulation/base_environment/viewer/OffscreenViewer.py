@@ -14,7 +14,7 @@ class OffscreenViewer:
 
 
     def view(self, image: RenderImage):
-        cv2.imshow(self.window_name, image.image["canonical"].channel_last)
+        cv2.imshow(self.window_name, image.collection["canonical"].channel_last)
         cv2.waitKey(50)
 
 
