@@ -11,6 +11,9 @@ training dataset
 if __name__ == '__main__':
     @hydra.main(version_base=None, config_path="../../../../../conf", config_name="config.yaml")
     def main(config: DictConfig):
+
+        config.env.camera.z_distance = 0.4
+
         demo = CollectionfromRandomMotion(config)
 
         # << --- random action for each claw --- >>

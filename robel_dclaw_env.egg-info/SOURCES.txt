@@ -6,14 +6,17 @@ custom_service/__init__.py
 custom_service/angle_interface.py
 custom_service/concat.py
 custom_service/convert_data.py
+custom_service/create_feedable_ctrl_from_less_dim_ctrl.py
 custom_service/create_gif.py
 custom_service/data_shape_formating.py
 custom_service/dictionary_operation.py
 custom_service/dimension_assetion.py
 custom_service/join_with_mkdir.py
+custom_service/load_best_elite_sequence.py
 custom_service/make_dir.py
 custom_service/normalize.py
 custom_service/print_info.py
+custom_service/save_ctrl_sample_figure.py
 custom_service/save_mpc_planning_images.py
 custom_service/split_list.py
 custom_service/time_as_string.py

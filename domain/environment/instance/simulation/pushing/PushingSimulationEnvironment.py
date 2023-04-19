@@ -83,6 +83,24 @@ class PushingSimulationEnvironment(BaseEnvironment):
         pusing_etree.add_body_tree(nomalized_inside_points, individual_geometry_mass)
         pusing_etree.save_xml()
 
+        assert 1==0
+        '''
+         {古いユースケースだと objectの摩擦が一定になるように正規化されていないので新しいのにする !!!}
+
+            object_mass     = ObjectMass()
+            object_friction = ObjectFriction()
+
+            # import ipdb; ipdb.set_trace()
+            pusing_etree = PushingObjectElementTree()
+            pusing_etree.add_joint_tree()
+            pusing_etree.add_body_tree(
+                xy_pos   = nomalized_inside_points,
+                mass     = object_mass.unit_inside_cylinder_mass(num_inside_points),
+                friction = object_friction.unit_inside_cylinder_mass(num_inside_points),
+            )
+            pusing_etree.save_xml()
+        '''
+
 
     def reset(self, state):
         self.model_file_reset()

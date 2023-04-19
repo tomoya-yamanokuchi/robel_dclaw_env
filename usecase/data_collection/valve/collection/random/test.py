@@ -11,10 +11,13 @@ test dataset
 if __name__ == '__main__':
     @hydra.main(version_base=None, config_path="../../../../../conf", config_name="config.yaml")
     def main(config: DictConfig):
+
+        config.env.camera.z_distance = 0.4
+
         demo = CollectionfromRandomMotion(config)
 
         # << --- random action for each claw --- >>
-        num_sample_clawX = 30; colored_noise_exponent_clawX = [1.0] # colored_noise_exponent_clawX=[1.0, 2.0, 3.0]
+        num_sample_clawX = 30; colored_noise_exponent_clawX=[1.0, 2.0, 3.0]
         random_sample = demo.get_random_ctrl(num_sample_clawX, colored_noise_exponent_clawX)
 
         ctrl_random_claw1 = create_feedable_ctrl_from_less_dim_ctrl(

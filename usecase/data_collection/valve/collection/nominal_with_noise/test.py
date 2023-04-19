@@ -5,6 +5,9 @@ from CollectionfromNominalwithNoise import CollectionfromNominalwithNoise
 if __name__ == "__main__":
     @hydra.main(version_base=None, config_path="../../../../../conf", config_name="config.yaml")
     def main(config: DictConfig):
+
+        config.env.camera.z_distance = 0.4
+
         demo = CollectionfromNominalwithNoise(config)
         nominal_ctrl = demo.load_nominal_ctrl(
             "[num_sample=500]-[num_subparticle=10]-[num_cem_iter=7]-[colored_noise_exponent=[0.5, 1.0, 2.0, 3.0, 4.0]]-1680989914.145154"

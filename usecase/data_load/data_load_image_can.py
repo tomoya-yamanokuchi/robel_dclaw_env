@@ -13,7 +13,7 @@ cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 
 repository = Repository(
     dataset_dir  = "./dataset",
-    dataset_name = "fixed_motion_N1800_202341193244_202341193244",
+    dataset_name = "random_action_claw3_NumSample300_NumColoredNoiseExponent3_2023412214634",
 )
 
 
