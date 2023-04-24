@@ -1,6 +1,9 @@
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from custom_service import concat, NTD
+from custom_service import normalize as normalize_func
+import torch
+
 
 
 class ValveReference:
@@ -31,9 +34,21 @@ class ValveReference:
         return reference
 
 
-    def get_as_polar_coordinates(self, current_step: int):
+    def get_as_polar_coordinates_cycle_360degree(self, current_step: int, tensor:bool=False, normalize:bool=False):
         radian    = self.get_as_radian(current_step)
-        reference = np.stack((np.cos(radian), np.sin(radian)), axis=-1)
+        reference = np.concatenate((np.cos(radian), np.sin(radian)), axis=-1)
+        return self._convert(reference, tensor, normalize)
+
+
+    def get_as_polar_coordinates_cycle_120degree(self, current_step: int, tensor:bool=False, normalize:bool=False):
+        radian    = self.get_as_radian(current_step)
+        reference = np.concatenate((np.cos(3*radian), np.sin(3*radian)), axis=-1)
+        return self._convert(reference, tensor, normalize)
+
+
+    def _convert(self, reference, tensor:bool=False, normalize:bool=False):
+        if normalize: reference = normalize_func(reference, x_min=-1, x_max=1, m=0, M=1)
+        if tensor   : reference = torch.Tensor(reference).cuda()
         return reference
 
 

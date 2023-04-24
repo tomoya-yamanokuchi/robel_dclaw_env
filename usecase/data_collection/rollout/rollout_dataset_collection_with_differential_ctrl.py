@@ -16,12 +16,11 @@ def rollout_dataset_collection_with_differential_ctrl(constant_setting, queue_in
     env_subclass  = constant_setting["env_subclass"]
     config        = constant_setting["config"]
     init_state    = constant_setting["init_state"]
-    TaskSpaceAbs  = constant_setting["TaskSpaceAbs"]
     TaskSpaceDiff = constant_setting["TaskSpaceDiff"]
     dataset_name  = constant_setting["dataset_name"]
 
     env           = env_subclass(config.env, use_render=True)
-    repository    = Repository(dataset_dir="./dataset", dataset_name=dataset_name, read_only=False)
+    repository    = Repository(dataset_dir="/nfs/workspace/robel_dclaw_env/dataset", dataset_name=dataset_name, read_only=False)
 
     # << ------ rollout ------- >>
     for n in range(num_ctrl):
@@ -34,7 +33,7 @@ def rollout_dataset_collection_with_differential_ctrl(constant_setting, queue_in
             img                 = env.render()
             state               = env.get_state()
             task_space_position = state.collection["task_space_position"]
-            task_space_ctrl     = task_space_position + TaskSpaceAbs(NTD(task_space_differential_ctrl[n, t]))
+            task_space_ctrl     = task_space_position + TaskSpaceDiff(NTD(task_space_differential_ctrl[n, t]))
             ctrl                = env.set_ctrl_task_space(task_space_ctrl)
             ctrl.collection["task_space_diff_position"] = TaskSpaceDiff(NTD(task_space_differential_ctrl[n, t]))
 

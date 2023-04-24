@@ -16,13 +16,13 @@ from domain.icem_mpc.icem_mpc.visualization.VisualizationCollection import Visua
 class CollectionfromNominalwithNoise:
     def __init__(self, config):
         self.config = config
+        # import ipdb; ipdb.set_trace()
 
-
-    def load_nominal_ctrl(self, load_path):
-        self.icem_repository       = iCEM_Repository()
-        config                     = self.icem_repository.load_config_and_repository(load_path)
-        result_best_elite_sequence = self.icem_repository.load_best_elite_sequence()
-        return result_best_elite_sequence["task_space_differential_position"]
+    # def load_nominal_ctrl(self, save_dir, load_path):
+    #     self.icem_repository       = iCEM_Repository()
+    #     config                     = self.icem_repository.load_config_and_repository(save_dir, load_path)
+    #     result_best_elite_sequence = self.icem_repository.load_best_elite_sequence()
+    #     return result_best_elite_sequence["task_space_differential_position"]
 
 
     def add_random_noise_to_nominal(self, nominal_ctrl, num_sample, colored_noise_exponent, planning_horizon, init_std, sampling_bound_width):
@@ -39,10 +39,10 @@ class CollectionfromNominalwithNoise:
             colored_noise_exponent = colored_noise_exponent,
             num_sample             = num_sample,
         )
-        save_path(random_noise, self.icem_repository.save_dir, figsize=(4, 7), figname="random_noise_init_std={}".format(init_std))
+        save_path(random_noise, self.config.save_dir, figsize=(4, 7), figname="random_noise_init_std={}".format(init_std))
         # ------
         nominal_with_noise = nominal_ctrl[np.newaxis,:,:] + random_noise
-        save_path(nominal_with_noise, self.icem_repository.save_dir, figsize=(4, 7), figname="nominal_with_noise={}".format(init_std))
+        save_path(nominal_with_noise, self.config.save_dir, figsize=(4, 7), figname="nominal_with_noise={}".format(init_std))
         return nominal_with_noise
 
 

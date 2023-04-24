@@ -20,6 +20,7 @@ class CollectionAggregation:
         for t in range(len(dataclass_list)):
             x = dataclass_list[t]
             for key in keys:
+                print("key = ", key)
                 val = x.collection[key].value
                 val = val.squeeze() if type(val) == np.ndarray else val
                 data[key].append(val)

@@ -17,7 +17,7 @@ def rollout_progress_check_differential_without_render(constant_setting, queue_i
     env_subclass    = constant_setting["env_subclass"]
     config          = constant_setting["config"]
     init_state      = constant_setting["init_state"]
-    TaskSpace       = constant_setting["TaskSpace"]
+    TaskSpaceDiff   = constant_setting["TaskSpaceDiff"]
     # ---- additional for progress check ----
     save_fig_dir    = constant_setting["save_fig_dir"]
     iter_outer_loop = constant_setting["iter_outer_loop"]
@@ -37,19 +37,19 @@ def rollout_progress_check_differential_without_render(constant_setting, queue_i
         # img = env.render(); images.append(img.canonical)
         # -----
         state = env.get_state()
-        robot_position_1seq.append(state.state["robot_position"].value)
-        object_state_1seq.append(state.state["object_position"].value)
+        robot_position_1seq.append(state.collection["robot_position"].value)
+        object_state_1seq.append(state.collection["object_position"].value)
         if t == 1: next_state = copy.deepcopy(state)
-        task_space_position = state.state["task_space_position"]
-        task_space_ctrl     = task_space_position + TaskSpace(NTD(task_space_differential_position[0, t]))
-        # actions             = TaskSpace(action_doi.construct(cumsum_actions)).value
-        env.set_ctrl_task_space(task_space_ctrl)
-        if t == 0: task_space_ctrl_t = task_space_ctrl.value.squeeze()
+        task_space_position = state.collection["task_space_position"]
+        task_space_ctrl     = task_space_position + TaskSpaceDiff(NTD(task_space_differential_position[0, t]))
+        ctrl                = env.set_ctrl_task_space(task_space_ctrl)
+        ctrl.collection["task_space_diff_position"] = TaskSpaceDiff(NTD(task_space_differential_position[0, t]))
+        if t == 0: ctrl_t = ctrl
         # -----
         env.step()
     state = env.get_state()
-    robot_position_1seq.append(state.state["robot_position"].value)
-    object_state_1seq.append(state.state["object_position"].value)
+    robot_position_1seq.append(state.collection["robot_position"].value)
+    object_state_1seq.append(state.collection["object_position"].value)
     # -----
     robot_position_1seq = np.stack(robot_position_1seq)[np.newaxis, :, :]
     object_state_1seq   = np.stack(object_state_1seq)[np.newaxis, :, :]
@@ -59,7 +59,7 @@ def rollout_progress_check_differential_without_render(constant_setting, queue_i
     queue_result.put({
         "index_chunk"            : index_chunk,
         "state"                  : next_state,
-        "task_space_ctrl"        : task_space_ctrl_t,
+        "ctrl_t"                 : ctrl_t,
         "robot_state_trajectory" : robot_position_1seq,
         "object_state_trajectory": object_state_1seq,
     }) # 結果とバッチインデックスをキューに入れる

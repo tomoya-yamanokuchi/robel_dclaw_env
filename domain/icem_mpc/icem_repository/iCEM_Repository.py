@@ -17,12 +17,11 @@ class iCEM_Repository:
         self._set_repositories()
 
 
-    def load_config_and_repository(self, dir_name):
+    def load_config_and_repository(self, save_dir, dir_name):
         assert self.config is None
-        p           = pathlib.Path(".")
-        self.config = OmegaConf.load(
-            os.path.join(p.absolute(), "saved_data_icem", dir_name, "config.yaml")
-        )
+        # p           = pathlib.Path(".")
+        # import ipdb; ipdb.set_trace()
+        self.config = OmegaConf.load(os.path.join(save_dir, "saved_data_icem", dir_name, "config.yaml"))
         self._set_repositories()
         return copy.deepcopy(self.config)
 
@@ -39,7 +38,8 @@ class iCEM_Repository:
 
 
     def _create_save_dir_name(self):
-        return join_with_mkdir(".",
+        return join_with_mkdir(
+            "/nfs/workspace/robel_dclaw_env",
             "saved_data_icem",
             "[num_sample={}]-[num_subparticle={}]-[num_cem_iter={}]-[colored_noise_exponent={}]-{}".format(
                     self.config.icem.num_sample,

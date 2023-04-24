@@ -1,0 +1,6 @@
+defaults:
+  - env: sim/valve
+
+nominal:
+    dataset_dir : "/nfs/workspace/robel_dclaw_env/saved_data_icem"
+    dataset_name: "[num_sample=600]-[num_subparticle=20]-[num_cem_iter=7]-[colored_noise_exponent=[0.5, 1.0, 2.0, 3.0, 4.0]]-1682103006.6260257"

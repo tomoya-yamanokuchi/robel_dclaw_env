@@ -26,6 +26,7 @@ class BestEliteSequenceRepository:
 
     def load(self):
         load_path = os.path.join(self.save_dir, "best_elite_sequence.pkl")
+        # import ipdb; ipdb.set_trace()
         with open(load_path, "rb") as tf:
             best_elite_sequence = pickle.load(tf)
         return {

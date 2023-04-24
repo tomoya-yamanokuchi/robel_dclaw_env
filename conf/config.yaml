@@ -5,8 +5,8 @@ defaults:
   # - env: sim/old_pushing
   # - env: real/valve
 
-  # - icem: subparticle_valve_sim_mpc
-  - icem: singleparticle_valve_sim
+  - icem: subparticle_valve_sim_mpc
+  # - icem: singleparticle_valve_sim
 
 run:
   step    : 25
@@ -17,4 +17,8 @@ run:
   # sequence: 400 # train (please consider [/ motion set num])
   sequence: 50 # valid (please consider [/ motion set num])
 
-save_dir:
+save_dir: "/nfs/workspace/robel_dclaw_env"
+
+nominal:
+    dataset_dir : "/nfs/workspace/robel_dclaw_env/saved_data_icem"
+    dataset_name: "[num_sample=600]-[num_subparticle=20]-[num_cem_iter=7]-[colored_noise_exponent=[0.5, 1.0, 2.0, 3.0, 4.0]]-1682103006.6260257"

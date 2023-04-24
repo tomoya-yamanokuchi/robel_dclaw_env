@@ -109,7 +109,8 @@ class iCEM_Subparticle:
         return {
             "cost"              : cost,
             "state"             : forward_results_progress["state"],
-            "best_elite_action" : forward_results_progress["task_space_ctrl"],
+            # "best_elite_action" : forward_results_progress["task_space_ctrl"],
+            "best_elite_ctrl_t" : forward_results_progress["ctrl_t"],
             "best_elite_sample" : best_elite_sample[0, 0],
         }
 
@@ -133,10 +134,11 @@ class iCEM_Subparticle:
 
 
     def get_cost(self, forward_results, target, num_samples):
-        cost_naive        = self.cost_function(forward_results=forward_results, target=target)
-        cost_subparticles = np.array_split(cost_naive, indices_or_sections=num_samples, axis=0)
-        cost_subparticles = np.stack(cost_subparticles, axis=0)
-        cost              = np.sum(cost_subparticles, axis=-1)
+        cost = self.cost_function(forward_results=forward_results, target=target, num_divide=num_samples)
+        # cost_naive        = self.cost_function(forward_results=forward_results, target=target)
+        # cost_subparticles = np.array_split(cost_naive, indices_or_sections=num_samples, axis=0)
+        # cost_subparticles = np.stack(cost_subparticles, axis=0)
+        # cost              = np.sum(cost_subparticles, axis=-1)
         assert cost.shape == (num_samples,), print("{} != {}".format(cost.shape, (num_samples,)))
         if (self.config.verbose) and (num_samples==1): print("cost_elite={: .3f}".format(float(cost)), end=" | ")
         return cost

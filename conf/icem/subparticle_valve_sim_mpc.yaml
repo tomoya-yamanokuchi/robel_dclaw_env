@@ -13,11 +13,11 @@ upper_bound_simulated_path :  8.0
 dim_path                   : 1
 
 # << sampling >>
-num_sample                 : 500
+num_sample                 : 600
 decay_sample               : 1.25
 
 # << subparticle >>
-num_subparticle            : 10
+num_subparticle            : 20
 std_subparticle            : 0.025
 
 # << elite >>

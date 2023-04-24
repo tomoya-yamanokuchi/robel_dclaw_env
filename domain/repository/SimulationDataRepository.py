@@ -31,10 +31,11 @@ class SimulationDataRepository:
 
     def __create_dataset_dir(self):
         self.__create_parent_dir()
-        if self.dataset_name is None:
-            date              = datetime.datetime.now()
-            self.dataset_name = "dataset_{}{}{}{}{}{}".format(date.year, date.month, date.day, date.hour, date.minute, date.second)
-        dataset_save_dir = str(self.p.resolve()) + "/" + self.dataset_name
+        # if self.dataset_name is None:
+        #     date              = datetime.datetime.now()
+        #     self.dataset_name = "dataset_{}{}{}{}{}{}".format(date.year, date.month, date.day, date.hour, date.minute, date.second)
+        if self.dataset_name is None: dataset_save_dir = str(self.p.resolve())
+        else                        : dataset_save_dir = str(self.p.resolve()) + "/" + self.dataset_name
         os.makedirs(dataset_save_dir, exist_ok=True)
         return dataset_save_dir
 

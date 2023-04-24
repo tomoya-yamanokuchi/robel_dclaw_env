@@ -12,10 +12,10 @@ def rollout_function_with_differential_ctrl(constant_setting, queue_input, queue
     num_chunk, step, dim_ctrl = task_space_differential_position.shape
     wait_time(const=5, seed=index_chunk)
 
-    env_subclass = constant_setting["env_subclass"]
-    config       = constant_setting["config"]
-    init_state   = constant_setting["init_state"]
-    TaskSpace    = constant_setting["TaskSpace"]
+    env_subclass  = constant_setting["env_subclass"]
+    config        = constant_setting["config"]
+    init_state    = constant_setting["init_state"]
+    TaskSpaceDiff = constant_setting["TaskSpaceDiff"]
 
     env = env_subclass(config.env, use_render=False)
 
@@ -28,18 +28,17 @@ def rollout_function_with_differential_ctrl(constant_setting, queue_input, queue
         env.reset(init_state)
         for t in range(step):
             state = env.get_state()
-            robot_position_1seq.append(state.state["robot_position"].value)
-            object_state_1seq.append(state.state["object_position"].value)
+            robot_position_1seq.append(state.collection["robot_position"].value)
+            object_state_1seq.append(state.collection["object_position"].value)
             # -----
-            task_space_position = state.state["task_space_position"]
-            task_space_ctrl     = task_space_position + TaskSpace(NTD(task_space_differential_position[n,t]))
-            # actions             = TaskSpace(action_doi.construct(cumsum_actions)).value
+            task_space_position = state.collection["task_space_position"]
+            task_space_ctrl     = task_space_position + TaskSpaceDiff(NTD(task_space_differential_position[n,t]))
             env.set_ctrl_task_space(task_space_ctrl)
             # -----
             env.step()
         state = env.get_state()
-        robot_position_1seq.append(state.state["robot_position"].value)
-        object_state_1seq.append(state.state["object_position"].value)
+        robot_position_1seq.append(state.collection["robot_position"].value)
+        object_state_1seq.append(state.collection["object_position"].value)
         # -----
         robot_state_trajectory.append(np.stack(robot_position_1seq))
         object_state_trajectory.append(np.stack(object_state_1seq))

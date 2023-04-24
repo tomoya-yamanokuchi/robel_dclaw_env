@@ -8,9 +8,9 @@ from usecase.data_collection.rollout.rollout_progress_check_differential_without
 from custom_service import time_as_string, NTD, join_with_mkdir
 from domain.icem_mpc.icem_mpc.iCEM_Subparticle import iCEM_Subparticle
 from domain.icem_mpc.icem_repository.iCEM_Repository import iCEM_Repository
-from domain.environment.task_space.manifold_1d.TaskSpaceDifferentialPositionValue_1D_Manifold import TaskSpaceDifferentialPositionValue_1D_Manifold
+from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
 from domain.reference.ValveReference import ValveReference
-from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
+
 
 
 class DataCollection:
@@ -30,18 +30,11 @@ class DataCollection:
             config                       = config.icem
         )
 
-        repository = Repository(
-            dataset_dir  = icem_repository.save_dir,
-            dataset_name = None,
-            read_only    = False
-        )
-        repository.open(filename='nominal')
-
-        ctrl_list  = []
-        state_list = []
-
+        best_elite_action_list = []
+        best_elite_sample_list = []
+        best_object_state_list = []
         reference  = ValveReference(config.icem.planning_horizon)
-        total_step = 25
+        total_step = 3 # 25
         for i in range(total_step):
             icem.reset()
             resutl_dict = icem.optimize(
@@ -49,19 +42,27 @@ class DataCollection:
                     "env_subclass" : env_subclass,
                     "config"       : config,
                     "init_state"   : init_state,
-                    "TaskSpaceDiff": TaskSpaceDifferentialPositionValue_1D_Manifold,
+                    "TaskSpace"    : TaskSpacePositionValue_1D_Manifold,
                     "dataset_name" : time_as_string(),
                 },
-                target = reference.get_as_radian(current_step=i)
+                target      = reference.get_as_radian(current_step=i)
             )
-            init_state = resutl_dict["state"]
-            state_list.append(resutl_dict["state"])
-            ctrl_list.append(resutl_dict["best_elite_ctrl_t"])
+            init_state  = resutl_dict["state"]
+            import ipdb; ipdb.set_trace()
+            best_elite_action_list.append(resutl_dict["best_elite_ctrl_t"])
+            best_elite_sample_list.append(resutl_dict["best_elite_sample"])
+            best_object_state_list.append(resutl_dict["state"].collection['object_position'].value)
 
-        # import ipdb; ipdb.set_trace()
-        repository.assign(state_list, name="state")
-        repository.assign(ctrl_list, name="ctrl")
-        repository.close()
+        best_elite_action_sequence = np.stack(best_elite_action_list)
+        best_elite_sample_sequence = np.stack(best_elite_sample_list)
+        best_object_state_sequence = np.stack(best_object_state_list)
+
+        icem_repository.save_best_elite_sequence(
+            best_elite_action_sequence = best_elite_action_sequence,
+            best_elite_sample_sequence = best_elite_sample_sequence,
+            best_object_state_sequence = best_object_state_sequence,
+        )
+
 
 
 if __name__ == "__main__":

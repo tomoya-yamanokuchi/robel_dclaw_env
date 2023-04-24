@@ -1,6 +1,6 @@
 import cv2, time, copy
 import numpy as np
-import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
+import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd())); sys.path.insert(0, './robel_dclaw_env')
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from custom_service import print_info, NTD
 from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
