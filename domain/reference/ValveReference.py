@@ -7,9 +7,9 @@ import torch
 
 
 class ValveReference:
-    def __init__(self, planning_horizon):
+    def __init__(self, planning_horizon, task_horizon=20):
         self.planning_horizon = planning_horizon
-        self.task_horizon     = 20
+        self.task_horizon     = task_horizon
         self.d_theta          = (2*np.pi) / self.task_horizon
 
 

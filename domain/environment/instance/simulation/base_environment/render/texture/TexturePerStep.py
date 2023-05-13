@@ -11,6 +11,7 @@ class TexturePerStep:
             randomization_mode           : str,
             is_dynamc_noise              : bool,
             task_relevant_geom_group_name: str,
+            **wargs,
         ):
         self.texture_modder        = myTextureModder(sim)
         self.randomization_mode    = randomization_mode

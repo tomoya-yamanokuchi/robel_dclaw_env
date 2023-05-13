@@ -46,7 +46,13 @@ class ValveSimulationEnvironment(BaseEnvironment):
     def model_file_reset(self):
         # self._generate_model_file()
         self.model         = self.load_model(self.config.model_file)
-        self.canonical_rgb = CanonicalRGB()
+        self.canonical_rgb = CanonicalRGB(self.config.xml.rgb.object)
+        # import ipdb; ipdb.set_trace()
+
+
+    def set_object_rgb(self, object_rgb: list):
+        self.canonical_rgb = CanonicalRGB(object_rgb)
+        self.rendering.set_canonical_rgb(self.canonical_rgb.rgb)
 
 
     def reset(self, state):
@@ -108,6 +114,10 @@ class ValveSimulationEnvironment(BaseEnvironment):
 
     def set_ctrl_task_space(self, task_space_abs_ctrl):
         return self.setCtrl.set_ctrl(task_space_abs_ctrl)
+
+
+    def set_ctrl_joint_space_position(self, joint_space_position):
+        return self.setCtrl.set_ctrl_joint_space_position(joint_space_position)
 
 
     def set_target_position(self, target_position):

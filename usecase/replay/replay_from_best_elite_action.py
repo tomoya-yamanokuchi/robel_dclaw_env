@@ -9,6 +9,8 @@ from domain.icem_mpc.icem_mpc.visualization.elements.utils.TrajectoryVisualizati
 from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpace
 from custom_service import NTD, concat
 
+from control_with_cdsvae_and_robel_dclaw_env.mpc.X3PolarTransformationNumpy import X3PolarTransformationNumpy
+
 
 class Demo_task_space:
     def run(self, config, task_space_differential_position):
@@ -43,9 +45,9 @@ class Demo_task_space:
 
                 replay_task_space_abs_position.append(task_space_ctrl.value.squeeze())
                 # -----
-                env.step(is_view=True)
-            replay_object_position.append(state.collection["object_position"].value)
-            joint_space_position.append(ctrl.collection["joint_space_position"].value.squeeze())
+                env.step(is_view=False)
+            # replay_object_position.append(state.collection["object_position"].value)
+            # joint_space_position.append(ctrl.collection["joint_space_position"].value.squeeze())
 
             time_end = time.time()
             print("time epoch = ", time_end - time_start)
@@ -90,9 +92,12 @@ if __name__ == "__main__":
 
         # --------- cos, sin of valve state ---------------
         plotmulti = PlotLineMultiDim(dim=2,  figsize    = (5, 5))
-        plotmulti.plot(reference.get_as_polar_coordinates_cycle_120degree(current_step=0).squeeze())
-        plotmulti.save_fig(os.path.join(config.nominal.dataset_dir,config.nominal.dataset_name, "replay_object_position_cos_sin.png"))
+        plotmulti.plot(reference.get_as_polar_coordinates_cycle_120degree(current_step=-1).squeeze(), label="reference")
 
+        transform_valve_state_polar_numpy = X3PolarTransformationNumpy()
+        cos_sin_valve_replay              = transform_valve_state_polar_numpy(replay_object_state_sequence)
+        plotmulti.plot(cos_sin_valve_replay, label="replay")
+        plotmulti.save_fig(os.path.join(config.nominal.dataset_dir,config.nominal.dataset_name, "replay_object_position_cos_sin.png"))
 
         # --------- joint_space_position ctrl ---------------
         joint_space_position_model_use = np.take(joint_space_position, [0, 1, 3,4, 6,7], axis=-1)

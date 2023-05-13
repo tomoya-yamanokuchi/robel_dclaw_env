@@ -12,13 +12,14 @@ gray = int((255 * 0.5) + 0.5)
 floor_rgb  = np.array([255, 255, 255], dtype=np.uint8)
 robot_rgb  = np.array([ 38,  38,  38], dtype=np.uint8)
 finger_rgb = np.array([255, 127,   0], dtype=np.uint8)
-valve_rgb  = np.array([255, 255, 255], dtype=np.uint8)
+# valve_rgb  = np.array([255, 255, 255], dtype=np.uint8)
 
 
-@dataclass(frozen=False)
 class CanonicalRGB:
-    rgb: Dict[str, int] = field(default_factory=lambda: (
-        {
+    def __init__(self, object_rgb: list):
+        self.object_rgb = np.array(object_rgb, dtype=np.uint8)
+
+        self.rgb = {
             "floor"                    : floor_rgb,
             # ------ robot ------
             # --> claw1
@@ -52,12 +53,11 @@ class CanonicalRGB:
             "THL32_metal_clamping"      : robot_rgb,
             "THL32_plastic_finger"      : finger_rgb,
             # ------ valve ------
-            "vis_valve_3fin_handle_1"   : valve_rgb,
-            "vis_valve_3fin_handle_2"   : valve_rgb,
-            "vis_valve_3fin_handle_3"   : valve_rgb,
-            "vis_valve_3fin_center"     : valve_rgb,
+            "vis_valve_3fin_handle_1"   : object_rgb,
+            "vis_valve_3fin_handle_2"   : object_rgb,
+            "vis_valve_3fin_handle_3"   : object_rgb,
+            "vis_valve_3fin_center"     : object_rgb,
         }
-    ))
 
 
 if __name__ == '__main__':

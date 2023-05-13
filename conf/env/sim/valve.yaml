@@ -23,6 +23,7 @@ texture:
     randomization_mode           : "per_step"
     is_dynamc_noise              : False
     task_relevant_geom_group_name: "valve"
+    force_default_canonical      : True
 
 joint_range:
     robot:
@@ -58,9 +59,13 @@ dynamics:
 camera:
     x_coordinate : 0.0
     y_coordinate : 0.0
-    z_distance   : 0.325
+    z_distance   : 0.4 # 0.325
     orientation  : 0.0
 
 light:
     light1 : 0
     light2 : 16
+
+xml:
+    rgb:
+        object: [255, 0, 0]

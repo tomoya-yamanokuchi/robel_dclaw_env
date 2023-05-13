@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.kinematics.InverseKinematics import InverseKinematics
 from .ReturnCtrl import ReturnCtrl
@@ -24,3 +25,8 @@ class SetCtrl:
             joint_space_position     = JointPosition(ctrl_joint.squeeze()),
         )
 
+    def set_ctrl_joint_space_position(self, joint_space_position: object):
+        joint_space_position = joint_space_position.squeeze()
+        assert joint_space_position.shape == (9,)
+        self.sim.data.ctrl[:9] = joint_space_position
+        return copy.deepcopy(self.sim.data.ctrl[:9])
