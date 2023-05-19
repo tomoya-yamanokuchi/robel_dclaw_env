@@ -9,7 +9,7 @@ from domain.icem_mpc.icem_mpc.visualization.elements.utils.TrajectoryVisualizati
 from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpace
 from custom_service import NTD, concat
 
-from control_with_cdsvae_and_robel_dclaw_env.mpc.X3PolarTransformationNumpy import X3PolarTransformationNumpy
+from control_with_cdsvae_and_robel_dclaw_env.mpc.utils.X3PolarTransformationNumpy import X3PolarTransformationNumpy
 
 
 class Demo_task_space:

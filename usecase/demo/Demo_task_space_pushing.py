@@ -1,6 +1,6 @@
 import cv2, time, copy
 import numpy as np
-import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
+import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd())); sys.path.insert(0, './robel_dclaw_env')
 from domain.environment.EnvironmentFactory import EnvironmentFactory
 from custom_service import print_info
 
@@ -17,7 +17,8 @@ class Demo_task_space:
         for s in range(10):
             time_start = time.time()
             env.reset(init_state); print("\n*** reset ***\n")
-            task_t = env.get_state().task_space_positioin
+            state  = env.get_state()
+            task_t = state.collection['task_space_position'].value.squeeze()
             task_g = copy.deepcopy(task_t)
 
             for t in range(step):
@@ -25,6 +26,7 @@ class Demo_task_space:
                 state = env.get_state()
                 env.view()
 
+                import ipdb; ipdb.set_trace()
                 task_g[0] += 0.00
                 task_g[1] += 0.1
 
