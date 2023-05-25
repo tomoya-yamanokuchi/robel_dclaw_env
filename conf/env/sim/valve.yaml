@@ -9,7 +9,7 @@ inplicit_step                  : 200
 ctrl_interpolation_margin_step : 40
 
 viewer:
-    is_Offscreen     : False
+    is_Offscreen     : True
 
 target:
     visible: False
@@ -68,4 +68,6 @@ light:
 
 xml:
     rgb:
-        object: [255, 0, 0]
+        # object: [255, 0, 0] # red
+        object: [0, 255, 0] # green
+        # object: [255, 0, 0] # blue

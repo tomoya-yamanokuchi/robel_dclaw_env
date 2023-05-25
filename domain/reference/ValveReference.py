@@ -11,6 +11,9 @@ class ValveReference:
         self.planning_horizon = planning_horizon
         self.task_horizon     = task_horizon
         self.d_theta          = (2*np.pi) / self.task_horizon
+        print(" --------------------------------------------")
+        print(" reference valve speed = {: .3f} [rad/step]".format(self.d_theta))
+        print(" --------------------------------------------")
 
 
     def get_timesteps(self, current_step):
