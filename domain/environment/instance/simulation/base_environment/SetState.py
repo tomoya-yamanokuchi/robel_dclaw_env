@@ -31,6 +31,26 @@ class SetState:
 
 
     def _set_qpos(self, state: dict):
+
+        '''
+        デバッグ用に reset呼び出し時の task_space_position の数を増やすので後でもどして!!
+        '''
+        random_add_task_space_position = np.concatenate(
+            (
+                np.zeros([100, 1, 3]) + 0.0,
+                np.zeros([100, 1, 3]) + 0.2,
+                np.zeros([100, 1, 3]) + 0.4,
+                np.zeros([100, 1, 3]) + 0.6,
+                np.zeros([100, 1, 3]) + 0.8,
+            ),
+            axis = 1,
+        )
+        state["task_space_position"].value = random_add_task_space_position
+        # debug_task_space_position = state["task_space_position"]
+        # import ipdb; ipdb.set_trace()
+        # -------------
+
+
         end_effector_position = self.task_space.task2end(state["task_space_position"])
         joint_position        = self.inverse_kinematics.calc(end_effector_position.value.squeeze(0))
         # ----------

@@ -1,4 +1,5 @@
 import numpy as np
+import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd())); sys.path.insert(0, './robel_dclaw_env')
 from custom_service import angle_interface as ai
 
 '''
