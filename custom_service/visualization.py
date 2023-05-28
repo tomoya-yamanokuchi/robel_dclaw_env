@@ -6,7 +6,6 @@ from matplotlib.animation import ArtistAnimation
 # Fixing random state for reproducibility
 np.random.seed(19680801)
 
-
 def scatter_3d(x):
     assert len(x.shape) == 2
     assert x.shape[-1] == 3
@@ -22,7 +21,7 @@ def scatter_3d(x):
     plt.show()
 
 
-def scatter_3d_color_map(x, cval, marker_size=30, cmap='bwr', cmap_label=""):
+def scatter_3d_color_map(x, cval, marker_size=30, cmap='bwr', cmap_label="", save_path=None):
     import matplotlib
     matplotlib.rcParams['pdf.fonttype'] = 42
     matplotlib.rcParams['ps.fonttype'] = 42
@@ -54,7 +53,8 @@ def scatter_3d_color_map(x, cval, marker_size=30, cmap='bwr', cmap_label=""):
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
     ax.set_zlabel('Z Label')
-    plt.show()
+    if save_path is None: plt.show()
+    else : plt.savefig(save_path)
 
 
 def scatter_3d_animation(x, num_history=100, interval=100):

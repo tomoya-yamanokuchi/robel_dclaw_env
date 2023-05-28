@@ -21,6 +21,8 @@ from .SignedDistanceMatrix import SignedDistanceMatrix
 from .NearestNeighborIndex import NearestNeighborIndex
 from .EndEffectorfromNearestNeighbor import EndEffectorfromNearestNeighbor
 from .create_cyclic_data import create_cyclic_data
+from .save_matrix_as_heatmap import save_matrix_as_heatmap
+from .EndEffectorVisualizationBuilder import EndEffectorVisualizationBuilder
 
 '''
 [方策のobservationとしてtask_space_positionを使う場合の問題]
@@ -55,6 +57,8 @@ class Manifold1D(AbstractTaskSpace):
         reference_task_space                 = ReferenceTaskSpacefromEndEffector()
         self.reference_task_space_position   = reference_task_space.create(self.reference_end_effector_position)
         self.max_euclidean_distance          = reference_task_space.get_max_euclidean_distance()
+        # -----
+        self.debug = True
 
 
     # @abstractmethod
@@ -73,11 +77,12 @@ class Manifold1D(AbstractTaskSpace):
         '''
         assert len(task_space_position.shape) == 3
         num_data, step, dim         = task_space_position.shape; assert dim==1
-        signed_distance_matrix      = SignedDistanceMatrix().create(task_space_position.reshape(num_data*step,), self.reference_task_space_position)
-        index_top2_nearest_neighbor = NearestNeighborIndex().get_top2(signed_distance_matrix)
+        signed_distance_matrix      = SignedDistanceMatrix(is_plot=False).create(task_space_position.reshape(num_data*step,), self.reference_task_space_position)
+        index_top2_nearest_neighbor = NearestNeighborIndex(is_plot=False).get_top2(signed_distance_matrix)
         end_effector_position       = EndEffectorfromNearestNeighbor(
             self.reference_end_effector_position, self.reference_task_space_position, index_top2_nearest_neighbor, self.max_euclidean_distance,
         ).get(task_space_position.reshape(num_data*step,))
+        # import ipdb; ipdb.set_trace()
         return end_effector_position.reshape(num_data, step, 3)
 
 
@@ -88,13 +93,14 @@ class Manifold1D(AbstractTaskSpace):
 
 
     def _end2task_1claw(self, end_effector_position):
-        assert end_effector_position.shape == (1, 1, 3) # １つのendeffector座標を比較するため
-        end_effector_position  = end_effector_position.squeeze(0)
-        distance               = np.linalg.norm(self.reference_end_effector_position - end_effector_position, axis=-1)
-        index_minimum_distance = np.argsort(distance)[0]
-        nearest_reference      = self.reference_task_space_position[index_minimum_distance]
-        return np.array([nearest_reference])
-
+        num_data, step, dim    = end_effector_position.shape
+        reshaped_end_effector_position           = end_effector_position.reshape(num_data*step, dim)[:, :, np.newaxis]
+        reshaped_reference_end_effector_position = self.reference_end_effector_position.transpose()[np.newaxis, :, :]
+        distance = np.linalg.norm(reshaped_end_effector_position - reshaped_reference_end_effector_position, axis=1)
+        # if self.debug: EndEffectorVisualizationBuilder().build(end_effector_position, self.reference_end_effector_position)
+        index_minimum_distance = np.argsort(distance, axis=1)[:, 0]
+        nearest_reference      = np.take(self.reference_task_space_position, index_minimum_distance)
+        return nearest_reference.reshape(num_data, step, -1)
 
 
 

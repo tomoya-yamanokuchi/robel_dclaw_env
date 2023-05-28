@@ -3,8 +3,9 @@ from .save_matrix_as_heatmap import save_matrix_as_heatmap
 
 
 class NearestNeighborIndex:
-    def __init__(self, is_plot=True):
+    def __init__(self, is_plot=True, verbose=False):
         self.is_plot = is_plot
+        self.verbose = verbose
 
 
     def get_top2(self, signed_distance_matrix):
@@ -16,7 +17,7 @@ class NearestNeighborIndex:
     def __sign_change_point(self, signed_distance_matrix):
         # referenceとの差で符号関係が変化する点を探す（以下，以上の関係が変化する点）
         num_query, num_reference    = signed_distance_matrix.shape
-        print("[num_query, num_reference] = [{}, {}]".format(num_query, num_reference))
+        if self.verbose: print("[num_query, num_reference] = [{}, {}]".format(num_query, num_reference))
         diff_signed_distance_matrix = np.diff(signed_distance_matrix, n=1, axis=-1)
         if self.is_plot: save_matrix_as_heatmap(x=diff_signed_distance_matrix, save_path="./diff_signed_distance_matrix.png")
         index_sign_change           = np.nonzero(diff_signed_distance_matrix)[1]

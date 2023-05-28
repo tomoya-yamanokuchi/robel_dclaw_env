@@ -4,10 +4,10 @@ import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.kinematics.InverseKinematics import InverseKinematics
 from custom_service import NTD
 
-
+from domain.environment.task_space.manifold_1d.Manifold1D import Manifold1D
 
 class SetState:
-    def __init__(self, sim, State, task_space):
+    def __init__(self, sim, State, task_space: Manifold1D):
         self.sim                  = sim
         self.State                = State
         self.task_space           = task_space
@@ -25,9 +25,12 @@ class SetState:
             udd_state = state["udd_state"].value,
         )
         self.sim.set_state(new_state)
-        # self.sim.data.ctrl[:9] = qpos[:9]
-        # self.sim.data.ctrl[9:] = 0.0
         self.sim.forward()
+        # print("---------------------------------")
+        # print("  self.sim.set_state(new_state)  ")
+        # print()
+        # print("---------------------------------")
+        # import ipdb; ipdb.set_trace()
 
 
     def _set_qpos(self, state: dict):
@@ -35,21 +38,20 @@ class SetState:
         '''
         デバッグ用に reset呼び出し時の task_space_position の数を増やすので後でもどして!!
         '''
-        random_add_task_space_position = np.concatenate(
-            (
-                np.zeros([100, 1, 3]) + 0.0,
-                np.zeros([100, 1, 3]) + 0.2,
-                np.zeros([100, 1, 3]) + 0.4,
-                np.zeros([100, 1, 3]) + 0.6,
-                np.zeros([100, 1, 3]) + 0.8,
-            ),
-            axis = 1,
-        )
-        state["task_space_position"].value = random_add_task_space_position
+        # random_add_task_space_position = np.concatenate(
+        #     (
+        #         np.zeros([100, 1, 3]) + 0.0,
+        #         np.zeros([100, 1, 3]) + 0.2,
+        #         np.zeros([100, 1, 3]) + 0.4,
+        #         np.zeros([100, 1, 3]) + 0.6,
+        #         np.zeros([100, 1, 3]) + 0.8,
+        #     ),
+        #     axis = 1,
+        # )
+        # state["task_space_position"].value = random_add_task_space_position
         # debug_task_space_position = state["task_space_position"]
         # import ipdb; ipdb.set_trace()
         # -------------
-
 
         end_effector_position = self.task_space.task2end(state["task_space_position"])
         joint_position        = self.inverse_kinematics.calc(end_effector_position.value.squeeze(0))
