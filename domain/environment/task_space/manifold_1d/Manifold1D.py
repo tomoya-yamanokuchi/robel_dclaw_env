@@ -4,12 +4,6 @@ import numpy as np
 from .ReferencePosition import ReferencePosition
 from custom_service import data_shape_formating
 
-# 上位ディレクトリからのインポート
-# import sys, pprint
-# p_file = pathlib.Path(__file__)
-# path_environment = "/".join(str(p_file).split("/")[:-2])
-# sys.path.append(path_environment)
-
 from .TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
 from .EndEffectorPositionValueObject import EndEffectorPositionValueObject as EndEffectorValueObject
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
