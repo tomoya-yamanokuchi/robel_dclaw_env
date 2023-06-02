@@ -1,6 +1,6 @@
 from typing import List
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.kinematics.KinematicsDefinition import KinematicsDefinition
+from domain.environment.kinematics import KinematicsDefinition
 
 
 class RobotCtrlRange:

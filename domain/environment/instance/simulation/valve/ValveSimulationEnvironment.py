@@ -12,12 +12,11 @@ from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
 import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
 from domain.environment.instance.simulation.base_environment.BaseEnvironment import BaseEnvironment
-from domain.environment.kinematics.ForwardKinematics import ForwardKinematics
-from domain.environment.kinematics.InverseKinematics import InverseKinematics
-from domain.environment.task_space.manifold_1d.Manifold1D import Manifold1D as TaskSpace
-
-from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
-from domain.environment.task_space.manifold_1d.EndEffectorPositionValueObject import EndEffectorPositionValueObject as EndEffectorValueObject
+from domain.environment.kinematics import ForwardKinematics
+from domain.environment.kinematics import InverseKinematics
+from domain.environment.task_space.manifold_1d_torch.Manifold1D import Manifold1D as TaskSpace
+from domain.environment.task_space.manifold_1d_torch.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
+from domain.environment.task_space.manifold_1d_torch.EndEffectorPositionValueObject import EndEffectorPositionValueObject as EndEffectorValueObject
 from custom_service import print_info, NTD
 
 from ..base_environment.SetState import SetState

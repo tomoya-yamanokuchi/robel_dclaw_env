@@ -1,11 +1,13 @@
 import numpy as np
+from torch_numpy_converter import to_tensor
 
 
 class TaskSpacePositionValue_1D_Manifold:
     _min = 0.0
     _max = 1.0
 
-    def __init__(self, value: np.ndarray):
+    def __init__(self, value, tensor: bool = False):
+        if tensor: value = to_tensor(value)
         self.value = value % self._max
         self.__validation__()
 

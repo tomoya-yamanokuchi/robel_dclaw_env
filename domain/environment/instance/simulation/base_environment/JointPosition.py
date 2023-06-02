@@ -1,6 +1,6 @@
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.kinematics.KinematicsDefinition import KinematicsDefinition
+from domain.environment.kinematics import KinematicsDefinition
 from custom_service import NTD, dimension_assetion
 
 kinematics = KinematicsDefinition()

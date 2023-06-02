@@ -7,8 +7,8 @@ from domain.environment.instance.simulation.base_environment.state.MjSimAct impo
 from domain.environment.instance.simulation.base_environment.state.MjSimUddState import MjSimUddState
 from domain.environment.instance.simulation.base_environment.state.RobotPosition import RobotPosition
 from domain.environment.instance.simulation.base_environment.state.RobotVelocity import RobotVelocity
-from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
-from domain.environment.kinematics.EndEffectorPosition import EndEffectorPosition
+from domain.environment.task_space.manifold_1d_torch.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
+from domain.environment.kinematics import EndEffectorPosition
 from custom_service import NTD
 
 
@@ -24,12 +24,13 @@ StateValueObject = {
     "udd_state"             : MjSimUddState,
 }
 
+debug = True
 
 class ValveState:
     def __init__(self, **kwargs: dict):
         self.collection = {}
         for key, val in kwargs.items():
-            # print("key, val, val_shape = {}, {}".format(key, val))
+            if debug: print("key, val, val_shape = {}, {}".format(key, val))
             state_value_object = StateValueObject[key]
 
             if (key != "time") and (key != "act") and (key != "udd_state"):

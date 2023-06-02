@@ -1,7 +1,7 @@
 import numpy as np
 import copy
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.kinematics.InverseKinematics import InverseKinematics
+from domain.environment.kinematics import InverseKinematics
 from .ReturnCtrl import ReturnCtrl
 from .JointPosition import JointPosition
 

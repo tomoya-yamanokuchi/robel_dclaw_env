@@ -12,8 +12,7 @@ from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
 import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
 from domain.environment.instance.simulation.base_environment.BaseEnvironment import BaseEnvironment
-from domain.environment.kinematics.ForwardKinematics import ForwardKinematics
-from domain.environment.kinematics.InverseKinematics import InverseKinematics
+from domain.environment.kinematics import ForwardKinematics, InverseKinematics
 from domain.environment.task_space.end_effector_action_pace.EndEffector2D import EndEffector2D as TaskSpace
 
 from domain.environment.task_space.end_effector_action_pace.TaskSpacePositionValueObject_2D_Plane import TaskSpacePositionValueObject_2D_Plane as TaskSpaceValueObject

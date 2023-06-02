@@ -54,7 +54,7 @@ class Manifold1D(AbstractTaskSpace):
         self.reference_task_space_position   = reference_task_space.create(self.reference_end_effector_position)
         self.max_euclidean_distance          = reference_task_space.get_max_euclidean_distance()
         # -----
-        self.debug = True
+        self.debug = False
 
 
     # @abstractmethod
@@ -82,33 +82,18 @@ class Manifold1D(AbstractTaskSpace):
         return end_effector_position.reshape(num_data, step, 3)
 
 
-    def debug_task2any(self, task_space_position):
-        any = [self._debug_any(x) for x in torch.split(task_space_position.value, 1, dim=-1)]
-        return any
-
-    def _debug_any(self, task_space_position):
-        assert len(task_space_position.shape) == 3
-        num_data, step, dim         = task_space_position.shape; assert dim==1
-        signed_distance_matrix      = SignedDistanceMatrix(is_plot=True).create(task_space_position.reshape(num_data*step,), self.reference_task_space_position)
-        index_nearest_neighbor      = NearestNeighborIndex(is_plot=False).get(signed_distance_matrix) # test3
-        unit_direction_vector       = EndEffectorfromNearestNeighbor(
-            self.reference_end_effector_position, self.reference_task_space_position, index_nearest_neighbor, self.max_euclidean_distance,
-        )._debug_get_unit_direction_vector()
-        return unit_direction_vector
-
-
     # @abstractmethod
     def end2task(self, end_effector_position: EndEffectorValueObject):
-        task_space_position = [self._end2task_1claw(x) for x in torch.split(end_effector_position.value, 1, dim=-1)]
-        return TaskSpaceValueObject(NTD(torch.cat(task_space_position, dim=-1)))
+        task_space_position = [self._end2task_1claw(x) for x in torch.split(end_effector_position.value, self.num_claw, dim=-1)]
+        return TaskSpaceValueObject(NTD(torch.cat(task_space_position, dim=-1)), tensor=False)
 
 
     def _end2task_1claw(self, end_effector_position):
-        num_data, step, dim    = end_effector_position.shape
-        reshaped_end_effector_position           = end_effector_position.reshape(num_data*step, dim)[:, :, torch.newaxis]
-        reshaped_reference_end_effector_position = self.reference_end_effector_position.transpose()[torch.newaxis, :, :]
+        num_data, step, dim                      = end_effector_position.shape
+        reshaped_end_effector_position           = end_effector_position.reshape(num_data*step, dim).unsqueeze(-1)  # [:, :, torch.newaxis]
+        reshaped_reference_end_effector_position = self.reference_end_effector_position.transpose(1, 0).unsqueeze(0)  # [torch.newaxis, :, :]
         distance = torch.linalg.norm(reshaped_end_effector_position - reshaped_reference_end_effector_position, axis=1)
-        # if self.debug: EndEffectorVisualizationBuilder().build(end_effector_position, self.reference_end_effector_position)
+        if self.debug: EndEffectorVisualizationBuilder().build(to_numpy(end_effector_position), to_numpy(self.reference_end_effector_position))
         index_minimum_distance = torch.argsort(distance, axis=1)[:, 0]
         nearest_reference      = torch.take(self.reference_task_space_position, index_minimum_distance)
         return nearest_reference.reshape(num_data, step, -1)

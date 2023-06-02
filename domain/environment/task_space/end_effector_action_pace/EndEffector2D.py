@@ -14,10 +14,8 @@ from custom_service import normalize, NTD
 from .TaskSpacePositionValueObject_2D_Plane import TaskSpacePositionValueObject_2D_Plane as TaskSpaceValueObject
 from .EndEffectorPositionValueObject_2D_Plane import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.kinematics.ForwardKinematics import ForwardKinematics
-from domain.environment.kinematics.InverseKinematics import InverseKinematics
+from domain.environment.kinematics import ForwardKinematics, InverseKinematics
 from domain.environment.task_space.AbstractTaskSpace import AbstractTaskSpace
-
 
 
 class EndEffector2D(AbstractTaskSpace):
