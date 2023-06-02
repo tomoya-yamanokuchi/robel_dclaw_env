@@ -8,9 +8,10 @@ import pathlib
 p = pathlib.Path(__file__).resolve()
 sys.path.append(str(p.parent))
 
-from .KinematicsDefinition import KinematicsDefinition
+from ..base import KinematicsDefinition, AbstractForwardKinematics
 
-class ForwardKinematics:
+
+class NumpyForwardKinematics(AbstractForwardKinematics):
     def __init__(self):
         self.num_joint  = 9
         self.kinematics = KinematicsDefinition()
@@ -52,6 +53,7 @@ class ForwardKinematics:
         px = L * np.cos(theta0)
         py = (self.kinematics.l1 * np.sin(theta1)) + (self.kinematics.l2 * np.sin(theta1 + theta2))
         pz = L * np.sin(theta0)
+        # import ipdb; ipdb.set_trace()
         return np.c_[px, py, pz]
 
 

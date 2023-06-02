@@ -32,3 +32,10 @@ class EndEffectorfromNearestNeighbor:
         norm_direction_vector = np.linalg.norm(direction_vector, axis=-1, keepdims=True) # ベクトルのノルムを計算: (num_query, 1)
         unit_direction_vector = direction_vector / norm_direction_vector                 # 方向ベクトルと同一方向の単位ベクトルをxyzそれぞれで計算: (num_query, 3)
         return unit_direction_vector
+
+
+
+    def _debug_get_unit_direction_vector(self):
+        top2_nearest_end_effector_position = np.take(self.reference_end_effector_position, self.index_top2_nearest_neighbor, axis=0)
+        unit_direction_vector              = self.__unit_direction_vecotor(top2_nearest_end_effector_position)
+        return unit_direction_vector

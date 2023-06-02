@@ -7,8 +7,7 @@ import pathlib
 p = pathlib.Path(__file__).resolve()
 sys.path.append(str(p.parent))
 
-from KinematicsDefinition import KinematicsDefinition
-
+from ..base import KinematicsDefinition, AbstractInverseKinematics
 
 '''
 ＊注意＊
@@ -19,7 +18,7 @@ from KinematicsDefinition import KinematicsDefinition
 
 
 
-class InverseKinematics:
+class NumpyInverseKinematics(AbstractInverseKinematics):
     def __init__(self):
         self.kinematics = KinematicsDefinition()
 
@@ -34,11 +33,11 @@ class InverseKinematics:
         '''
         theta = [0]*3
         for i, pos_1claw in enumerate(np.split(position, 3, axis=-1)):
-            theta[i] = self._calc_1claw(pos_1claw)
+            theta[i] = self.calc_1claw(pos_1claw)
         return np.concatenate(theta, axis=-1)
 
 
-    def _calc_1claw(self, position):
+    def calc_1claw(self, position):
         '''
         input:
             endeffector position: size (N, 3)

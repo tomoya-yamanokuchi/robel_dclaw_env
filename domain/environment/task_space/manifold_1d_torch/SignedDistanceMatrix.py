@@ -1,6 +1,6 @@
 import copy
 import pathlib
-import numpy as np
+import torch
 from .ReferencePosition import ReferencePosition
 
 # 上位ディレクトリからのインポート
@@ -8,17 +8,16 @@ import sys, pprint
 p_file = pathlib.Path(__file__)
 path_environment = "/".join(str(p_file).split("/")[:-2])
 sys.path.append(path_environment)
-# import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
-# import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.kinematics.ForwardKinematics import ForwardKinematics
+from domain.environment.kinematics import ForwardKinematics
 from .replace_zero_point import replace_zero_point_with_given_value, replace_zero_point_with_one
 from .save_matrix_as_heatmap import save_matrix_as_heatmap
+from torch_numpy_converter import to_numpy
 
 
 class SignedDistanceMatrix:
     def __init__(self, is_plot:bool=True):
         self.dim_task_space = 3
-        self.is_plot = is_plot
+        self.is_plot        = is_plot
 
 
     def create(self, task_space_position, reference_task_space_position):
@@ -27,13 +26,13 @@ class SignedDistanceMatrix:
         signed_distance_matrix_with_zero = self.__signed_distance_matrix(task_space_position, reference_task_space_position)
         signed_distance_matrix           = self.__replace_zero_point(signed_distance_matrix_with_zero)
         assert (signed_distance_matrix == 0).sum() == 0 # ゼロ要素が無いことを確認
-        if self.is_plot: save_matrix_as_heatmap(x=signed_distance_matrix, save_path="./signed_distance_matrix.png")
+        if self.is_plot: save_matrix_as_heatmap(x=to_numpy(signed_distance_matrix), save_path="./signed_distance_matrix_torch.png")
         return signed_distance_matrix
 
 
     def __signed_distance_matrix(self, task_space_position, reference_task_space_position):
         distance_matrix = task_space_position.reshape(-1, 1) - reference_task_space_position.reshape(1, -1) # referenceとの差を計算
-        return np.sign(distance_matrix) # referenceとの差の符号を取得
+        return torch.sign(distance_matrix) # referenceとの差の符号を取得
 
 
     def __replace_zero_point(self, x):
@@ -69,6 +68,6 @@ if __name__ == '__main__':
     # num_claw                        = 3
 
     reference_task_space_position = ReferenceTaskSpacefromEndEffector().create(reference_end_effector_position)
-    task_space_position           = np.random.randn(5).clip(0, 1)
+    task_space_position           = torch.random.randn(5).clip(0, 1)
     signed_distance_matrix        = SignedDistanceMatrix().create(task_space_position, reference_task_space_position)
     print(signed_distance_matrix)

@@ -1,5 +1,5 @@
 import copy
-import numpy as np
+import torch
 
 
 class ReferenceTaskSpacefromEndEffector:
@@ -12,9 +12,9 @@ class ReferenceTaskSpacefromEndEffector:
 
     def __cumulative_euclidean_distance(self, reference_end_effector_position):
         num_data, dim_xyz         = reference_end_effector_position.shape; assert dim_xyz == 3
-        diff_for_each_data        = np.diff(reference_end_effector_position, n=1, axis=0) # 各データ点ごとの差分を各次元で計算
-        euclidean_distance        = np.sqrt(np.sum(diff_for_each_data**2, axis=-1))       # [差分を2乗] + [次元を総和] + [平方根] を取ることで各データ点間のユークリッド距離を計算
-        cumsum_euclidean_distance = np.cumsum(euclidean_distance, axis=0)                 # 1つめ目のデータ点を起点とした各データ点間までのユークリッド距離の累積和を計算
+        diff_for_each_data        = torch.diff(reference_end_effector_position, n=1, axis=0) # 各データ点ごとの差分を各次元で計算
+        euclidean_distance        = torch.sqrt(torch.sum(diff_for_each_data**2, axis=-1))       # [差分を2乗] + [次元を総和] + [平方根] を取ることで各データ点間のユークリッド距離を計算
+        cumsum_euclidean_distance = torch.cumsum(euclidean_distance, axis=0)                 # 1つめ目のデータ点を起点とした各データ点間までのユークリッド距離の累積和を計算
         return cumsum_euclidean_distance
 
 
@@ -25,7 +25,9 @@ class ReferenceTaskSpacefromEndEffector:
 
 
     def __add_initial_point(self, normalized_cumsum_euclidean_distance):
-        cyclic_normalized_cumsum_euclidean_distance = np.hstack((np.zeros(1), normalized_cumsum_euclidean_distance)) # 最初の点までをつなぐ開始点として0を追加
+        cyclic_normalized_cumsum_euclidean_distance = torch.hstack(
+            (torch.zeros(1).type_as(normalized_cumsum_euclidean_distance), normalized_cumsum_euclidean_distance)
+        ) # 最初の点までをつなぐ開始点として0を追加
         return cyclic_normalized_cumsum_euclidean_distance
 
 
@@ -42,14 +44,14 @@ if __name__ == '__main__':
     sys.path.insert(0, './robel_dclaw_env')
     from robel_dclaw_env.domain.environment.task_space.manifold_1d.ReferencePosition import ReferencePosition
     from robel_dclaw_env.domain.environment.task_space.manifold_1d.create_cyclic_data import create_cyclic_data
-    from robel_dclaw_env.domain.environment.kinematics.ForwardKinematics import ForwardKinematics
+    from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics, to_tensor
     from robel_dclaw_env.domain.environment.task_space.AbstractTaskSpace import AbstractTaskSpace
 
     min                             = 0.0
     max                             = 1.0
     forward_kinematics              = ForwardKinematics()
     reference_joint_position        = ReferencePosition().augument_reference_joint_position()
-    reference_end_effector_position = forward_kinematics.calc_1claw(reference_joint_position)
+    reference_end_effector_position = forward_kinematics.calc_1claw(to_tensor(reference_joint_position))
     reference_end_effector_position = create_cyclic_data(reference_end_effector_position) # 中間点を補完する際にはtask_spaceとして閉じている必要がある
     # reference_task_space_position   = _create_reference_task_space_position()
     # num_claw                        = 3

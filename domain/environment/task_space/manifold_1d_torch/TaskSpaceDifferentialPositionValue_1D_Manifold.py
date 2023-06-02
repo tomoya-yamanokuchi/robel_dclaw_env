@@ -1,12 +1,12 @@
 import numpy as np
 
 
-class TaskSpacePositionValue_1D_Manifold:
-    _min = 0.0
-    _max = 1.0
+class TaskSpaceDifferentialPositionValue_1D_Manifold:
+    _min = -0.2
+    _max =  0.2
 
     def __init__(self, value: np.ndarray):
-        self.value = value % self._max
+        self.value = value
         self.__validation__()
 
     def __validation__ (self):
@@ -17,8 +17,8 @@ class TaskSpacePositionValue_1D_Manifold:
     def __eq__(self, other: object) -> bool:
         return True if (other.value == self.value).all() else False
 
-    def __add__(self, other: object):
-        return TaskSpacePositionValue_1D_Manifold(self.value + other.value)
+    # def __add__(self, other: object):
+    #     return TaskSpaceDifferentialPositionValue_1D_Manifold(self.value + other.value)
 
     @property
     def min(self):
@@ -35,8 +35,8 @@ if __name__ == '__main__':
     data1 = np.random.rand(1,1,3)*1
     data2 = np.random.rand(1,1,3)*2
 
-    x = TaskSpacePositionValue_1D_Manifold(data1)
-    y = TaskSpacePositionValue_1D_Manifold(data2)
+    x = TaskSpaceDifferentialPositionValue_1D_Manifold(data1)
+    y = TaskSpaceDifferentialPositionValue_1D_Manifold(data2)
 
     print("x = ", x.value)
     print("y = ", y.value)
@@ -46,8 +46,8 @@ if __name__ == '__main__':
     z = x + y
     print("z = ", z.value)
 
-    print(TaskSpacePositionValue_1D_Manifold._min)
-    print(TaskSpacePositionValue_1D_Manifold.min)
+    print(TaskSpaceDifferentialPositionValue_1D_Manifold._min)
+    print(TaskSpaceDifferentialPositionValue_1D_Manifold.min)
     # import ipdb; ipdb.set_trace()
     # print(y.__min, y.__max)
 
