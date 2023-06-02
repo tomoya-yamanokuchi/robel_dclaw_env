@@ -24,7 +24,7 @@ StateValueObject = {
     "udd_state"             : MjSimUddState,
 }
 
-debug = True
+debug = False
 
 class ValveState:
     def __init__(self, **kwargs: dict):

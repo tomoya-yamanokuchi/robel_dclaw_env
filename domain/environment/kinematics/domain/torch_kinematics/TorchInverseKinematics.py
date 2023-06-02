@@ -9,7 +9,7 @@ p = pathlib.Path(__file__).resolve()
 sys.path.append(str(p.parent))
 
 from ..base import KinematicsDefinition, AbstractInverseKinematics
-
+from torch_numpy_converter import to_numpy
 '''
 ＊注意＊
     ブロックはめ合わせタスクに必要な範囲の値では，解の一意性が問題になっていないが，
@@ -54,15 +54,22 @@ class TorchInverseKinematics(AbstractInverseKinematics):
         y = position[:, 1]
         z = position[:, 2]
 
-        theta0 = torch.atan2(z, x) # torch.arctan2(y, x)
-
+        theta0 = torch.atan2(z, x); assert to_numpy(torch.isnan(theta0)).sum() == 0 # torch.arctan2(y, x)
+        # import ipdb; ipdb.set_trace()
         l      = torch.sqrt(x**2 + z**2)
         s      = torch.sqrt((l - self.kinematics.l0)**2 + y**2)
-        beta   = torch.arccos((self.kinematics.l1**2 - self.kinematics.l2**2 + s**2) / (2 * self.kinematics.l1 * s))
-        gamma  = torch.atan2(y, l - self.kinematics.l0)
+        # -------- torch specific ------
+        input_arccos = (self.kinematics.l1**2 - self.kinematics.l2**2 + s**2) / (2 * self.kinematics.l1 * s)
+        beta         = torch.arccos(input_arccos.clip(-1, 1)); assert to_numpy(torch.isnan(beta)).sum() == 0 # clip, otherwise, output nan
+        # ------------------------------
+
+        gamma  = torch.atan2(y, l - self.kinematics.l0); assert to_numpy(torch.isnan(gamma)).sum() == 0
         theta1 = gamma - beta
 
-        theta2 = torch.Tensor([np.pi]).type_as(position) - torch.arccos((self.kinematics.l1**2 + self.kinematics.l2**2 - s**2 ) / (2 * self.kinematics.l1 * self.kinematics.l2))
+        # -------- torch specific ------
+        input_arccos_theta2 = (self.kinematics.l1**2 + self.kinematics.l2**2 - s**2 ) / (2 * self.kinematics.l1 * self.kinematics.l2)
+        theta2              = torch.Tensor([np.pi]).type_as(position) - torch.arccos(input_arccos_theta2.clip(-1, 1)) # clip, otherwise, output nan
+        # ------------------------------
 
         theta = torch.cat((theta0.unsqueeze(1), theta1.unsqueeze(1), theta2.unsqueeze(1)), dim=1)
         self.kinematics.check_feasibility(theta)
