@@ -1,5 +1,6 @@
 defaults:
-  - env: sim/valve
+  # - env: sim/valve
+  - env: sim/pushing
 
 nominal:
     dataset_dir : "/nfs/workspace/robel_dclaw_env/saved_data_icem"

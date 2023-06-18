@@ -1,5 +1,6 @@
 env_name   : "sim_pushing"
-verbose    : False
+verbose    : True
+
 
 model_file : "dclaw3xh_pushing.xml"
 env_color  :
@@ -10,6 +11,9 @@ ctrl_interpolation_margin_step : 40
 viewer:
     is_Offscreen     : True
 
+target:
+    visible: False
+
 render:
     camera_name_list : ["random_nonfix", "canonical"]
     width_capture    : 64
@@ -19,6 +23,7 @@ texture:
     randomization_mode           : "per_step"
     is_dynamc_noise              : False
     task_relevant_geom_group_name: "object_geom_vis"
+    force_default_canonical      : True
 
 joint_range:
     robot:
@@ -33,6 +38,10 @@ init_state:
     robot_velocity     : [0.0, 0.0, 0.0,   0.0, 0.0, 0.0,   0.0, 0.0, 0.0]
     object_position    : [0.04, 0.0, 0.0, 1, 0, 0, 0]
     object_velocity    : [0, 0, 0, 0, 0, 0]
+    # ---
+    time               : 0.0 # MjSImState
+    act                :     # MjSImState
+    udd_state          : {}  # MjSImState
 
 dynamics:
     robot:

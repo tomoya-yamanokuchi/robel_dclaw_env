@@ -1,8 +1,16 @@
+import os
 import numpy as np
-import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd())); sys.path.insert(0, './robel_dclaw_env')
-from robel_dclaw_env.domain.environment.task_space.manifold_1d.Manifold1D import Manifold1D as TorchTaskSpace
+
+# import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
+# sys.path.append(os.path.join(str(p.cwd()), 'robel_dclaw_env'))
+
+# import ipdb; ipdb.set_trace()
+
+from robel_dclaw_env import EnvironmentBuilder, TaskSpaceValueObjectFactory
+
+from robel_dclaw_env.domain.environment.task_space.manifold_1d_ .Manifold1D import Manifold1D as TorchTaskSpace
 from robel_dclaw_env.domain.environment.task_space.manifold_1d_numpy.Manifold1D import Manifold1D as NumpyTorchTaskSpace
-from robel_dclaw_env.domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
+# from robel_dclaw_env.domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
 from torch_numpy_converter import to_numpy, to_tensor_double, NTD
 
 class Test:

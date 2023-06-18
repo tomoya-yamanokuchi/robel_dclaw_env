@@ -1,13 +1,9 @@
 from .instance.simulation.valve.ValveSimulationEnvironment import ValveSimulationEnvironment
-# from .instance.simulation.valve.ValveFeedState import ValveFeedState
 from .instance.simulation.valve.ValveState import ValveState
 
 
-# from .instance.simulation.block_mating.BlockMatingSimulationEnvironment import BlockMatingSimulationEnvironment
-
-
 from .instance.simulation.pushing.PushingSimulationEnvironment import PushingSimulationEnvironment
-from .instance.simulation.pushing.PushingFeedState import PushingFeedState
+from .instance.simulation.pushing.PushingState import PushingState
 
 
 '''
@@ -21,7 +17,7 @@ class EnvironmentFactory:
 
         if   env_name == "sim_valve"           : return (ValveSimulationEnvironment, ValveState)
         # if   env_name == "sim_block_mating"    : return BlockMatingSimulationEnvironment
-        if   env_name == "sim_pushing"         : return (PushingSimulationEnvironment, PushingFeedState)
+        if   env_name == "sim_pushing"         : return (PushingSimulationEnvironment, PushingState)
         # elif env_name == "real"          : return DClawRealEnvironment
         raise NotImplementedError()
 

@@ -5,9 +5,9 @@ import numpy as np
 from pprint import pprint
 import mujoco_py
 # -------- import from same level directory --------
-from .PushingFeedState import PushingFeedState as FeedState
-from .PushingReturnState import PushingReturnState as ReturnState
-from .PushingReturnCtrl import PushingReturnCtrl as ReturnCtrl
+from .PushingState import PushingState as State
+# from .ValveFeedState import ValveFeedState as FeedState
+# from .ValveReturnState import ValveReturnState as ReturnState
 from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
 import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
@@ -102,20 +102,35 @@ class PushingSimulationEnvironment(BaseEnvironment):
 
 
     def reset(self, state):
-        self.model_file_reset()
-        if self.sim is not None: return 0
-        self.sim = mujoco_py.MjSim(self.model); self.sim.reset()
-        RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)
-        PushingObjectDyanmicsParameter(self.sim).set(self.config.dynamics.object)
-        RobotJointRange(self.sim).set_range(**self.config.joint_range.robot)
-        PushingObjectJointRange(self.sim).set_range(**self.config.joint_range.object)
-        RobotCtrlRange(self.sim).set_range()
-        self.setState = SetState(self.sim, FeedState,  self.task_space, TaskSpaceValueObject)
-        self.getState = GetState(self.sim, FeedState,  self.task_space, EndEffectorValueObject, ReturnState)
-        self.setCtrl  = SetCtrl( self.sim, ReturnCtrl, self.task_space, TaskSpaceValueObject)
+        # self.model_file_reset()
+        if self.sim is None:
+            self.model_file_reset()
+            self.sim      = mujoco_py.MjSim(self.model)
+            self.setState = SetState(self.sim, State, self.task_space)
+            self.getState = GetState(self.sim, State, self.task_space, EndEffectorValueObject)
+            self.setCtrl  = SetCtrl( self.sim, self.task_space)
+            # self.setTargetPosition = ValveTarget(self.sim)
+            # self.setTargetPosition.set_target_visible(self.config.target.visible)
+            RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)
+            PushingObjectDyanmicsParameter(self.sim).set(self.config.dynamics.object)
+            RobotJointRange(self.sim).set_range(**self.config.joint_range.robot)
+            PushingObjectJointRange(self.sim).set_range(**self.config.joint_range.object)
+            RobotCtrlRange(self.sim).set_range()
+            self._initialize_viewer_and_render()
+        self.sim.reset()
         self.set_state(state)
         if self.use_render:
-            self.viewer    = ViewerFactory().create(self.config.viewer.is_Offscreen)(self.sim)
+            self.rendering.register_new_randomized_texture_collection()
+        # print(self.sim.get_state().time)
+        self.sim.step()
+
+
+
+    def _initialize_viewer_and_render(self):
+        if not self.use_render: return
+        if self.viewer is None:
+            self.viewer = ViewerFactory().create(self.config.viewer.is_Offscreen)(self.sim)
+        if self.rendering is None:
             self.rendering = Rendering(
                 sim            = self.sim,
                 canonical_rgb  = self.canonical_rgb.rgb,
@@ -124,7 +139,6 @@ class PushingSimulationEnvironment(BaseEnvironment):
                 config_camera  = self.config.camera,
                 config_light   = self.config.light,
             )
-        self.sim.step()
 
 
     def render(self):

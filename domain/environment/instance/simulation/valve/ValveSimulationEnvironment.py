@@ -6,8 +6,6 @@ from pprint import pprint
 import mujoco_py
 # -------- import from same level directory --------
 from .ValveState import ValveState as State
-# from .ValveFeedState import ValveFeedState as FeedState
-# from .ValveReturnState import ValveReturnState as ReturnState
 from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
 import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
@@ -58,8 +56,8 @@ class ValveSimulationEnvironment(BaseEnvironment):
         if self.sim is None:
             self.model_file_reset()
             self.sim      = mujoco_py.MjSim(self.model)
-            self.setState = SetState(self.sim, State,  self.task_space)
-            self.getState = GetState(self.sim, State,  self.task_space, EndEffectorValueObject)
+            self.setState = SetState(self.sim, State, self.task_space)
+            self.getState = GetState(self.sim, State, self.task_space, EndEffectorValueObject)
             self.setCtrl  = SetCtrl( self.sim, self.task_space)
             self.setTargetPosition = ValveTarget(self.sim)
             self.setTargetPosition.set_target_visible(self.config.target.visible)
