@@ -6,17 +6,19 @@ import numpy as np
 
 # import ipdb; ipdb.set_trace()
 
-from robel_dclaw_env import EnvironmentBuilder, TaskSpaceValueObjectFactory
+# from robel_dclaw_env import EnvironmentBuilder, TaskSpaceValueObjectFactory
+from robel_dclaw_env.domain.environment.task_space import TaskSpaceFactory
 
-from robel_dclaw_env.domain.environment.task_space.manifold_1d_ .Manifold1D import Manifold1D as TorchTaskSpace
-from robel_dclaw_env.domain.environment.task_space.manifold_1d_numpy.Manifold1D import Manifold1D as NumpyTorchTaskSpace
+# from robel_dclaw_env.domain.environment.task_space.manifold_1d_ .Manifold1D import Manifold1D as TorchTaskSpace
+# from robel_dclaw_env.domain.environment.task_space.manifold_1d_numpy.Manifold1D import Manifold1D as NumpyTorchTaskSpace
 # from robel_dclaw_env.domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
 from torch_numpy_converter import to_numpy, to_tensor_double, NTD
 
+
 class Test:
-    def __init__(self):
-        self.numpy_task_space = NumpyTorchTaskSpace()
-        self.torch_task_space = TorchTaskSpace()
+    def __init__(self, env_name):
+        self.numpy_task_space = TaskSpaceFactory().create(env_name, mode="numpy")
+        self.torch_task_space = TaskSpaceFactory().create(env_name, mode="torch")
 
 
     def run(self, task_space_value):
@@ -32,8 +34,10 @@ class Test:
 
 
 if __name__ == '__main__':
-    test = Test()
 
+    env_name = "sim_valve"
+
+    test = Test(env_name)
 
     t = np.linspace(start=0.0, stop=1.0, num=400)
     t = t.reshape(-1, 1)

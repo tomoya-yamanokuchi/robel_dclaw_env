@@ -1,60 +1,10 @@
 Metadata-Version: 2.1
 Name: robel-dclaw-env
-Version: 0.0.1
-Summary: You can receive AWS Service Name.
-Home-page: https://github.com/tomoya-yamanokuchi/robel-dclaw-env
-Author: tomoya-y
-License: MIT
+Version: 0.1
+Summary: UNKNOWN
+Home-page: UNKNOWN
+License: UNKNOWN
 Platform: UNKNOWN
-Classifier: Programming Language :: Python :: 3
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
-Requires-Python: >=3.8
-Description-Content-Type: text/markdown
 
-ROBEL-D'Claw environment from goole.
-
-## DClaw環境
-![Screenshot from 2022-08-20 02-22-30](https://user-images.githubusercontent.com/49630508/185674226-85950dba-7e45-49fa-9070-62758f353227.png)
-
-
-## EnvStateの定義
-
-### robot_position
-- 9次元
-- インデックス[0, 1, 2]：1本目の指の第一関節，第二関節，第三関節の関節角度
-- インデックス[3, 4, 5]：2本目の指の ''
-- インデックス[6, 7, 8]：3本目の指の ''
-
-### object_position
-- 1次元
-- バルブの関節角度
-
-### robot_velocity（今回は使わないかもしれません）
-- 9次元
-- インデックス[0, 1, 2]：1本目の指の第一関節，第二関節，第三関節の関節速度
-- インデックス[3, 4, 5]：2本目の指の ''
-- インデックス[6, 7, 8]：3本目の指の ''
-
-
-### object_velocity
-- 1次元
-- バルブの関節速度
-
-
-### force
-- 9次元
-- 指先に設置してあるフォースセンサの値
-- インデックス[0, 1, 2]：1本目の指の指先に設置してあるフォースセンサの値
-- インデックス[3, 4, 5]：2本目の ''
-- インデックス[6, 7, 8]：3本目の ''
-
-
-## 制御入力の定義
-### ctrl
-- 9次元
-- [0, 1, 2] : 1本目の指の第一関節，第二関節，第三関節の目標関節位置
-- [3, 4, 5] : 2本目の指の ''
-- [6, 7, 8] : 3本目の指の ''
-
+UNKNOWN
 

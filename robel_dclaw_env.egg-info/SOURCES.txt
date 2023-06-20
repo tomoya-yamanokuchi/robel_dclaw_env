@@ -26,8 +26,6 @@ domain/__init__.py
 domain/environment/CtrlFactory.py
 domain/environment/EnvironmentBuilder.py
 domain/environment/EnvironmentFactory.py
-domain/environment/TaskSpaceBuilder.py
-domain/environment/TaskSpaceValueObjectFactory.py
 domain/environment/__StateFactory.py
 domain/environment/__init__.py
 domain/environment/kinematics/__init__.py
@@ -43,6 +41,12 @@ domain/environment/kinematics/domain/numpy_kinematics/__init__.py
 domain/environment/kinematics/domain/torch_kinematics/TorchForwardKinematics.py
 domain/environment/kinematics/domain/torch_kinematics/TorchInverseKinematics.py
 domain/environment/kinematics/domain/torch_kinematics/__init__.py
+domain/environment/task_space/AbstractTaskSpace.py
+domain/environment/task_space/TaskSpaceFactory.py
+domain/environment/task_space/TaskSpaceFactoryNumpy.py
+domain/environment/task_space/TaskSpaceFactoryTorch.py
+domain/environment/task_space/__init__.py
+domain/environment/task_space/manifold_1d/__init__.py
 domain/forward_model_multiprocessing/ForkedPdb.py
 domain/forward_model_multiprocessing/ForwardModelMultiprocessing.py
 domain/forward_model_multiprocessing/ProcessTimeInformation.py
@@ -53,5 +57,4 @@ domain/icem_mpc/__init__.py
 robel_dclaw_env.egg-info/PKG-INFO
 robel_dclaw_env.egg-info/SOURCES.txt
 robel_dclaw_env.egg-info/dependency_links.txt
-robel_dclaw_env.egg-info/requires.txt
 robel_dclaw_env.egg-info/top_level.txt

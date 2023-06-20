@@ -5,7 +5,7 @@ import torch
 from .ReferencePosition import ReferencePosition
 from custom_service import data_shape_formating
 
-from .TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
+from ..value_object.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
 from .EndEffectorPositionValueObject import EndEffectorPositionValueObject as EndEffectorValueObject
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.environment.kinematics import ForwardKinematics
