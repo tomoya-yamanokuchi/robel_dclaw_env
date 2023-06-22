@@ -2,7 +2,7 @@ import time
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
-from custom_service import wait_time, NTD
+from robel_dclaw_env.custom_service import wait_time, NTD
 
 
 

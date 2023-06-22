@@ -1,10 +1,10 @@
 import copy
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.EnvironmentFactory import EnvironmentFactory
-from domain.environment.DClawState import DClawState as EnvState
-from domain.environment.multiprocessing.EnvironmentMultiprocessing import EnvironmentMultiprocessing
-from domain.environment.multiprocessing.EnvironmentConstantSetting import EnvironmentConstantSetting
+from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
+from robel_dclaw_env.domain.environment.DClawState import DClawState as EnvState
+from robel_dclaw_env.domain.environment.multiprocessing.EnvironmentMultiprocessing import EnvironmentMultiprocessing
+from robel_dclaw_env.domain.environment.multiprocessing.EnvironmentConstantSetting import EnvironmentConstantSetting
 
 
 

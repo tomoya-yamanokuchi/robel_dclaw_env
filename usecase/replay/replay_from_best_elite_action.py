@@ -1,13 +1,13 @@
 import os, cv2, time, copy
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd())); sys.path.insert(0, './robel_dclaw_env'); sys.path.insert(0, './cdsvae')
-from domain.environment.EnvironmentFactory import EnvironmentFactory
+from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
 import pickle
 from visualize.ReplayVisualization import ReplayVisualization
 from domain.reference.ValveReference import ValveReference
 from domain.icem_mpc.icem_mpc.visualization.elements.utils.TrajectoryVisualization import TrajectoryVisualization
-from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpace
-from custom_service import NTD, concat
+from robel_dclaw_env.domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpace
+from robel_dclaw_env.custom_service import NTD, concat
 
 from control_with_cdsvae_and_robel_dclaw_env.mpc.utils.X3PolarTransformationNumpy import X3PolarTransformationNumpy
 
@@ -58,7 +58,7 @@ class Demo_task_space:
 if __name__ == "__main__":
     import hydra
     from omegaconf import OmegaConf, DictConfig
-    from custom_service import load_best_elite_sequence
+    from robel_dclaw_env.custom_service import load_best_elite_sequence
     from visualize.ReplayActionVisualization import ReplayActionVisualization
     from visualize.ReplayObjectPpositionVisualization import ReplayObjectPpositionVisualization
     from domain.icem_mpc.icem_repository.iCEM_Repository import iCEM_Repository

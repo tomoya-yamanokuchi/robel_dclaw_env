@@ -1,7 +1,7 @@
 import hydra
 from omegaconf import DictConfig
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from custom_service import create_feedable_ctrl_from_less_dim_ctrl
+from robel_dclaw_env.custom_service import create_feedable_ctrl_from_less_dim_ctrl
 from CollectionfromRandomMotion import CollectionfromRandomMotion
 
 '''

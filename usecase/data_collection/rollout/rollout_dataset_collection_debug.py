@@ -3,8 +3,8 @@ import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
 from domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
-from custom_service import wait_time
-from domain.environment.instance.simulation.base_environment.render.ReturnImage import ReturnImage
+from robel_dclaw_env.custom_service import wait_time
+from robel_dclaw_env.domain.environment.instance.simulation.base_environment.render.ReturnImage import ReturnImage
 
 
 def rollout_dataset_collection_debug(constant_setting, task_space_position):

@@ -1,8 +1,8 @@
 import cv2, time, copy
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd())); sys.path.insert(0, './robel_dclaw_env')
-from domain.environment.EnvironmentFactory import EnvironmentFactory
-from custom_service import print_info
+from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
+from robel_dclaw_env.custom_service import print_info
 
 
 class Demo_task_space:

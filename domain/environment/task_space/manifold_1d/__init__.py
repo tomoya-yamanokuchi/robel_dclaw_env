@@ -1,4 +1,0 @@
-from .manifold_1d_numpy.Manifold1D import Manifold1D as Manifold1D_numpy
-from .manifold_1d_torch.Manifold1D import Manifold1D as Manifold1D_torch
-from .value_object.TaskSpaceDifferentialPositionValue_1D_Manifold import TaskSpaceDifferentialPositionValue_1D_Manifold
-from .value_object.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold

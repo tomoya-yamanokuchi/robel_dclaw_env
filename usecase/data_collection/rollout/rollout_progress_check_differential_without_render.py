@@ -3,9 +3,9 @@ import time, copy
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
-from custom_service import wait_time, NTD
-from custom_service import create_gif, join_with_mkdir
-from custom_service import save_mpc_planning_images
+from robel_dclaw_env.custom_service import wait_time, NTD
+from robel_dclaw_env.custom_service import create_gif, join_with_mkdir
+from robel_dclaw_env.custom_service import save_mpc_planning_images
 
 
 def rollout_progress_check_differential_without_render(constant_setting, queue_input, queue_result):

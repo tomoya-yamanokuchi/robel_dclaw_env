@@ -1,16 +1,17 @@
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.task_space.TaskSpace import TaskSpace
-from custom_service import visualization as vis
+from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
+from robel_dclaw_env.custom_service import visualization as vis
 
 
 
-task_space = TaskSpace()
+# task_space             = TaskSpaceBuilder().build(env_name="sim_valve", mode="numpy")
+task_space             = TaskSpaceBuilder().build(env_name="sim_valve", mode="torch")
 
-# import ipdb; ipdb.set_trace()
-# vis.scatter_3d(task_space.reference_end_effector_position)
+task_space_transformer =  task_space["transformer"]
+
 vis.scatter_3d_color_map(
-    x          = task_space.reference_end_effector_position,
-    cval       = task_space.reference_task_space_position,
+    x          = task_space_transformer.reference_end_effector_position,
+    cval       = task_space_transformer.reference_task_space_position,
     cmap_label = "task space position"
 )
 

@@ -1,10 +1,10 @@
 import cv2, time, copy
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.EnvironmentFactory import EnvironmentFactory
-from custom_service import print_info
-from domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
-from custom_service import NTD, time_as_string
+from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
+from robel_dclaw_env.custom_service import print_info
+from robel_dclaw_env.domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
+from robel_dclaw_env.custom_service import NTD, time_as_string
 from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
 
 

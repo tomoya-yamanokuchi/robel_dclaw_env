@@ -4,16 +4,16 @@ import pprint
 import time
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.EnvironmentFactory import EnvironmentFactory
-from domain.environment.DClawState import DClawState as EnvState
-from domain.environment.DClawCtrl import DClawCtrl as CtrlState
-from domain.environment.simulation.base_environment.ImageObs import ImageObs
+from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
+from robel_dclaw_env.domain.environment.DClawState import DClawState as EnvState
+from robel_dclaw_env.domain.environment.DClawCtrl import DClawCtrl as CtrlState
+from robel_dclaw_env.domain.environment.simulation.base_environment.ImageObs import ImageObs
 from domain.repository.SimulationDataRepository import SimulationDataRepository as Repository
 
-from domain.environment.multiprocessing.EnvironmentMultiprocessing_develop import EnvironmentMultiprocessing
-# from domain.environment.multiprocessing.EnvironmentMultiprocessing import EnvironmentMultiprocessing
+from robel_dclaw_env.domain.environment.multiprocessing.EnvironmentMultiprocessing_develop import EnvironmentMultiprocessing
+# from robel_dclaw_env.domain.environment.multiprocessing.EnvironmentMultiprocessing import EnvironmentMultiprocessing
 
-from domain.environment.multiprocessing.EnvironmentConstantSetting import EnvironmentConstantSetting
+from robel_dclaw_env.domain.environment.multiprocessing.EnvironmentConstantSetting import EnvironmentConstantSetting
 
 
 

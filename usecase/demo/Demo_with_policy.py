@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import torch
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.EnvironmentFactory import EnvironmentFactory
-from domain.environment.DClawState import DClawState as EnvState
+from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
+from robel_dclaw_env.domain.environment.DClawState import DClawState as EnvState
 from domain.controller.ExamplePolicy import ExamplePolicy
 
 '''

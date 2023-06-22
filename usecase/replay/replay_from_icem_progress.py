@@ -1,7 +1,7 @@
 import cv2, time, copy
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.EnvironmentFactory import EnvironmentFactory
+from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
 
 
 

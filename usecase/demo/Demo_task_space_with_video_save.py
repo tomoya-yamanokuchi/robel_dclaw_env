@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.environment.EnvironmentFactory import EnvironmentFactory
-from domain.environment.DClawState import DClawState as EnvState
+from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
+from robel_dclaw_env.domain.environment.DClawState import DClawState as EnvState
 from domain.video_record.bk_recorder import WebCamControl
 
 

@@ -1,0 +1,8 @@
+from .manifold_1d import Manifold_1D_Builder
+from .end_effector_2d import End_Effector_2D_Builder
+
+class TaskSpaceBuilder:
+    def build(self, env_name: str, mode:str="numpy"):
+        if "valve"   in env_name: return Manifold_1D_Builder().build(mode)
+        if "pushing" in env_name: return End_Effector_2D_Builder().build(mode)
+        raise NotImplementedError()
