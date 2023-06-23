@@ -2,21 +2,23 @@ import numpy as np
 import copy
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import InverseKinematics
+from robel_dclaw_env.domain.environment.task_space import AbstractTaskSpaceTransformer
 from .ReturnCtrl import ReturnCtrl
 from .JointPosition import JointPosition
+from torch_numpy_converter import to_numpy
 
 
 class SetCtrl:
-    def __init__(self, sim, task_space):
+    def __init__(self, sim, task_space: AbstractTaskSpaceTransformer):
         self.sim                = sim
         self.task_space         = task_space
         self.inverse_kinematics = InverseKinematics()
 
 
     def set_ctrl(self, task_space_position: object):
-        ctrl_end_effector      = self.task_space.task2end(task_space_position)                         # 新たな目標値に対応するエンドエフェクタ座標を計算
-        ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector.value.squeeze(axis=0)) # エンドエフェクタ座標からインバースキネマティクスで関節角度を計算
-        self.sim.data.ctrl[:9] = ctrl_joint.squeeze()                                                  # 制御入力としてsimulationで設定
+        ctrl_end_effector      = self.task_space.task2end(task_space_position)
+        ctrl_joint             = self.inverse_kinematics.calc(ctrl_end_effector.value.squeeze(axis=0))
+        self.sim.data.ctrl[:9] = to_numpy(ctrl_joint.squeeze())
         # ---------------
         return ReturnCtrl(
             task_space_abs_position  = task_space_position,

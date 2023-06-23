@@ -14,9 +14,7 @@ from robel_dclaw_env.domain.environment.instance.simulation.base_environment.Bas
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics
 from robel_dclaw_env.domain.environment.kinematics import InverseKinematics
 from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
-# from robel_dclaw_env.domain.environment.task_space.manifold_1d_torch.Manifold1D import Manifold1D as TaskSpace
-# from robel_dclaw_env.domain.environment.task_space.manifold_1d_torch.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
-# from robel_dclaw_env.domain.environment.task_space.manifold_1d_torch.EndEffectorPositionValueObject import EndEffectorPositionValueObject as EndEffectorValueObject
+from robel_dclaw_env.domain.environment.task_space.manifold_1d import TaskSpacePositionValue_1D_Manifold
 from robel_dclaw_env.domain.environment.task_space.manifold_1d import EndEffectorPositionValueObject
 from robel_dclaw_env.custom_service import print_info, NTD
 
@@ -31,6 +29,8 @@ from ..base_environment.joint_range.RobotJointRange import RobotJointRange
 from .ValveDyanmicsParameter import ValveDyanmicsParameter
 from .ValveJointRange import ValveJointRange
 from ..base_environment.ctrl_range.RobotCtrlRange import RobotCtrlRange
+
+from torch_numpy_converter import to_tensor
 
 
 class ValveSimulationEnvironment(BaseEnvironment):
@@ -115,7 +115,8 @@ class ValveSimulationEnvironment(BaseEnvironment):
         self.setState.set_state(state)
 
 
-    def set_ctrl_task_space(self, task_space_abs_ctrl):
+    def set_ctrl_task_space(self, task_space_abs_ctrl: TaskSpacePositionValue_1D_Manifold):
+        task_space_abs_ctrl.value = to_tensor(task_space_abs_ctrl.value)
         return self.setCtrl.set_ctrl(task_space_abs_ctrl)
 
 
