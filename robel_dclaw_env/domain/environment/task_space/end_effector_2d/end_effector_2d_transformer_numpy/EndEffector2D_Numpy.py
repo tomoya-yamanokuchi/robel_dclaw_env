@@ -15,11 +15,11 @@ from ..end_effector_2d_value_object import TaskSpacePositionValue_2D_Plane as Ta
 from ..end_effector_2d_value_object import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics, InverseKinematics
-from robel_dclaw_env.domain.environment.task_space.AbstractTaskSpaceTransformer import AbstractTaskSpace
+from robel_dclaw_env.domain.environment.task_space import AbstractTaskSpaceTransformer
 from robel_dclaw_env.custom_service import normalize, NTD
 
 
-class EndEffector2D_Numpy(AbstractTaskSpace):
+class EndEffector2D_Numpy(AbstractTaskSpaceTransformer):
     def __init__(self):
         self.num_claw                = 3
         self._inverse_kinematics     = ForwardKinematics()
