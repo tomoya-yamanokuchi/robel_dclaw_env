@@ -6,8 +6,7 @@ class TaskSpacePositionValue_1D_Manifold:
     _min = 0.0
     _max = 1.0
 
-    def __init__(self, value, tensor: bool = False):
-        if tensor: value = to_tensor(value)
+    def __init__(self, value):
         self.value = value % self._max
         self.__validation__()
 
@@ -29,6 +28,14 @@ class TaskSpacePositionValue_1D_Manifold:
     @property
     def max(self):
         return self._max
+
+    @property
+    def numpy_value(self):
+        return self.value
+
+    @property
+    def tensor_value(self):
+        return to_tensor(self.value)
 
 
 if __name__ == '__main__':

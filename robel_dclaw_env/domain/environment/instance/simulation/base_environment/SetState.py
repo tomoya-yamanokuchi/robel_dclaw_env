@@ -30,7 +30,8 @@ class SetState:
 
     def _set_qpos(self, state: dict):
         # -------------
-        state["task_space_position"].value = to_tensor(state["task_space_position"].value)
+        # state["task_space_position"].value = to_tensor(state["task_space_position"].value)
+        # import ipdb; ipdb.set_trace()
         end_effector_position = self.task_space.task2end(state["task_space_position"])
         joint_position        = self.inverse_kinematics.calc(end_effector_position.value.squeeze(0))
         # ----------

@@ -1,2 +1,3 @@
 from .AbstractEnvironment import AbstractEnvironment
 from .BaseEnvironment import BaseEnvironment
+from .EndEffectorPosition import EndEffectorPosition
