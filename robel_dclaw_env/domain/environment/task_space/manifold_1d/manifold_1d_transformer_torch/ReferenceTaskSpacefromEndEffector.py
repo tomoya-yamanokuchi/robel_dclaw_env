@@ -45,7 +45,7 @@ if __name__ == '__main__':
     from robel_dclaw_env.domain.environment.task_space.manifold_1d.ReferencePosition import ReferencePosition
     from robel_dclaw_env.domain.environment.task_space.manifold_1d.create_cyclic_data import create_cyclic_data
     from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics, to_tensor
-    from robel_dclaw_env.domain.environment.task_space.AbstractTaskSpace import AbstractTaskSpace
+    from robel_dclaw_env.domain.environment.task_space.AbstractTaskSpaceTransformer import AbstractTaskSpace
 
     min                             = 0.0
     max                             = 1.0

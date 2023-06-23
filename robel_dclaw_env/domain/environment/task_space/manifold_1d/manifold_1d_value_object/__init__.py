@@ -1,2 +1,3 @@
 from .TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
 from .TaskSpaceDifferentialPositionValue_1D_Manifold import TaskSpaceDifferentialPositionValue_1D_Manifold
+from .EndEffectorPositionValueObject import EndEffectorPositionValueObject

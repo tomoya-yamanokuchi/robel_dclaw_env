@@ -1,16 +1,15 @@
 import cv2, time, copy
 import numpy as np
-import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd())); sys.path.insert(0, './robel_dclaw_env')
-from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
 from robel_dclaw_env.custom_service import print_info, NTD
-from robel_dclaw_env.domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
+from robel_dclaw_env.domain import EnvironmentBuilder
 
 
 class Demo_task_space:
     def run(self, config):
-        env_subclass, state_subclass = EnvironmentFactory().create(env_name=config.env.env_name)
-        env        = env_subclass(config.env)
-        init_state = state_subclass(**config.env.init_state)
+        env_struct        = EnvironmentBuilder().build(config, mode="numpy")
+        env               = env_struct["env"]
+        init_state        = env_struct["init_state"]
+        TaskSpacePosition = env_struct["TaskSpacePosition"]
 
         step           = 100
         dim_task_space = 3
@@ -33,7 +32,7 @@ class Demo_task_space:
                 task_g -= 0.05
                 # import ipdb; ipdb.set_trace()
 
-                env.set_ctrl_task_space(TaskSpacePositionValue_1D_Manifold(NTD(task_g)))
+                env.set_ctrl_task_space(TaskSpacePosition(NTD(task_g)))
                 env.step(is_view=True)
 
                 # import ipdb; ipdb.set_trace()

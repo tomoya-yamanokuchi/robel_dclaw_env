@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class AbstractTaskSpace(metaclass=ABCMeta):
+class AbstractTaskSpaceTransformer(metaclass=ABCMeta):
     @abstractmethod
     def task2end(self, task_space_position):
         pass

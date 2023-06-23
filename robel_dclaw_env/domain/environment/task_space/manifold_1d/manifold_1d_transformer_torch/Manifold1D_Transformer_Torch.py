@@ -6,10 +6,10 @@ from .ReferencePosition import ReferencePosition
 from robel_dclaw_env.custom_service import data_shape_formating
 
 from ..manifold_1d_value_object import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
-from .EndEffectorPositionValueObject import EndEffectorPositionValueObject as EndEffectorValueObject
+from ..manifold_1d_value_object import EndEffectorPositionValueObject as EndEffectorValueObject
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics
-from robel_dclaw_env.domain.environment.task_space.AbstractTaskSpace import AbstractTaskSpace
+from robel_dclaw_env.domain.environment.task_space import AbstractTaskSpaceTransformer
 from robel_dclaw_env.custom_service import NTD
 from .ReferenceTaskSpacefromEndEffector import ReferenceTaskSpacefromEndEffector
 from .SignedDistanceMatrix import SignedDistanceMatrix
@@ -40,7 +40,7 @@ from torch_numpy_converter import to_tensor_double, to_numpy, to_tensor
 '''
 
 
-class Manifold1D_Transformer_Torch(AbstractTaskSpace):
+class Manifold1D_Transformer_Torch(AbstractTaskSpaceTransformer):
     def __init__(self):
         self.num_claw                        = 3
         self.min                             = 0.0

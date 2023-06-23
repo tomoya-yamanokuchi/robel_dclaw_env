@@ -15,7 +15,7 @@ from ..end_effector_2d_value_object.TaskSpaceDifferentialPositionValue_2D_Plane 
 from ..end_effector_2d_value_object.EndEffectorPositionValueObject_2D_Plane import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics, InverseKinematics
-from robel_dclaw_env.domain.environment.task_space.AbstractTaskSpace import AbstractTaskSpace
+from robel_dclaw_env.domain.environment.task_space.AbstractTaskSpaceTransformer import AbstractTaskSpace
 
 
 class EndEffector2D(AbstractTaskSpace):

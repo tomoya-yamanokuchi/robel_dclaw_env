@@ -1,7 +1,7 @@
 env_name   : "sim_valve"
 verbose    : True
 
-# model_file : "dclaw3xh_valve3_with_line.xml"
+model_dir  : "/nfs/workspace/robel_dclaw_env/robel_dclaw_env/domain/environment/model"
 model_file : "dclaw3xh_valve3_default.xml"
 env_color  : "rgb_valve"
 

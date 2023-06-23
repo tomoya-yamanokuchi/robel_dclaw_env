@@ -1,3 +1,4 @@
+import os
 import sys
 import copy
 import pathlib
@@ -16,6 +17,7 @@ from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
 # from robel_dclaw_env.domain.environment.task_space.manifold_1d_torch.Manifold1D import Manifold1D as TaskSpace
 # from robel_dclaw_env.domain.environment.task_space.manifold_1d_torch.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold as TaskSpaceValueObject
 # from robel_dclaw_env.domain.environment.task_space.manifold_1d_torch.EndEffectorPositionValueObject import EndEffectorPositionValueObject as EndEffectorValueObject
+from robel_dclaw_env.domain.environment.task_space.manifold_1d import EndEffectorPositionValueObject
 from robel_dclaw_env.custom_service import print_info, NTD
 
 from ..base_environment.SetState import SetState
@@ -40,11 +42,13 @@ class ValveSimulationEnvironment(BaseEnvironment):
         self.use_render         = use_render
 
         task_space = TaskSpaceBuilder().build("sim_valve", mode="torch")
-        self.task_space
+        self.task_space_transformer = task_space["transformer"]
+        self.EndEffectorValueObject = task_space["transformer"]
+
 
     def model_file_reset(self):
         # self._generate_model_file()
-        self.model         = self.load_model(self.config.model_file)
+        self.model         = self.load_model(os.path.join(self.config.model_dir, self.config.model_file))
         self.canonical_rgb = CanonicalRGB(self.config.xml.rgb.object)
         # import ipdb; ipdb.set_trace()
 
@@ -58,9 +62,9 @@ class ValveSimulationEnvironment(BaseEnvironment):
         if self.sim is None:
             self.model_file_reset()
             self.sim      = mujoco_py.MjSim(self.model)
-            self.setState = SetState(self.sim, State, self.task_space)
-            self.getState = GetState(self.sim, State, self.task_space, EndEffectorValueObject)
-            self.setCtrl  = SetCtrl( self.sim, self.task_space)
+            self.setState = SetState(self.sim, State, self.task_space_transformer)
+            self.getState = GetState(self.sim, State, self.task_space_transformer, EndEffectorPositionValueObject)
+            self.setCtrl  = SetCtrl( self.sim,        self.task_space_transformer)
             self.setTargetPosition = ValveTarget(self.sim)
             self.setTargetPosition.set_target_visible(self.config.target.visible)
             RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)

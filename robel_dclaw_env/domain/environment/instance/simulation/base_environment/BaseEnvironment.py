@@ -18,14 +18,9 @@ class BaseEnvironment(AbstractEnvironment):
         )
 
 
-    def load_model(self, model_file):
-        repository_name  = "robel_dclaw_env"
-        sys_path_leaf    = [path.split("/")[-1] for path in sys.path] # 全てのパスの末端ディレクトリを取得
+    def load_model(self, model_path):
         # import ipdb; ipdb.set_trace()
-        assert repository_name in sys_path_leaf, print(sys_path_leaf) # 末端ディレクトリにリポジトリ名が含まれているか確認
-        index_model_path = sys_path_leaf.index(repository_name)       # リポジトリがあるパスを抽出
-        xml_path         = "{}/domain/environment/model/{}".format(sys.path[index_model_path], model_file)
-        return mujoco_py.load_model_from_path(xml_path)
+        return mujoco_py.load_model_from_path(model_path)
 
 
     def _step_with_inplicit_step(self, is_view):

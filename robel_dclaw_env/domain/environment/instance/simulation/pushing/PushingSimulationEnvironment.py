@@ -14,6 +14,7 @@ import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd())
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.BaseEnvironment import BaseEnvironment
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics, InverseKinematics
 from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
+from robel_dclaw_env.domain.environment.task_space.end_effector_2d import EndEffectorPositionValueObject_2D_Plane
 
 # from robel_dclaw_env.domain.environment.task_space.end_effector_action_pace.TaskSpacePositionValueObject_2D_Plane import TaskSpacePositionValueObject_2D_Plane as TaskSpaceValueObject
 # from robel_dclaw_env.domain.environment.task_space.end_effector_action_pace.EndEffectorPositionValueObject_2D_Plane import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
@@ -37,7 +38,10 @@ class PushingSimulationEnvironment(BaseEnvironment):
         super().__init__(config)
         self.config             = config
         self.use_render         = use_render
-        self.task_space_transformer,  = TaskSpaceBuilder().build("sim_valve", mode="torch")
+
+        task_space                  = TaskSpaceBuilder().build("sim_valve", mode="torch")
+        self.task_space_transformer = task_space["transformer"]
+        # self.task_space_transformer = task_space["transformer"]
 
 
     def model_file_reset(self):
@@ -106,9 +110,9 @@ class PushingSimulationEnvironment(BaseEnvironment):
         if self.sim is None:
             self.model_file_reset()
             self.sim      = mujoco_py.MjSim(self.model)
-            self.setState = SetState(self.sim, State, self.task_space)
-            self.getState = GetState(self.sim, State, self.task_space, EndEffectorValueObject)
-            self.setCtrl  = SetCtrl( self.sim, self.task_space)
+            self.setState = SetState(self.sim, State, self.task_space_transformer)
+            self.getState = GetState(self.sim, State, self.task_space_transformer, EndEffectorPositionValueObject_2D_Plane)
+            self.setCtrl  = SetCtrl( self.sim, self.task_space_transformer)
             # self.setTargetPosition = ValveTarget(self.sim)
             # self.setTargetPosition.set_target_visible(self.config.target.visible)
             RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)

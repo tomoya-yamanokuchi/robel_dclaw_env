@@ -2,11 +2,11 @@ import numpy as np
 from mujoco_py import MjSimState
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import InverseKinematics
-from robel_dclaw_env.domain.environment.task_space import AbstractTaskSpace
+from robel_dclaw_env.domain.environment.task_space import AbstractTaskSpaceTransformer
 from torch_numpy_converter import NTD, to_tensor, to_numpy
 
 class SetState:
-    def __init__(self, sim, State, task_space: AbstractTaskSpace):
+    def __init__(self, sim, State, task_space: AbstractTaskSpaceTransformer):
         self.sim                  = sim
         self.State                = State
         self.task_space           = task_space
