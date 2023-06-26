@@ -1,2 +1,2 @@
 from .End_Effector_2D_Builder import End_Effector_2D_Builder
-from .end_effector_2d_value_object import EndEffectorPositionValueObject_2D_Plane
+from .end_effector_2d_value_object import BiasedEndEffectorPosition_2D_Plane

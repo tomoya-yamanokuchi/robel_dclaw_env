@@ -10,7 +10,7 @@ class EndEffectorPosition:
 
     def __validation__(self):
         assert len(self.value.shape) == 3
-        assert self.value.shape[-1]  == 9
+        assert self.value.shape[-1] == 9, print("{} != {}".format(self.value.shape[-1], 9))
 
     @property
     def numpy_value(self):

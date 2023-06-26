@@ -12,10 +12,11 @@ from robel_dclaw_env.domain.environment.kinematics import EndEffectorPosition
 from robel_dclaw_env.custom_service import NTD
 
 
-task_space_transformer, task_space_position, task_space_diff_position = TaskSpaceBuilder().build(env_name="sim_pushing", mode="torch")
+task_space = TaskSpaceBuilder().build(env_name="sim_pushing", mode="torch")
+
 
 StateValueObject = {
-    "task_space_position"   : task_space_position,
+    "task_space_position"   : task_space["TaskSpacePosition"],
     "end_effector_position" : EndEffectorPosition,
     "robot_position"        : RobotPosition,
     "robot_velocity"        : RobotVelocity,
@@ -26,7 +27,7 @@ StateValueObject = {
     "udd_state"             : MjSimUddState,
 }
 
-debug = True
+debug = False
 
 class PushingState:
     def __init__(self, **kwargs: dict):

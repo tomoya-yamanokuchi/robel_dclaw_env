@@ -1,7 +1,8 @@
 import numpy as np
+from torch_numpy_converter import to_tensor
 
 
-class TaskSpacePositionValueObject_2D_Plane:
+class TaskSpacePosition_2D_Plane:
     _min = 0.0
     _max = 1.0
 
@@ -11,14 +12,14 @@ class TaskSpacePositionValueObject_2D_Plane:
 
     def __validation__ (self):
         assert len(self.value.shape) == 3
-        assert  self.value.shape[-1] == 6 #(2dim * 3claw)
+        assert  self.value.shape[-1] == 6, print("{} != {}".format(self.value.shape[-1], 6)) # 6 = (2dim * 3claw)
         self.value = self.value.clip(self._min, self._max)
 
     def __eq__(self, other: object) -> bool:
         return True if (other.value == self.value).all() else False
 
     def __add__(self, other: object):
-        return TaskSpacePositionValueObject_2D_Plane(self.value + other.value)
+        return TaskSpacePosition_2D_Plane(self.value + other.value)
 
     @property
     def min(self):
@@ -27,6 +28,15 @@ class TaskSpacePositionValueObject_2D_Plane:
     @property
     def max(self):
         return self._max
+
+    @property
+    def numpy_value(self):
+        return self.value
+
+    @property
+    def tensor_value(self):
+        return to_tensor(self.value)
+
 
 
 if __name__ == '__main__':

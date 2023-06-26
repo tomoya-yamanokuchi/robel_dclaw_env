@@ -15,9 +15,6 @@ from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics
 from robel_dclaw_env.domain.environment.kinematics import InverseKinematics
 from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
 from robel_dclaw_env.domain.environment.task_space.manifold_1d import TaskSpacePositionValue_1D_Manifold
-from robel_dclaw_env.domain.environment.instance.simulation.base_environment import EndEffectorPosition
-from robel_dclaw_env.custom_service import print_info, NTD
-
 from ..base_environment.SetState import SetState
 from ..base_environment.GetState import GetState
 from ..base_environment.SetCtrl  import SetCtrl
@@ -63,7 +60,7 @@ class ValveSimulationEnvironment(BaseEnvironment):
             self.model_file_reset()
             self.sim      = mujoco_py.MjSim(self.model)
             self.setState = SetState(self.sim, State, self.task_space_transformer)
-            self.getState = GetState(self.sim, State, self.task_space_transformer, EndEffectorPosition)
+            self.getState = GetState(self.sim, State, self.task_space_transformer)
             self.setCtrl  = SetCtrl( self.sim,        self.task_space_transformer)
             self.setTargetPosition = ValveTarget(self.sim)
             self.setTargetPosition.set_target_visible(self.config.target.visible)

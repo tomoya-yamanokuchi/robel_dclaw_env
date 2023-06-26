@@ -1,3 +1,4 @@
+import os
 import sys
 import copy
 import pathlib
@@ -6,18 +7,15 @@ from pprint import pprint
 import mujoco_py
 # -------- import from same level directory --------
 from .PushingState import PushingState as State
-# from .ValveFeedState import ValveFeedState as FeedState
-# from .ValveReturnState import ValveReturnState as ReturnState
 from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
 import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.BaseEnvironment import BaseEnvironment
+from robel_dclaw_env.domain.environment.instance.simulation.base_environment import EndEffectorPosition
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics, InverseKinematics
 from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
-from robel_dclaw_env.domain.environment.task_space.end_effector_2d import EndEffectorPositionValueObject_2D_Plane
+from robel_dclaw_env.domain.environment.task_space.end_effector_2d import BiasedEndEffectorPosition_2D_Plane
 
-# from robel_dclaw_env.domain.environment.task_space.end_effector_action_pace.TaskSpacePositionValueObject_2D_Plane import TaskSpacePositionValueObject_2D_Plane as TaskSpaceValueObject
-# from robel_dclaw_env.domain.environment.task_space.end_effector_action_pace.EndEffectorPositionValueObject_2D_Plane import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
 from robel_dclaw_env.custom_service import print_info, NTD
 
 from ..base_environment.SetState import SetState
@@ -29,6 +27,7 @@ from ..base_environment.dynamics_parameter.RobotDynamicsParameter import RobotDy
 from ..base_environment.joint_range.RobotJointRange import RobotJointRange
 from .PushingObjectDyanmicsParameter import PushingObjectDyanmicsParameter
 from .PushingObjectJointRange import PushingObjectJointRange
+from .PushingTarget import PushingTarget
 from ..base_environment.ctrl_range.RobotCtrlRange import RobotCtrlRange
 
 
@@ -39,17 +38,18 @@ class PushingSimulationEnvironment(BaseEnvironment):
         self.config             = config
         self.use_render         = use_render
 
-        task_space                  = TaskSpaceBuilder().build("sim_valve", mode="torch")
+        task_space                  = TaskSpaceBuilder().build("sim_pushing", mode="torch")
         self.task_space_transformer = task_space["transformer"]
-        # self.task_space_transformer = task_space["transformer"]
 
 
     def model_file_reset(self):
         # self._generate_model_file()
-        self.model         = self.load_model(self.config.model_file)
+        self.model         = self.load_model(os.path.join(self.config.model_dir, self.config.model_file))
         object_geom_names  = [name for name in self.model.geom_names
                 if (self.config.texture.task_relevant_geom_group_name in name)]
         self.canonical_rgb = CanonicalRGB(num_object_geom=len(object_geom_names))
+
+
 
 
     def _generate_model_file(self):
@@ -111,9 +111,9 @@ class PushingSimulationEnvironment(BaseEnvironment):
             self.model_file_reset()
             self.sim      = mujoco_py.MjSim(self.model)
             self.setState = SetState(self.sim, State, self.task_space_transformer)
-            self.getState = GetState(self.sim, State, self.task_space_transformer, EndEffectorPositionValueObject_2D_Plane)
+            self.getState = GetState(self.sim, State, self.task_space_transformer)
             self.setCtrl  = SetCtrl( self.sim, self.task_space_transformer)
-            # self.setTargetPosition = ValveTarget(self.sim)
+            self.setTargetPosition = PushingTarget(self.sim)
             # self.setTargetPosition.set_target_visible(self.config.target.visible)
             RobotDynamicsParameter(self.sim).set(self.config.dynamics.robot)
             PushingObjectDyanmicsParameter(self.sim).set(self.config.dynamics.object)
@@ -164,5 +164,13 @@ class PushingSimulationEnvironment(BaseEnvironment):
         self.setState.set_state(state)
 
 
-    def set_ctrl_task_space(self, task_space_abs_ctrl):
+    def set_ctrl_task_space(self, task_space_abs_ctrl: BiasedEndEffectorPosition_2D_Plane):
         return self.setCtrl.set_ctrl(task_space_abs_ctrl)
+
+
+    def set_ctrl_joint_space_position(self, joint_space_position):
+        return self.setCtrl.set_ctrl_joint_space_position(joint_space_position)
+
+
+    def set_target_position(self, target_position):
+        self.setTargetPosition.set_target_position(target_position)

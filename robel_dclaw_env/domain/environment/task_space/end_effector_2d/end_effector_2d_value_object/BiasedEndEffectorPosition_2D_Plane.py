@@ -6,7 +6,7 @@ from typing import Sequence
 import copy
 
 
-class EndEffectorPositionValueObject_2D_Plane:
+class BiasedEndEffectorPosition_2D_Plane:
     x_base = 153.437       #     height-axis for end-effector
     y_base = -68.5         #   vertical-axis for end-effector
     z_base = 0.0           # horizontal-axis for end-effector
