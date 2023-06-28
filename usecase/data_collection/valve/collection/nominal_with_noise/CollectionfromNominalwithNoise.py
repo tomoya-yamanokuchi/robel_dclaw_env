@@ -2,7 +2,7 @@ import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from usecase.data_collection.rollout.rollout_dataset_collection_with_differential_ctrl import rollout_dataset_collection_with_differential_ctrl
 from robel_dclaw_env.domain.environment.EnvironmentFactory import EnvironmentFactory
-from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
+from robel_dclaw_env.domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
 from robel_dclaw_env.domain.environment.task_space.manifold_1d.TaskSpacePositionValue_1D_Manifold import TaskSpacePositionValue_1D_Manifold
 from robel_dclaw_env.domain.environment.task_space.manifold_1d.TaskSpaceDifferentialPositionValue_1D_Manifold import TaskSpaceDifferentialPositionValue_1D_Manifold
 from domain.icem_mpc.icem_mpc.population.PopulationSampler import PopulationSampler

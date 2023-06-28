@@ -2,7 +2,7 @@ import os
 import time, copy
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
+from robel_dclaw_env.domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
 from robel_dclaw_env.custom_service import wait_time, NTD
 from robel_dclaw_env.custom_service import create_gif, join_with_mkdir
 from robel_dclaw_env.custom_service import save_mpc_planning_images

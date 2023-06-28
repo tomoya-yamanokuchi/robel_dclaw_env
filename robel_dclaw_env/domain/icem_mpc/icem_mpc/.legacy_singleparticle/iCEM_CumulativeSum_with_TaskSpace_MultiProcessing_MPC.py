@@ -11,7 +11,7 @@ from ._debug_iCEM_Visualizer import iCEM_Visualizer
 from .ColoredNoiseSampler import ColoredNoiseSampler
 from .ActionDimensionOfInterest import ActionDimensionOfInterest as ActionDoI
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
+from robel_dclaw_env.domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
 
 
 

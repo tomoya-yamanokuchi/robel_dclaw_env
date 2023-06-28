@@ -4,7 +4,7 @@ import time
 import numpy as np
 from typing import Any
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
+from robel_dclaw_env.domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
 from .population.PopulationSampingDistribution import PopulationSampingDistribution
 from .population.PopulationSizeScheduler import PopulationSizeScheduler
 from .population.PopulationSampler import PopulationSampler

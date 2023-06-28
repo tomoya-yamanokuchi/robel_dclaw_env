@@ -2,7 +2,7 @@ import numpy as np
 from robel_dclaw_env.custom_service import concat
 
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
+from robel_dclaw_env.domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
 
 
 class CollectionAggregation:

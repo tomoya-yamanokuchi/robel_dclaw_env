@@ -5,7 +5,7 @@ from logging import getLogger
 import numpy as np
 from .GaussianNoiseSampler import GaussianNoiseSampler
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
-from domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
+from robel_dclaw_env.domain.forward_model_multiprocessing.ForwardModelMultiprocessing import ForwardModelMultiprocessing
 from .ActionDimensionOfInterest import ActionDimensionOfInterest as ActionDoI
 from robel_dclaw_env.custom_service import concat
 from .visualizer.Visualizer import Visualizer

@@ -6,7 +6,7 @@ import numpy as np
 import glob
 from pprint import pprint
 from natsort import natsorted
-from domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
+from robel_dclaw_env.domain.forward_model_multiprocessing.ForkedPdb import ForkedPdb
 from .CollectionAggregation import CollectionAggregation
 
 
