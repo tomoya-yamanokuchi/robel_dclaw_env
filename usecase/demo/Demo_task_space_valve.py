@@ -4,6 +4,7 @@ from robel_dclaw_env.custom_service import print_info, NTD
 from robel_dclaw_env.domain import EnvironmentBuilder
 
 
+
 class Demo_task_space:
     def run(self, config):
         env_struct        = EnvironmentBuilder().build(config, mode="numpy")
