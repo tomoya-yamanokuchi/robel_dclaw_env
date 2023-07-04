@@ -9,7 +9,7 @@ p = pathlib.Path(__file__).resolve()
 sys.path.append(str(p.parent))
 
 from ..base import KinematicsDefinition, AbstractInverseKinematics
-from torch_numpy_converter import to_numpy
+from robel_dclaw_env.custom_service import to_numpy
 '''
 ＊注意＊
     ブロックはめ合わせタスクに必要な範囲の値では，解の一意性が問題になっていないが，

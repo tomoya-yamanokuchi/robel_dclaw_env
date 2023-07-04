@@ -3,7 +3,6 @@ from .RenderImage import RenderImage
 from .ImageObject import ImageObject
 from .Camera import Camera
 from .Light import Light
-
 from .utility import flip_upside_down, reverse_channel
 
 
@@ -62,11 +61,10 @@ class Rendering:
 
 
     def render(self):
-        image = RenderImage(
+        return RenderImage(
             canonical     = self._render_canonical(),
             # random_nonfix = self._render_randomized(),
         )
-        return image
 
 
     def set_canonical_rgb(self, canonical_rgb):

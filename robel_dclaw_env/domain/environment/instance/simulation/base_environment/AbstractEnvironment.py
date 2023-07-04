@@ -1,7 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
 
-
 class AbstractEnvironment(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, config):
@@ -17,6 +16,9 @@ class AbstractEnvironment(metaclass=ABCMeta):
     def set_ctrl_task_space(self):
         pass
 
+    @abstractmethod
+    def set_ctrl_joint_space_position(self):
+        pass
 
     @abstractmethod
     def get_state(self):
@@ -30,4 +32,9 @@ class AbstractEnvironment(metaclass=ABCMeta):
 
     @abstractmethod
     def render(self):
+        pass
+
+
+    @abstractmethod
+    def view(self):
         pass

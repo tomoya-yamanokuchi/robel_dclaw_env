@@ -2,10 +2,10 @@ import numpy as np
 import copy
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import InverseKinematics
-from robel_dclaw_env.domain.environment.task_space import AbstractTaskSpaceTransformer
+from task_space import AbstractTaskSpaceTransformer
 from .ReturnCtrl import ReturnCtrl
 from .JointPosition import JointPosition
-from torch_numpy_converter import to_numpy
+from robel_dclaw_env.custom_service import to_numpy
 
 
 class SetCtrl:

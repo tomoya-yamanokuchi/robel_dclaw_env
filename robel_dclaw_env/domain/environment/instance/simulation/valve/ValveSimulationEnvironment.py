@@ -9,12 +9,12 @@ import mujoco_py
 from .ValveState import ValveState as State
 from .CanonicalRGB import CanonicalRGB
 # -------- import from upper level directory --------
-import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
+import robel_dclaw_env
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.BaseEnvironment import BaseEnvironment
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics
 from robel_dclaw_env.domain.environment.kinematics import InverseKinematics
-from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
-from robel_dclaw_env.domain.environment.task_space.manifold_1d import TaskSpacePositionValue_1D_Manifold
+from task_space import TaskSpaceFactory
+from task_space.manifold_1d import TaskSpacePositionValue_1D_Manifold
 from ..base_environment.SetState import SetState
 from ..base_environment.GetState import GetState
 from ..base_environment.SetCtrl  import SetCtrl
@@ -27,7 +27,7 @@ from .ValveDyanmicsParameter import ValveDyanmicsParameter
 from .ValveJointRange import ValveJointRange
 from ..base_environment.ctrl_range.RobotCtrlRange import RobotCtrlRange
 
-from torch_numpy_converter import to_tensor
+from robel_dclaw_env.custom_service import to_tensor, NTD
 
 
 class ValveSimulationEnvironment(BaseEnvironment):
@@ -38,14 +38,16 @@ class ValveSimulationEnvironment(BaseEnvironment):
         self.inverse_kinematics = InverseKinematics()
         self.use_render         = use_render
 
-        task_space = TaskSpaceBuilder().build("sim_valve", mode="torch")
-        self.task_space_transformer = task_space["transformer"]
-        self.EndEffectorValueObject = task_space["transformer"]
+        self.env_name               = "sim_valve"
+        self.task_space_transformer = TaskSpaceFactory.create_transformer(self.env_name, mode="torch")
+        self.TaskSpaceValueObject   = TaskSpaceFactory.create_position(self.env_name)
 
 
     def model_file_reset(self):
-        # self._generate_model_file()
-        self.model         = self.load_model(os.path.join(self.config.model_dir, self.config.model_file))
+        absolute_path      = os.path.abspath(robel_dclaw_env.__file__)
+        parent_dir         = os.path.dirname(absolute_path)
+        model_path         = os.path.join(parent_dir, "domain", "environment", "model", self.config.model_file)
+        self.model         = self.load_model(model_path)
         self.canonical_rgb = CanonicalRGB(self.config.xml.rgb.object)
         # import ipdb; ipdb.set_trace()
 
@@ -55,7 +57,7 @@ class ValveSimulationEnvironment(BaseEnvironment):
         self.rendering.set_canonical_rgb(self.canonical_rgb.rgb)
 
 
-    def reset(self, state):
+    def reset(self, state, verbose=False):
         if self.sim is None:
             self.model_file_reset()
             self.sim      = mujoco_py.MjSim(self.model)
@@ -76,6 +78,7 @@ class ValveSimulationEnvironment(BaseEnvironment):
             self.rendering.register_new_randomized_texture_collection()
         # print(self.sim.get_state().time)
         self.sim.step()
+        if verbose: print("\n <---- reset --->\n")
 
 
     def _initialize_viewer_and_render(self):
@@ -112,8 +115,8 @@ class ValveSimulationEnvironment(BaseEnvironment):
         self.setState.set_state(state)
 
 
-    def set_ctrl_task_space(self, task_space_abs_ctrl: TaskSpacePositionValue_1D_Manifold):
-        return self.setCtrl.set_ctrl(task_space_abs_ctrl)
+    def set_ctrl_task_space(self, TaskSpacePosition: TaskSpacePositionValue_1D_Manifold):
+        return self.setCtrl.set_ctrl(TaskSpacePosition)
 
 
     def set_ctrl_joint_space_position(self, joint_space_position):

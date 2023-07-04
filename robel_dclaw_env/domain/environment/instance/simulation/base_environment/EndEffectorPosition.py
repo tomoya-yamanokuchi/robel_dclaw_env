@@ -1,5 +1,5 @@
 import numpy as np
-from torch_numpy_converter import to_tensor
+from robel_dclaw_env.custom_service import to_tensor
 
 
 class EndEffectorPosition:

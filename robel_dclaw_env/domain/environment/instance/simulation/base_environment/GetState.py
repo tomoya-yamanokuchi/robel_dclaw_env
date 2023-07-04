@@ -3,8 +3,8 @@ import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment import EndEffectorPosition
-from robel_dclaw_env.domain.environment.task_space import AbstractTaskSpaceTransformer
-from torch_numpy_converter import NTD, to_tensor, to_numpy
+from task_space import AbstractTaskSpaceTransformer
+from robel_dclaw_env.custom_service import NTD, to_tensor, to_numpy
 
 
 class GetState:
@@ -20,7 +20,7 @@ class GetState:
         state                 = copy.deepcopy(self.sim.get_state())
         robot_position        = state.qpos[:9]
         end_effector_position = self.forward_kinematics.calc(to_tensor(robot_position)).squeeze()
-        task_space_position   = self.task_space.end2task(EndEffectorPosition(NTD(end_effector_position))).value.squeeze()
+        task_space_position   = self.task_space.end2task(end_effector_position).value.squeeze()
         state = self.State(
             robot_position        = robot_position,
             object_position       = state.qpos[18:],

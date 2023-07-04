@@ -1,7 +1,7 @@
 import numpy as np
 from dataclasses import dataclass
 from robel_dclaw_env.custom_service import dimension_assetion
-from torch_numpy_converter import to_tensor
+from robel_dclaw_env.custom_service import to_tensor
 
 
 @dataclass(frozen=True)

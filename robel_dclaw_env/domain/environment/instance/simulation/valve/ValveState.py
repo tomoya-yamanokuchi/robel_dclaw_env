@@ -7,10 +7,11 @@ from robel_dclaw_env.domain.environment.instance.simulation.base_environment.sta
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.state.MjSimUddState import MjSimUddState
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.state.RobotPosition import RobotPosition
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.state.RobotVelocity import RobotVelocity
-from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
 from robel_dclaw_env.domain.environment.kinematics import EndEffectorPosition
 from robel_dclaw_env.custom_service import NTD
 
+from robel_dclaw_env.task_space import TaskSpaceBuilder
+from robel_dclaw_env.custom_service import to_tensor
 
 task_space = TaskSpaceBuilder().build(env_name="sim_valve", mode="torch")
 
@@ -37,7 +38,7 @@ class ValveState:
             state_value_object = StateValueObject[key]
 
             if (key != "time") and (key != "act") and (key != "udd_state"):
-                val = np.array(val)
+                val = to_tensor(np.array(val))
             if key == "udd_state":
                 val = dict()
 

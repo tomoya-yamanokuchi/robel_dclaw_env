@@ -7,7 +7,7 @@ from robel_dclaw_env.domain.environment.instance.simulation.base_environment.sta
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.state.MjSimUddState import MjSimUddState
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.state.RobotPosition import RobotPosition
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.state.RobotVelocity import RobotVelocity
-from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
+from task_space import TaskSpaceBuilder
 from robel_dclaw_env.domain.environment.kinematics import EndEffectorPosition
 from robel_dclaw_env.custom_service import NTD
 

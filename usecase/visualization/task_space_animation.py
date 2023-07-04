@@ -1,7 +1,7 @@
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.custom_service import visualization as vis
-from robel_dclaw_env.domain.environment.task_space.manifold_1d.Manifold1D import Manifold1D as TaskSpace
+from task_space.manifold_1d.Manifold1D import Manifold1D as TaskSpace
 
 
 taskspace = TaskSpace()

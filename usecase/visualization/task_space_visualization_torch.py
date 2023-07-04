@@ -1,8 +1,8 @@
 import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd())); sys.path.insert(0, './robel_dclaw_env')
 from robel_dclaw_env.custom_service import visualization as vis
-from robel_dclaw_env.domain.environment.task_space import TaskSpaceBuilder
-from torch_numpy_converter import to_numpy, to_tensor, NTD
+from task_space import TaskSpaceBuilder
+from robel_dclaw_env.custom_service import to_numpy, to_tensor, NTD
 
 # import matplotlib
 # matplotlib.use('TkAgg')

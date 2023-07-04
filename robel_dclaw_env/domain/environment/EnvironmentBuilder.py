@@ -2,18 +2,18 @@ from typing import Dict, Union
 from typing import TypedDict
 
 from .instance.simulation.base_environment import AbstractEnvironment
-from .task_space import AbstractTaskSpaceTransformer
 from .EnvironmentFactory import EnvironmentFactory
-from .task_space import TaskSpaceBuilder
+from task_space import AbstractTaskSpaceTransformer
+from task_space import TaskSpaceBuilder
 
 
 class EnvDict(TypedDict):
     """Typed User definition."""
     env                   : AbstractEnvironment
     init_state            : str
-    transformer           : AbstractTaskSpaceTransformer
+    # transformer           : AbstractTaskSpaceTransformer
     TaskSpacePosition     : str
-    TaskSpaceDiffPosition : str
+    # TaskSpaceDiffPosition : str
 
 
 class EnvironmentBuilder():
@@ -25,9 +25,9 @@ class EnvironmentBuilder():
         return {
             "env"                   : env,
             "init_state"            : init_state,
-            "transformer"           : task_space["transformer"],
+            # "transformer"           : task_space["transformer"],
             "TaskSpacePosition"     : task_space["TaskSpacePosition"],
-            "TaskSpaceDiffPosition" : task_space["TaskSpaceDiffPosition"],
+            # "TaskSpaceDiffPosition" : task_space["TaskSpaceDiffPosition"],
         }
 
 

@@ -2,8 +2,8 @@ import numpy as np
 from mujoco_py import MjSimState
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import InverseKinematics
-from robel_dclaw_env.domain.environment.task_space import AbstractTaskSpaceTransformer
-from torch_numpy_converter import NTD, to_tensor, to_numpy
+from task_space import AbstractTaskSpaceTransformer
+from robel_dclaw_env.custom_service import NTD, to_tensor, to_numpy
 
 
 class SetState:
@@ -37,12 +37,12 @@ class SetState:
         # ----------
         qpos      = np.zeros(self.sim.model.nq)
         qpos[:9]  = to_numpy(joint_position.squeeze())
-        qpos[18:] = state["object_position"].value.squeeze() # <--- env specific!
+        qpos[18:] = to_numpy(state["object_position"].value.squeeze()) # <--- env specific!
         return qpos
 
 
     def _set_qvel(self, state: dict):
         qvel      = np.zeros(self.sim.model.nv)
-        qvel[:9]  = state["robot_velocity"].value.squeeze()
-        qvel[18:] = state["object_velocity"].value.squeeze()
+        qvel[:9]  = to_numpy(state["robot_velocity"].value.squeeze())
+        qvel[18:] = to_numpy(state["object_velocity"].value.squeeze())
         return qvel
