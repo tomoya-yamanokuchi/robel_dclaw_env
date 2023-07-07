@@ -10,3 +10,4 @@ fig
 *.png
 *.npy
 **/*.egg-info
+!robel_dclaw_env/domain/environment/model/pattern/pattern_default_crop.png
