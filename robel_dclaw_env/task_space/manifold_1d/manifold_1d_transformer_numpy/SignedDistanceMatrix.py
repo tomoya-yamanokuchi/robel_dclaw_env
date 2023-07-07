@@ -53,10 +53,10 @@ if __name__ == '__main__':
     import numpy as np
     import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd()))
     sys.path.insert(0, './robel_dclaw_env')
-    from task_space.manifold_1d.ReferencePosition import ReferencePosition
-    from task_space.manifold_1d.create_cyclic_data import create_cyclic_data
+    from robel_dclaw_env.task_space.manifold_1d.ReferencePosition import ReferencePosition
+    from robel_dclaw_env.task_space.manifold_1d.create_cyclic_data import create_cyclic_data
     from robel_dclaw_env.domain.environment.kinematics.ForwardKinematics import ForwardKinematics
-    from task_space.AbstractTaskSpaceTransformer import AbstractTaskSpace
+    from robel_dclaw_env.task_space.AbstractTaskSpaceTransformer import AbstractTaskSpace
     from ReferenceTaskSpacefromEndEffector import ReferenceTaskSpacefromEndEffector
 
     min                             = 0.0

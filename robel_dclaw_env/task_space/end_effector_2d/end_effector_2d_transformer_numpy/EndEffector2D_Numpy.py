@@ -6,15 +6,12 @@ from matplotlib import axes
 from matplotlib.pyplot import axis
 import numpy as np
 from numpy.core.defchararray import index, join
-
-import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.custom_service import angle_interface as ai
 from ..end_effector_2d_value_object import TaskSpacePosition_2D_Plane
 from ..end_effector_2d_value_object import BiasedEndEffectorPosition_2D_Plane
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment import EndEffectorPosition
-import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics, InverseKinematics
-from task_space import AbstractTaskSpaceTransformer
+from robel_dclaw_env.task_space import AbstractTaskSpaceTransformer
 from robel_dclaw_env.custom_service import normalize, NTD
 
 

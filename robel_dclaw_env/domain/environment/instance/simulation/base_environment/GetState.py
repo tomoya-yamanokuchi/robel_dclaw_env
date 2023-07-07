@@ -3,7 +3,7 @@ import numpy as np
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment import EndEffectorPosition
-from task_space import AbstractTaskSpaceTransformer
+from robel_dclaw_env.task_space import AbstractTaskSpaceTransformer
 from robel_dclaw_env.custom_service import NTD, to_tensor, to_numpy
 
 

@@ -3,8 +3,8 @@ from typing import TypedDict
 
 from .instance.simulation.base_environment import AbstractEnvironment
 from .EnvironmentFactory import EnvironmentFactory
-from task_space import AbstractTaskSpaceTransformer
-from task_space import TaskSpaceBuilder
+from robel_dclaw_env.task_space import AbstractTaskSpaceTransformer
+from robel_dclaw_env.task_space import TaskSpaceBuilder
 
 
 class EnvDict(TypedDict):

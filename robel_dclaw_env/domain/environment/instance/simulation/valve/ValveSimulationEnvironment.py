@@ -13,8 +13,8 @@ import robel_dclaw_env
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.BaseEnvironment import BaseEnvironment
 from robel_dclaw_env.domain.environment.kinematics import ForwardKinematics
 from robel_dclaw_env.domain.environment.kinematics import InverseKinematics
-from task_space import TaskSpaceFactory
-from task_space.manifold_1d import TaskSpacePositionValue_1D_Manifold
+from robel_dclaw_env.task_space import TaskSpaceFactory
+from robel_dclaw_env.task_space.manifold_1d import TaskSpacePositionValue_1D_Manifold
 from ..base_environment.SetState import SetState
 from ..base_environment.GetState import GetState
 from ..base_environment.SetCtrl  import SetCtrl

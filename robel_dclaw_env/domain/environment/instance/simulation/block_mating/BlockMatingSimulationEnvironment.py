@@ -13,10 +13,10 @@ import sys; import pathlib; p = pathlib.Path("./"); sys.path.append(str(p.cwd())
 from robel_dclaw_env.domain.environment.instance.simulation.base_environment.BaseEnvironment import BaseEnvironment
 from robel_dclaw_env.domain.environment.kinematics.ForwardKinematics import ForwardKinematics
 from robel_dclaw_env.domain.environment.kinematics.InverseKinematics import InverseKinematics
-from task_space.end_effector_action_pace.EndEffector2D import EndEffector2D as TaskSpace
+from robel_dclaw_env.task_space.end_effector_action_pace.EndEffector2D import EndEffector2D as TaskSpace
 from robel_dclaw_env.domain.environment.kinematics.KinematicsDefinition import KinematicsDefinition
-from task_space.end_effector_action_pace.TaskSpacePositionValueObject_2D_Plane import TaskSpacePositionValueObject_2D_Plane as TaskSpaceValueObject
-from task_space.end_effector_action_pace.EndEffectorPositionValueObject_2D_Plane import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
+from robel_dclaw_env.task_space.end_effector_action_pace.TaskSpacePositionValueObject_2D_Plane import TaskSpacePositionValueObject_2D_Plane as TaskSpaceValueObject
+from robel_dclaw_env.task_space.end_effector_action_pace.EndEffectorPositionValueObject_2D_Plane import EndEffectorPositionValueObject_2D_Plane as EndEffectorValueObject
 from robel_dclaw_env.custom_service import print_info, NTD
 
 

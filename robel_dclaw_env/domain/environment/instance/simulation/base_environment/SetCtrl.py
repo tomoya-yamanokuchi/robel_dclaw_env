@@ -2,7 +2,7 @@ import numpy as np
 import copy
 import sys; import pathlib; p = pathlib.Path(); sys.path.append(str(p.cwd()))
 from robel_dclaw_env.domain.environment.kinematics import InverseKinematics
-from task_space import AbstractTaskSpaceTransformer
+from robel_dclaw_env.task_space import AbstractTaskSpaceTransformer
 from .ReturnCtrl import ReturnCtrl
 from .JointPosition import JointPosition
 from robel_dclaw_env.custom_service import to_numpy
