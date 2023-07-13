@@ -11,8 +11,8 @@ class TaskSpacePositionValue_1D_Manifold:
         self.__validation__()
 
     def __validation__ (self):
-        assert len(self.value.shape) == 3
-        assert  self.value.shape[-1] == 3 #(1dim * 3claw)
+        assert len(self.value.shape) == 3 # (batch, step, dim)
+        assert  self.value.shape[-1] == 3 # (1dim * 3claw)
         self.value = self.value.clip(self._min, self._max)
 
     def __eq__(self, other: object) -> bool:

@@ -125,3 +125,7 @@ class ValveSimulationEnvironment(BaseEnvironment):
 
     def set_target_position(self, target_position):
         self.setTargetPosition.set_target_position(target_position)
+
+
+    # def get_reward(self):
+    #     return np.abs(self.get_state().collection["object_position"] - self.target_object_position)

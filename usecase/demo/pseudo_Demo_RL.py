@@ -1,4 +1,5 @@
 import cv2, time, copy
+import numpy as np
 from robel_dclaw_env.custom_service import NTD
 from robel_dclaw_env.domain import EnvironmentBuilder
 
@@ -12,16 +13,24 @@ class Demo_task_space:
 
         task_space_position_init = init_state.collection['task_space_position'].value.squeeze()
 
+        sac = SAC(config_sac)
+
         for m in range(episode):
             env.reset(init_state, verbose=True)
             task_g = copy.deepcopy(task_space_position_init)
             for t in range(step):
-                img   = env.render()    # img.collection["canonical"]
+                # img   = env.render()    # img.collection["canonical"]
                 state = env.get_state() # state.collection["robot_position"]
-                # env.view()
-                task_g -= 0.05
-                env.set_ctrl_task_space(TaskSpacePosition(NTD(task_g)))
+
+                robot_position  = state.collection["robot_position"]
+                object_position = state.collection["object_position"]
+
+                action = sac.action(np.concatenate([robot_position, object_position]))
+
+                env.set_ctrl_task_space(TaskSpacePosition(NTD(action)))
                 env.step(is_view=False)
+
+                reward = env.get_reward()
 
 
 if __name__ == "__main__":

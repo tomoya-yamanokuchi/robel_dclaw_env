@@ -9,7 +9,7 @@ inplicit_step                  : 200
 ctrl_interpolation_margin_step : 40
 
 viewer:
-    is_Offscreen     : True
+    is_Offscreen     : False
 
 target:
     visible: False
